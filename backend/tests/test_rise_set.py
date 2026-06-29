@@ -1,4 +1,4 @@
-"""Tests for sunrise and sunset calculation helpers."""
+"""Tests for rise/set calculation helpers."""
 
 from __future__ import annotations
 
@@ -14,11 +14,16 @@ class FakeSwissEphemeris(SimpleNamespace):
     """Small fake for Swiss Ephemeris rise/set calls."""
 
     SUN = 0
+    MOON = 1
     GREG_CAL = 1
     FLG_SWIEPH = 2
     CALC_RISE = 1
     CALC_SET = 2
     BIT_DISC_CENTER = 256
+    SUNRISE_JD = 2461220.529560185
+    SUNSET_JD = 2461221.078240741
+    MOONRISE_JD = 2461221.11412037
+    MOONSET_JD = 2461220.646585648
 
     def __init__(self) -> None:
         super().__init__()
@@ -51,24 +56,32 @@ class FakeSwissEphemeris(SimpleNamespace):
         if self.not_found:
             return -2, ()
 
+        if body == self.MOON and rsmi & self.CALC_RISE:
+            return 0, (self.MOONRISE_JD,)
+        if body == self.MOON:
+            return 0, (self.MOONSET_JD,)
         if rsmi & self.CALC_RISE:
-            return 0, (2461220.529560185,)
+            return 0, (self.SUNRISE_JD,)
 
-        return 0, (2461221.078240741,)
+        return 0, (self.SUNSET_JD,)
 
     def revjul(
         self,
         jd_ut: float,
         calendar: int,
     ) -> tuple[int, int, int, float]:
-        if jd_ut == 2461220.529560185:
+        if jd_ut == self.SUNRISE_JD:
             return 2026, 6, 29, 0.7094444444
+        if jd_ut == self.MOONRISE_JD:
+            return 2026, 6, 29, 14.7388888889
+        if jd_ut == self.MOONSET_JD:
+            return 2026, 6, 29, 3.5180555556
 
         return 2026, 6, 29, 13.8708333333
 
 
 class RiseSetTest(unittest.TestCase):
-    """Validate sunrise and sunset outputs."""
+    """Validate rise/set outputs."""
 
     def setUp(self) -> None:
         self.fake_swisseph = FakeSwissEphemeris()
@@ -99,23 +112,43 @@ class RiseSetTest(unittest.TestCase):
         self.assertEqual(result["utc_datetime"], "2026-06-29T13:52:15Z")
         self.assertEqual(self.fake_swisseph.calls[-1][2], 258)
 
+    def test_jodhpur_date_returns_moonrise(self) -> None:
+        result = rise_set.get_moonrise(2026, 6, 29, 26.2389, 73.0243, 5.5)
+
+        self.assertEqual(result["event"], "moonrise")
+        self.assertEqual(result["local_time"], "20:14:20")
+        self.assertEqual(result["utc_datetime"], "2026-06-29T14:44:20Z")
+        self.assertEqual(result["timezone_offset"], 5.5)
+        self.assertEqual(self.fake_swisseph.calls[-1][1], self.fake_swisseph.MOON)
+        self.assertEqual(self.fake_swisseph.calls[-1][2], 257)
+        self.assertEqual(self.fake_swisseph.calls[-1][3], (73.0243, 26.2389, 0.0))
+
+    def test_jodhpur_date_returns_moonset(self) -> None:
+        result = rise_set.get_moonset(2026, 6, 29, 26.2389, 73.0243, 5.5)
+
+        self.assertEqual(result["event"], "moonset")
+        self.assertEqual(result["local_time"], "09:01:05")
+        self.assertEqual(result["utc_datetime"], "2026-06-29T03:31:05Z")
+        self.assertEqual(self.fake_swisseph.calls[-1][1], self.fake_swisseph.MOON)
+        self.assertEqual(self.fake_swisseph.calls[-1][2], 258)
+
     def test_invalid_latitude_raises_clear_error(self) -> None:
         with self.assertRaisesRegex(ValueError, "latitude must be between"):
-            rise_set.get_sunrise(2026, 6, 29, 91.0, 73.0243, 5.5)
+            rise_set.get_moonrise(2026, 6, 29, 91.0, 73.0243, 5.5)
 
     def test_invalid_longitude_raises_clear_error(self) -> None:
         with self.assertRaisesRegex(ValueError, "longitude must be between"):
-            rise_set.get_sunset(2026, 6, 29, 26.2389, 181.0, 5.5)
+            rise_set.get_moonset(2026, 6, 29, 26.2389, 181.0, 5.5)
 
     def test_event_not_found_does_not_crash(self) -> None:
         self.fake_swisseph.not_found = True
 
-        result = rise_set.get_sunrise(2026, 6, 29, 70.0, 73.0243, 5.5)
+        result = rise_set.get_moonrise(2026, 6, 29, 70.0, 73.0243, 5.5)
 
         self.assertEqual(
             result,
             {
-                "event": "sunrise",
+                "event": "moonrise",
                 "local_time": None,
                 "utc_datetime": None,
                 "timezone_offset": 5.5,

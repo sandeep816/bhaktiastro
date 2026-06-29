@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Moonrise and moonset helpers using Swiss Ephemeris rise/transit calculations.
 - Sunrise and sunset in basic Panchang output, API schemas, examples, and docs.
 - Sunrise and sunset helpers using Swiss Ephemeris rise/transit calculations.
 - Panchang API documentation, Jodhpur request/response examples, and smoke coverage.

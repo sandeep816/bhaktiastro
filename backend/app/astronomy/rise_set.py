@@ -1,4 +1,4 @@
-"""Sunrise and sunset calculation helpers."""
+"""Sunrise, sunset, moonrise, and moonset calculation helpers."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ UTC_SUFFIX = "Z"
 
 
 class RiseSetResult(TypedDict):
-    """Typed output for a solar rise/set event."""
+    """Typed output for a rise/set event."""
 
     event: str
     local_time: Optional[str]
@@ -108,6 +108,86 @@ def get_sunset(
     )
 
 
+def get_moonrise(
+    year: int,
+    month: int,
+    day: int,
+    latitude: float,
+    longitude: float,
+    timezone_offset: float,
+) -> RiseSetResult:
+    """Return moonrise for a local civil date and location.
+
+    Args:
+        year: Local calendar year.
+        month: Local calendar month.
+        day: Local calendar day.
+        latitude: Geographic latitude in degrees, north positive.
+        longitude: Geographic longitude in degrees, east positive.
+        timezone_offset: Local UTC offset in decimal hours.
+
+    Returns:
+        RiseSetResult with local time and UTC datetime. If Swiss Ephemeris
+        reports no event on the requested local date, time fields are returned
+        as None.
+
+    Raises:
+        TypeError: If latitude or longitude is not numeric.
+        ValueError: If date, latitude, longitude, or timezone offset is invalid.
+        RuntimeError: If Swiss Ephemeris is not installed or fails fatally.
+    """
+
+    return _get_lunar_event(
+        event="moonrise",
+        year=year,
+        month=month,
+        day=day,
+        latitude=latitude,
+        longitude=longitude,
+        timezone_offset=timezone_offset,
+    )
+
+
+def get_moonset(
+    year: int,
+    month: int,
+    day: int,
+    latitude: float,
+    longitude: float,
+    timezone_offset: float,
+) -> RiseSetResult:
+    """Return moonset for a local civil date and location.
+
+    Args:
+        year: Local calendar year.
+        month: Local calendar month.
+        day: Local calendar day.
+        latitude: Geographic latitude in degrees, north positive.
+        longitude: Geographic longitude in degrees, east positive.
+        timezone_offset: Local UTC offset in decimal hours.
+
+    Returns:
+        RiseSetResult with local time and UTC datetime. If Swiss Ephemeris
+        reports no event on the requested local date, time fields are returned
+        as None.
+
+    Raises:
+        TypeError: If latitude or longitude is not numeric.
+        ValueError: If date, latitude, longitude, or timezone offset is invalid.
+        RuntimeError: If Swiss Ephemeris is not installed or fails fatally.
+    """
+
+    return _get_lunar_event(
+        event="moonset",
+        year=year,
+        month=month,
+        day=day,
+        latitude=latitude,
+        longitude=longitude,
+        timezone_offset=timezone_offset,
+    )
+
+
 def _get_solar_event(
     *,
     event: str,
@@ -119,6 +199,57 @@ def _get_solar_event(
     timezone_offset: float,
 ) -> RiseSetResult:
     """Calculate a solar rise/set event through Swiss Ephemeris."""
+
+    swe = _load_swisseph()
+    return _get_rise_set_event(
+        event=event,
+        body=swe.SUN,
+        year=year,
+        month=month,
+        day=day,
+        latitude=latitude,
+        longitude=longitude,
+        timezone_offset=timezone_offset,
+    )
+
+
+def _get_lunar_event(
+    *,
+    event: str,
+    year: int,
+    month: int,
+    day: int,
+    latitude: float,
+    longitude: float,
+    timezone_offset: float,
+) -> RiseSetResult:
+    """Calculate a lunar rise/set event through Swiss Ephemeris."""
+
+    swe = _load_swisseph()
+    return _get_rise_set_event(
+        event=event,
+        body=swe.MOON,
+        year=year,
+        month=month,
+        day=day,
+        latitude=latitude,
+        longitude=longitude,
+        timezone_offset=timezone_offset,
+    )
+
+
+def _get_rise_set_event(
+    *,
+    event: str,
+    body: int,
+    year: int,
+    month: int,
+    day: int,
+    latitude: float,
+    longitude: float,
+    timezone_offset: float,
+) -> RiseSetResult:
+    """Calculate one rise/set event through Swiss Ephemeris."""
 
     latitude_value = _validate_coordinate(
         latitude,
@@ -145,17 +276,17 @@ def _get_solar_event(
     ).julian_day_ut
     _validate_local_date(year, month, day)
 
-    swe = _load_swisseph()
     _set_ephemeris_path_if_available()
 
-    event_flag = swe.CALC_RISE if event == "sunrise" else swe.CALC_SET
+    swe = _load_swisseph()
+    event_flag = swe.CALC_RISE if event.endswith("rise") else swe.CALC_SET
     rsmi = event_flag | swe.BIT_DISC_CENTER
     geopos = (longitude_value, latitude_value, GEOGRAPHIC_ALTITUDE_METERS)
 
     try:
         result_code, event_times = swe.rise_trans(
             local_midnight_jd,
-            swe.SUN,
+            body,
             rsmi,
             geopos,
             flags=swe.FLG_SWIEPH,
