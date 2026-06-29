@@ -236,9 +236,9 @@ class VaraInfo(BaseModel):
 
 
 class RiseSetInfo(BaseModel):
-    """Sunrise or sunset section of a Panchang response."""
+    """Rise/set section of a Panchang response."""
 
-    event: str = Field(..., description="Solar event name.")
+    event: str = Field(..., description="Rise/set event name.")
     local_time: Optional[str] = Field(
         None,
         description="Local event time as HH:MM:SS, or null if not found.",
@@ -267,3 +267,5 @@ class PanchangResponse(BaseModel):
     vara: VaraInfo = Field(..., description="Vara information.")
     sunrise: RiseSetInfo = Field(..., description="Sunrise information.")
     sunset: RiseSetInfo = Field(..., description="Sunset information.")
+    moonrise: RiseSetInfo = Field(..., description="Moonrise information.")
+    moonset: RiseSetInfo = Field(..., description="Moonset information.")

@@ -147,6 +147,8 @@ class PanchangResponseSchemaTest(unittest.TestCase):
         self.assertEqual(response.vara.name_en, "Monday")
         self.assertEqual(response.sunrise.event, "sunrise")
         self.assertEqual(response.sunset.event, "sunset")
+        self.assertEqual(response.moonrise.event, "moonrise")
+        self.assertEqual(response.moonset.event, "moonset")
 
 
 def _planet_summary(planet: str, sidereal_longitude: float) -> dict[str, object]:
@@ -236,6 +238,18 @@ def _aggregator_output() -> dict[str, object]:
             "event": "sunset",
             "local_time": "19:31:49",
             "utc_datetime": "2026-06-29T14:01:49Z",
+            "timezone_offset": 5.5,
+        },
+        "moonrise": {
+            "event": "moonrise",
+            "local_time": "20:14:20",
+            "utc_datetime": "2026-06-29T14:44:20Z",
+            "timezone_offset": 5.5,
+        },
+        "moonset": {
+            "event": "moonset",
+            "local_time": None,
+            "utc_datetime": None,
             "timezone_offset": 5.5,
         },
     }

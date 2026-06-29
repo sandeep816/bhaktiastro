@@ -30,6 +30,8 @@ class BasicPanchangTest(unittest.TestCase):
                 "vara",
                 "sunrise",
                 "sunset",
+                "moonrise",
+                "moonset",
             },
         )
 
@@ -144,6 +146,73 @@ class BasicPanchangTest(unittest.TestCase):
         self.assertEqual(result["sunrise"]["event"], "sunrise")
         self.assertEqual(result["sunset"]["event"], "sunset")
 
+    def test_moonrise_and_moonset_are_calculated_from_local_date_and_location(
+        self,
+    ) -> None:
+        with self._patched_dependencies() as mocks:
+            result = panchang.calculate_basic_panchang(
+                2026,
+                6,
+                29,
+                12,
+                0,
+                0,
+                5.5,
+                26.2389,
+                73.0243,
+            )
+
+        mocks["get_moonrise"].assert_called_once_with(
+            2026,
+            6,
+            29,
+            26.2389,
+            73.0243,
+            5.5,
+        )
+        mocks["get_moonset"].assert_called_once_with(
+            2026,
+            6,
+            29,
+            26.2389,
+            73.0243,
+            5.5,
+        )
+        self.assertEqual(result["moonrise"]["event"], "moonrise")
+        self.assertEqual(result["moonset"]["event"], "moonset")
+
+    def test_missing_moonrise_and_moonset_do_not_crash(self) -> None:
+        with self._patched_dependencies() as mocks:
+            mocks["get_moonrise"].return_value = {
+                "event": "moonrise",
+                "local_time": None,
+                "utc_datetime": None,
+                "timezone_offset": 5.5,
+            }
+            mocks["get_moonset"].return_value = {
+                "event": "moonset",
+                "local_time": None,
+                "utc_datetime": None,
+                "timezone_offset": 5.5,
+            }
+
+            result = panchang.calculate_basic_panchang(
+                2026,
+                6,
+                29,
+                12,
+                0,
+                0,
+                5.5,
+                26.2389,
+                73.0243,
+            )
+
+        self.assertIsNone(result["moonrise"]["local_time"])
+        self.assertIsNone(result["moonrise"]["utc_datetime"])
+        self.assertIsNone(result["moonset"]["local_time"])
+        self.assertIsNone(result["moonset"]["utc_datetime"])
+
     def test_invalid_date_raises_clear_error(self) -> None:
         with self.assertRaisesRegex(ValueError, "Invalid local date components"):
             panchang.calculate_basic_panchang(
@@ -245,6 +314,26 @@ class _PanchangPatchContext:
                     "event": "sunset",
                     "local_time": "19:31:49",
                     "utc_datetime": "2026-06-29T14:01:49Z",
+                    "timezone_offset": 5.5,
+                },
+            ),
+            "get_moonrise": patch.object(
+                panchang.rise_set,
+                "get_moonrise",
+                return_value={
+                    "event": "moonrise",
+                    "local_time": "20:14:20",
+                    "utc_datetime": "2026-06-29T14:44:20Z",
+                    "timezone_offset": 5.5,
+                },
+            ),
+            "get_moonset": patch.object(
+                panchang.rise_set,
+                "get_moonset",
+                return_value={
+                    "event": "moonset",
+                    "local_time": "09:01:05",
+                    "utc_datetime": "2026-06-29T03:31:05Z",
                     "timezone_offset": 5.5,
                 },
             ),

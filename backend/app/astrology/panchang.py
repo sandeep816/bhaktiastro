@@ -23,6 +23,8 @@ class BasicPanchangResult(TypedDict):
     vara: dict[str, Any]
     sunrise: dict[str, Any]
     sunset: dict[str, Any]
+    moonrise: dict[str, Any]
+    moonset: dict[str, Any]
 
 
 def calculate_basic_panchang(
@@ -51,7 +53,8 @@ def calculate_basic_panchang(
 
     Returns:
         A structured dictionary with Julian Day, ayanamsa, Sun, Moon,
-        Tithi, Nakshatra, Yoga, Karana, Vara, sunrise, and sunset sections.
+        Tithi, Nakshatra, Yoga, Karana, Vara, sunrise, sunset, moonrise,
+        and moonset sections.
 
     Raises:
         ValueError: If the local date components are invalid.
@@ -105,6 +108,22 @@ def calculate_basic_panchang(
             timezone_offset,
         ),
         "sunset": rise_set.get_sunset(
+            year,
+            month,
+            day,
+            latitude,
+            longitude,
+            timezone_offset,
+        ),
+        "moonrise": rise_set.get_moonrise(
+            year,
+            month,
+            day,
+            latitude,
+            longitude,
+            timezone_offset,
+        ),
+        "moonset": rise_set.get_moonset(
             year,
             month,
             day,

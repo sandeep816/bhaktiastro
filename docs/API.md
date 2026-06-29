@@ -4,7 +4,7 @@
 
 Calculate the basic deterministic Panchang for one local date and time.
 
-This endpoint does not include moonrise, moonset, monthly Panchang, boundary end times, muhurat, or interpretation text.
+This endpoint does not include monthly Panchang, boundary end times, muhurat, or interpretation text.
 
 ### Request
 
@@ -70,7 +70,9 @@ Response body:
   "karana": {},
   "vara": {},
   "sunrise": {},
-  "sunset": {}
+  "sunset": {},
+  "moonrise": {},
+  "moonset": {}
 }
 ```
 

@@ -34,6 +34,18 @@
     "speed": 11.79695,
     "tropical_longitude": 33.666677
   },
+  "moonrise": {
+    "event": "moonrise",
+    "local_time": "06:15:04",
+    "timezone_offset": 5.5,
+    "utc_datetime": "1985-04-20T00:45:04Z"
+  },
+  "moonset": {
+    "event": "moonset",
+    "local_time": "19:15:15",
+    "timezone_offset": 5.5,
+    "utc_datetime": "1985-04-20T13:45:15Z"
+  },
   "nakshatra": {
     "degree_within_nakshatra": 10.014913,
     "end_degree": 13.333333333333334,

@@ -95,8 +95,44 @@ class PanchangApiTest(unittest.TestCase):
             "vara",
             "sunrise",
             "sunset",
+            "moonrise",
+            "moonset",
         ):
             self.assertIn(key, data)
+
+    def test_missing_moonrise_and_moonset_response_does_not_crash(self) -> None:
+        payload = _panchang_response_payload()
+        payload["moonrise"] = {
+            "event": "moonrise",
+            "local_time": None,
+            "utc_datetime": None,
+            "timezone_offset": 5.5,
+        }
+        payload["moonset"] = {
+            "event": "moonset",
+            "local_time": None,
+            "utc_datetime": None,
+            "timezone_offset": 5.5,
+        }
+
+        with patch(
+            "backend.app.api.v1.panchang.calculate_basic_panchang",
+            return_value=payload,
+        ):
+            response = get_panchang(
+                PanchangRequest(
+                    year=1985,
+                    month=4,
+                    day=20,
+                    latitude=26.2389,
+                    longitude=73.0243,
+                )
+            )
+
+        self.assertIsNone(response.moonrise.local_time)
+        self.assertIsNone(response.moonrise.utc_datetime)
+        self.assertIsNone(response.moonset.local_time)
+        self.assertIsNone(response.moonset.utc_datetime)
 
     def test_invalid_month_returns_validation_error(self) -> None:
         with self.assertRaises(ValidationError):
@@ -262,6 +298,18 @@ def _panchang_response_payload() -> dict[str, object]:
             "event": "sunset",
             "local_time": "18:59:01",
             "utc_datetime": "1985-04-20T13:29:01Z",
+            "timezone_offset": 5.5,
+        },
+        "moonrise": {
+            "event": "moonrise",
+            "local_time": "06:38:42",
+            "utc_datetime": "1985-04-20T01:08:42Z",
+            "timezone_offset": 5.5,
+        },
+        "moonset": {
+            "event": "moonset",
+            "local_time": "19:54:56",
+            "utc_datetime": "1985-04-20T14:24:56Z",
             "timezone_offset": 5.5,
         },
     }
