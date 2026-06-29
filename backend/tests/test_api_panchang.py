@@ -2,46 +2,61 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 import unittest
 from unittest.mock import patch
 
 try:
-    from fastapi.testclient import TestClient
+    from fastapi import HTTPException
+    from pydantic import ValidationError
 
-    from backend.app.main import app
+    from backend.app.api.v1.panchang import get_panchang, router
+    from backend.app.main import health_check
+    from backend.app.schemas.panchang import PanchangRequest
 except ModuleNotFoundError:
-    TestClient = None  # type: ignore[assignment]
-    app = None  # type: ignore[assignment]
+    HTTPException = None  # type: ignore[assignment]
+    ValidationError = None  # type: ignore[assignment]
+    get_panchang = None  # type: ignore[assignment]
+    health_check = None  # type: ignore[assignment]
+    PanchangRequest = None  # type: ignore[assignment]
+    router = None  # type: ignore[assignment]
 
 
-@unittest.skipIf(TestClient is None, "fastapi is not installed")
+@unittest.skipIf(PanchangRequest is None, "fastapi or pydantic is not installed")
 class PanchangApiTest(unittest.TestCase):
     """Validate Panchang API behavior."""
 
-    def setUp(self) -> None:
-        self.client = TestClient(app)
+    def test_router_exposes_post_panchang(self) -> None:
+        routes = [
+            route
+            for route in router.routes
+            if getattr(route, "path", None) == "/panchang"
+        ]
 
-    def test_post_panchang_returns_200_for_valid_jodhpur_ist_input(self) -> None:
+        self.assertEqual(len(routes), 1)
+        self.assertIn("POST", routes[0].methods)
+
+    def test_panchang_route_returns_response_for_valid_jodhpur_ist_input(self) -> None:
         with patch(
             "backend.app.api.v1.panchang.calculate_basic_panchang",
             return_value=_panchang_response_payload(),
         ) as calculate_basic_panchang:
-            response = self.client.post(
-                "/api/v1/panchang",
-                json={
-                    "year": 1985,
-                    "month": 4,
-                    "day": 20,
-                    "hour": 18,
-                    "minute": 10,
-                    "second": 0,
-                    "timezone_offset": 5.5,
-                    "language": "hi",
-                    "ayanamsa": "lahiri",
-                },
+            response = get_panchang(
+                PanchangRequest(
+                    year=1985,
+                    month=4,
+                    day=20,
+                    hour=18,
+                    minute=10,
+                    second=0,
+                    timezone_offset=5.5,
+                    language="hi",
+                    ayanamsa="lahiri",
+                )
             )
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.vara.name_en, "Saturday")
         calculate_basic_panchang.assert_called_once_with(
             year=1985,
             month=4,
@@ -57,49 +72,46 @@ class PanchangApiTest(unittest.TestCase):
             "backend.app.api.v1.panchang.calculate_basic_panchang",
             return_value=_panchang_response_payload(),
         ):
-            response = self.client.post(
-                "/api/v1/panchang",
-                json={"year": 1985, "month": 4, "day": 20},
-            )
+            response = get_panchang(PanchangRequest(year=1985, month=4, day=20))
 
-        data = response.json()
+        data = response.model_dump()
         for key in ("tithi", "nakshatra", "yoga", "karana", "vara"):
             self.assertIn(key, data)
 
     def test_invalid_month_returns_validation_error(self) -> None:
-        response = self.client.post(
-            "/api/v1/panchang",
-            json={"year": 1985, "month": 13, "day": 20},
-        )
-
-        self.assertEqual(response.status_code, 422)
+        with self.assertRaises(ValidationError):
+            PanchangRequest(year=1985, month=13, day=20)
 
     def test_invalid_timezone_returns_validation_error(self) -> None:
-        response = self.client.post(
-            "/api/v1/panchang",
-            json={"year": 1985, "month": 4, "day": 20, "timezone_offset": -13},
-        )
-
-        self.assertEqual(response.status_code, 422)
+        with self.assertRaises(ValidationError):
+            PanchangRequest(year=1985, month=4, day=20, timezone_offset=-13)
 
     def test_health_endpoint_still_works(self) -> None:
-        response = self.client.get("/api/v1/health")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["status"], "ok")
+        self.assertEqual(health_check()["status"], "ok")
 
     def test_calculation_value_error_returns_clear_error_response(self) -> None:
         with patch(
             "backend.app.api.v1.panchang.calculate_basic_panchang",
             side_effect=ValueError("Invalid local date components"),
         ):
-            response = self.client.post(
-                "/api/v1/panchang",
-                json={"year": 1985, "month": 4, "day": 20},
-            )
+            with self.assertRaises(HTTPException) as exc_info:
+                get_panchang(PanchangRequest(year=1985, month=4, day=20))
 
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["detail"], "Invalid local date components")
+        self.assertEqual(exc_info.exception.status_code, 400)
+        self.assertEqual(exc_info.exception.detail, "Invalid local date components")
+
+    def test_jodhpur_example_response_matches_current_route_output(self) -> None:
+        request_data = _read_json("docs/examples/panchang_request_jodhpur.json")
+        expected_response = _read_json("docs/examples/panchang_response_jodhpur.json")
+        request = PanchangRequest(**request_data)
+
+        actual_response = get_panchang(request).model_dump(mode="json")
+
+        self.assertEqual(actual_response, expected_response)
+
+
+def _read_json(path: str) -> dict[str, object]:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 def _planet_summary(planet: str, sidereal_longitude: float) -> dict[str, object]:

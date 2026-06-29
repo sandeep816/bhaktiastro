@@ -1,0 +1,93 @@
+{
+  "ayanamsa": {
+    "value": 23.651764213530612
+  },
+  "julian_day": {
+    "julian_day_ut": 2446176.027777778,
+    "utc_datetime": "1985-04-20T12:40:00+00:00"
+  },
+  "karana": {
+    "current_angle": 3.290856,
+    "degrees_completed": 3.290856,
+    "degrees_remaining": 2.709144,
+    "end_angle": 6.0,
+    "half_tithi_index": 0,
+    "karana_index": 11,
+    "name_en": "Kimstughna",
+    "name_hi": "किंस्तुघ्न",
+    "name_sa": "Kimstughna",
+    "start_angle": 0.0,
+    "type": "Fixed"
+  },
+  "moon": {
+    "degree_in_rashi": 10.0149,
+    "dms": {
+      "degrees": 10,
+      "minutes": 0,
+      "seconds": 53.7
+    },
+    "planet": "moon",
+    "rashi_index": 0,
+    "rashi_name_hi": "मेष",
+    "retrograde": false,
+    "sidereal_longitude": 10.014913,
+    "speed": 11.79695,
+    "tropical_longitude": 33.666677
+  },
+  "nakshatra": {
+    "degree_within_nakshatra": 10.014913,
+    "end_degree": 13.333333333333334,
+    "index": 0,
+    "name_en": "Ashwini",
+    "name_hi": "अश्विनी",
+    "name_sa": "Ashvini",
+    "pada": 4,
+    "ruling_planet": "ketu",
+    "start_degree": 0.0
+  },
+  "sun": {
+    "degree_in_rashi": 6.7241,
+    "dms": {
+      "degrees": 6,
+      "minutes": 43,
+      "seconds": 26.6
+    },
+    "planet": "sun",
+    "rashi_index": 0,
+    "rashi_name_hi": "मेष",
+    "retrograde": false,
+    "sidereal_longitude": 6.724057,
+    "speed": 0.976348,
+    "tropical_longitude": 30.375821
+  },
+  "tithi": {
+    "current_angle": 3.290856,
+    "degrees_completed": 3.290856,
+    "degrees_remaining": 8.709144,
+    "end_angle": 12.0,
+    "name_en": "Pratipada",
+    "name_hi": "प्रतिपदा",
+    "name_sa": "Pratipada",
+    "paksha": "Shukla",
+    "start_angle": 0.0,
+    "tithi_number": 1
+  },
+  "vara": {
+    "index": 7,
+    "name_en": "Saturday",
+    "name_hi": "शनिवार",
+    "name_sa": "Shanivara",
+    "ruling_planet": "saturn"
+  },
+  "yoga": {
+    "current_degree": 16.73897,
+    "degrees_completed": 3.405637,
+    "degrees_remaining": 9.927696,
+    "end_degree": 26.666666666666668,
+    "name_en": "Priti",
+    "name_hi": "प्रीति",
+    "name_sa": "Priti",
+    "start_degree": 13.333333333333334,
+    "yoga_index": 2
+  }
+}
