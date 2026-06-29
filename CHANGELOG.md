@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Tithi end-time calculation using reusable longitude boundary binary search.
 - Moonrise and moonset in basic Panchang output, API schema, examples, and docs.
 - Moonrise and moonset helpers using Swiss Ephemeris rise/transit calculations.
 - Sunrise and sunset in basic Panchang output, API schemas, examples, and docs.

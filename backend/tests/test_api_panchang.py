@@ -87,6 +87,7 @@ class PanchangApiTest(unittest.TestCase):
             )
 
         data = response.model_dump()
+        self.assertEqual(data["tithi"]["end_time_utc"], "1985-04-20T18:00:00Z")
         for key in (
             "tithi",
             "nakshatra",
@@ -245,6 +246,8 @@ def _panchang_response_payload() -> dict[str, object]:
             "current_angle": 29.55,
             "degrees_completed": 5.55,
             "degrees_remaining": 6.45,
+            "end_time_local": "1985-04-20T23:30:00+05:30",
+            "end_time_utc": "1985-04-20T18:00:00Z",
         },
         "nakshatra": {
             "index": 2,

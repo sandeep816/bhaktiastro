@@ -161,6 +161,14 @@ class TithiInfo(BaseModel):
         ...,
         description="Degrees remaining in the current Tithi.",
     )
+    end_time_local: Optional[str] = Field(
+        None,
+        description="Local datetime when the current Tithi ends.",
+    )
+    end_time_utc: Optional[str] = Field(
+        None,
+        description="UTC datetime when the current Tithi ends.",
+    )
 
 
 class NakshatraInfo(BaseModel):

@@ -91,7 +91,15 @@ def calculate_basic_panchang(
         },
         "sun": sun,
         "moon": moon,
-        "tithi": tithi.get_tithi(sun_sidereal_longitude, moon_sidereal_longitude),
+        "tithi": tithi.get_tithi_with_boundary(
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            second,
+            timezone_offset,
+        ),
         "nakshatra": nakshatra.get_nakshatra(moon_sidereal_longitude),
         "yoga": yoga.get_panchang_yoga(
             sun_sidereal_longitude,

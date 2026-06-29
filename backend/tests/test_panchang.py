@@ -57,7 +57,15 @@ class BasicPanchangTest(unittest.TestCase):
                 73.0243,
             )
 
-        mocks["get_tithi"].assert_called_once_with(10.0, 40.0)
+        mocks["get_tithi_with_boundary"].assert_called_once_with(
+            2026,
+            6,
+            29,
+            12,
+            0,
+            0,
+            5.5,
+        )
         mocks["get_nakshatra"].assert_called_once_with(40.0)
         mocks["get_panchang_yoga"].assert_called_once_with(10.0, 40.0)
         mocks["get_karana"].assert_called_once_with(10.0, 40.0)
@@ -272,10 +280,14 @@ class _PanchangPatchContext:
                     {"planet": "moon", "sidereal_longitude": 40.0},
                 ],
             ),
-            "get_tithi": patch.object(
+            "get_tithi_with_boundary": patch.object(
                 panchang.tithi,
-                "get_tithi",
-                return_value={"tithi_number": 3},
+                "get_tithi_with_boundary",
+                return_value={
+                    "tithi_number": 3,
+                    "end_time_local": "2026-06-29T14:00:00+05:30",
+                    "end_time_utc": "2026-06-29T08:30:00Z",
+                },
             ),
             "get_nakshatra": patch.object(
                 panchang.nakshatra,

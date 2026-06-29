@@ -4,7 +4,7 @@
 
 Calculate the basic deterministic Panchang for one local date and time.
 
-This endpoint does not include monthly Panchang, boundary end times, muhurat, or interpretation text.
+This endpoint includes current Tithi end time. It does not include Nakshatra, Yoga, Karana, or Vara boundary end times, monthly Panchang, muhurat, or interpretation text.
 
 ### Request
 
@@ -75,6 +75,8 @@ Response body:
   "moonset": {}
 }
 ```
+
+The `tithi` section includes `end_time_local` and `end_time_utc` for the next Tithi boundary.
 
 See `docs/examples/panchang_response_jodhpur.json` for a complete response generated from the current API route for Jodhpur, 20 Apr 1985, 18:10 IST.
 
