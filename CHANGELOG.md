@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Julian Day UT calculation with UTC conversion and unit tests.
 - Project folder structure and Python package markers.
 - Project metadata and tool configuration in `pyproject.toml`.
 - Runtime and development requirements files.
