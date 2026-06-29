@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic Tithi lookup from Sun-Moon sidereal angle with boundary tests.
 - Immutable constants for all 30 Tithis with paksha and angle boundaries.
 - Deterministic Nakshatra lookup from sidereal longitude with Pada boundary tests.
 - Immutable constants for all 27 Nakshatras with degree boundaries and tests.
