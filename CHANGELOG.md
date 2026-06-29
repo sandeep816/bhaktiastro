@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Sunrise and sunset helpers using Swiss Ephemeris rise/transit calculations.
 - Panchang API documentation, Jodhpur request/response examples, and smoke coverage.
 - FastAPI Panchang route with request/response schemas and integration tests.
 - Pydantic schemas for basic Panchang request validation and response output.
