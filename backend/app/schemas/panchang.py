@@ -52,6 +52,18 @@ class PanchangRequest(BaseModel):
         le=14.0,
         description="Local UTC offset in decimal hours.",
     )
+    latitude: float = Field(
+        ...,
+        ge=-90.0,
+        le=90.0,
+        description="Geographic latitude in degrees, north positive.",
+    )
+    longitude: float = Field(
+        ...,
+        ge=-180.0,
+        le=180.0,
+        description="Geographic longitude in degrees, east positive.",
+    )
     language: Literal["hi", "en"] = Field(
         "hi",
         description="Response language preference for MVP.",
@@ -223,6 +235,24 @@ class VaraInfo(BaseModel):
     ruling_planet: str = Field(..., description="Vara ruling planet.")
 
 
+class RiseSetInfo(BaseModel):
+    """Sunrise or sunset section of a Panchang response."""
+
+    event: str = Field(..., description="Solar event name.")
+    local_time: Optional[str] = Field(
+        None,
+        description="Local event time as HH:MM:SS, or null if not found.",
+    )
+    utc_datetime: Optional[str] = Field(
+        None,
+        description="UTC event datetime, or null if not found.",
+    )
+    timezone_offset: float = Field(
+        ...,
+        description="Local UTC offset in decimal hours.",
+    )
+
+
 class PanchangResponse(BaseModel):
     """Response schema matching calculate_basic_panchang output."""
 
@@ -235,3 +265,5 @@ class PanchangResponse(BaseModel):
     yoga: YogaInfo = Field(..., description="Panchang Yoga information.")
     karana: KaranaInfo = Field(..., description="Karana information.")
     vara: VaraInfo = Field(..., description="Vara information.")
+    sunrise: RiseSetInfo = Field(..., description="Sunrise information.")
+    sunset: RiseSetInfo = Field(..., description="Sunset information.")

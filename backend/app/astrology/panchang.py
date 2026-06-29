@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, TypedDict
 
-from backend.app.astronomy import ayanamsa, julian, planet_positions
+from backend.app.astronomy import ayanamsa, julian, planet_positions, rise_set
 from backend.app.astrology import karana, nakshatra, tithi, vara, yoga
 
 
@@ -21,6 +21,8 @@ class BasicPanchangResult(TypedDict):
     yoga: dict[str, Any]
     karana: dict[str, Any]
     vara: dict[str, Any]
+    sunrise: dict[str, Any]
+    sunset: dict[str, Any]
 
 
 def calculate_basic_panchang(
@@ -31,6 +33,8 @@ def calculate_basic_panchang(
     minute: int,
     second: int,
     timezone_offset: float,
+    latitude: float,
+    longitude: float,
 ) -> BasicPanchangResult:
     """Calculate the basic deterministic Panchang for a local date and time.
 
@@ -42,10 +46,12 @@ def calculate_basic_panchang(
         minute: Local minute.
         second: Local second.
         timezone_offset: Local UTC offset in decimal hours.
+        latitude: Geographic latitude in degrees.
+        longitude: Geographic longitude in degrees.
 
     Returns:
         A structured dictionary with Julian Day, ayanamsa, Sun, Moon,
-        Tithi, Nakshatra, Yoga, Karana, and Vara sections.
+        Tithi, Nakshatra, Yoga, Karana, Vara, sunrise, and sunset sections.
 
     Raises:
         ValueError: If the local date components are invalid.
@@ -90,6 +96,22 @@ def calculate_basic_panchang(
         ),
         "karana": karana.get_karana(sun_sidereal_longitude, moon_sidereal_longitude),
         "vara": vara.get_vara(local_date),
+        "sunrise": rise_set.get_sunrise(
+            year,
+            month,
+            day,
+            latitude,
+            longitude,
+            timezone_offset,
+        ),
+        "sunset": rise_set.get_sunset(
+            year,
+            month,
+            day,
+            latitude,
+            longitude,
+            timezone_offset,
+        ),
     }
 
 

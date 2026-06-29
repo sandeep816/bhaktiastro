@@ -23,6 +23,8 @@ def get_panchang(request: PanchangRequest) -> PanchangResponse:
             minute=request.minute,
             second=request.second,
             timezone_offset=request.timezone_offset,
+            latitude=request.latitude,
+            longitude=request.longitude,
         )
     except (TypeError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

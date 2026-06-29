@@ -4,7 +4,7 @@
 
 Calculate the basic deterministic Panchang for one local date and time.
 
-This endpoint does not include sunrise, sunset, moonrise, moonset, monthly Panchang, boundary end times, or interpretation text.
+This endpoint does not include moonrise, moonset, monthly Panchang, boundary end times, muhurat, or interpretation text.
 
 ### Request
 
@@ -27,12 +27,14 @@ Example:
   "minute": 10,
   "second": 0,
   "timezone_offset": 5.5,
+  "latitude": 26.2389,
+  "longitude": 73.0243,
   "language": "hi",
   "ayanamsa": "lahiri"
 }
 ```
 
-The current API schema validates `year`, `month`, `day`, `hour`, `minute`, `second`, `timezone_offset`, `language`, and `ayanamsa`. The `date` and `time` fields are included in the example for readability and match the split date/time fields.
+The current API schema validates `year`, `month`, `day`, `hour`, `minute`, `second`, `timezone_offset`, `latitude`, `longitude`, `language`, and `ayanamsa`. The `date` and `time` fields are included in the example for readability and match the split date/time fields.
 
 ### Request Fields
 
@@ -45,6 +47,8 @@ The current API schema validates `year`, `month`, `day`, `hour`, `minute`, `seco
 | `minute` | integer | no | `0` | `0` to `59` |
 | `second` | integer | no | `0` | `0` to `59` |
 | `timezone_offset` | number | no | `5.5` | `-12` to `14` |
+| `latitude` | number | yes | - | `-90` to `90` |
+| `longitude` | number | yes | - | `-180` to `180` |
 | `language` | string | no | `hi` | `hi` or `en` |
 | `ayanamsa` | string | no | `lahiri` | `lahiri` |
 
@@ -64,7 +68,9 @@ Response body:
   "nakshatra": {},
   "yoga": {},
   "karana": {},
-  "vara": {}
+  "vara": {},
+  "sunrise": {},
+  "sunset": {}
 }
 ```
 
@@ -79,6 +85,8 @@ Examples:
 - `month` outside `1..12`
 - `hour` outside `0..23`
 - `timezone_offset` outside `-12..14`
+- `latitude` outside `-90..90`
+- `longitude` outside `-180..180`
 - unsupported `language`
 - unsupported `ayanamsa`
 

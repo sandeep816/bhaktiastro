@@ -8,6 +8,8 @@
   "minute": 10,
   "second": 0,
   "timezone_offset": 5.5,
+  "latitude": 26.2389,
+  "longitude": 73.0243,
   "language": "hi",
   "ayanamsa": "lahiri"
 }

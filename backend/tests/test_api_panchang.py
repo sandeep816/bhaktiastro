@@ -51,6 +51,8 @@ class PanchangApiTest(unittest.TestCase):
                     minute=10,
                     second=0,
                     timezone_offset=5.5,
+                    latitude=26.2389,
+                    longitude=73.0243,
                     language="hi",
                     ayanamsa="lahiri",
                 )
@@ -65,6 +67,8 @@ class PanchangApiTest(unittest.TestCase):
             minute=10,
             second=0,
             timezone_offset=5.5,
+            latitude=26.2389,
+            longitude=73.0243,
         )
 
     def test_response_contains_panchang_sections(self) -> None:
@@ -72,19 +76,68 @@ class PanchangApiTest(unittest.TestCase):
             "backend.app.api.v1.panchang.calculate_basic_panchang",
             return_value=_panchang_response_payload(),
         ):
-            response = get_panchang(PanchangRequest(year=1985, month=4, day=20))
+            response = get_panchang(
+                PanchangRequest(
+                    year=1985,
+                    month=4,
+                    day=20,
+                    latitude=26.2389,
+                    longitude=73.0243,
+                )
+            )
 
         data = response.model_dump()
-        for key in ("tithi", "nakshatra", "yoga", "karana", "vara"):
+        for key in (
+            "tithi",
+            "nakshatra",
+            "yoga",
+            "karana",
+            "vara",
+            "sunrise",
+            "sunset",
+        ):
             self.assertIn(key, data)
 
     def test_invalid_month_returns_validation_error(self) -> None:
         with self.assertRaises(ValidationError):
-            PanchangRequest(year=1985, month=13, day=20)
+            PanchangRequest(
+                year=1985,
+                month=13,
+                day=20,
+                latitude=26.2389,
+                longitude=73.0243,
+            )
 
     def test_invalid_timezone_returns_validation_error(self) -> None:
         with self.assertRaises(ValidationError):
-            PanchangRequest(year=1985, month=4, day=20, timezone_offset=-13)
+            PanchangRequest(
+                year=1985,
+                month=4,
+                day=20,
+                timezone_offset=-13,
+                latitude=26.2389,
+                longitude=73.0243,
+            )
+
+    def test_invalid_latitude_returns_validation_error(self) -> None:
+        with self.assertRaises(ValidationError):
+            PanchangRequest(
+                year=1985,
+                month=4,
+                day=20,
+                latitude=91.0,
+                longitude=73.0243,
+            )
+
+    def test_invalid_longitude_returns_validation_error(self) -> None:
+        with self.assertRaises(ValidationError):
+            PanchangRequest(
+                year=1985,
+                month=4,
+                day=20,
+                latitude=26.2389,
+                longitude=181.0,
+            )
 
     def test_health_endpoint_still_works(self) -> None:
         self.assertEqual(health_check()["status"], "ok")
@@ -95,7 +148,15 @@ class PanchangApiTest(unittest.TestCase):
             side_effect=ValueError("Invalid local date components"),
         ):
             with self.assertRaises(HTTPException) as exc_info:
-                get_panchang(PanchangRequest(year=1985, month=4, day=20))
+                get_panchang(
+                    PanchangRequest(
+                        year=1985,
+                        month=4,
+                        day=20,
+                        latitude=26.2389,
+                        longitude=73.0243,
+                    )
+                )
 
         self.assertEqual(exc_info.exception.status_code, 400)
         self.assertEqual(exc_info.exception.detail, "Invalid local date components")
@@ -190,6 +251,18 @@ def _panchang_response_payload() -> dict[str, object]:
             "name_hi": "शनिवार",
             "name_sa": "Shanivara",
             "ruling_planet": "saturn",
+        },
+        "sunrise": {
+            "event": "sunrise",
+            "local_time": "06:12:34",
+            "utc_datetime": "1985-04-20T00:42:34Z",
+            "timezone_offset": 5.5,
+        },
+        "sunset": {
+            "event": "sunset",
+            "local_time": "18:59:01",
+            "utc_datetime": "1985-04-20T13:29:01Z",
+            "timezone_offset": 5.5,
         },
     }
 

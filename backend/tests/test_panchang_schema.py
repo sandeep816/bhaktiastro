@@ -27,28 +27,78 @@ class PanchangRequestSchemaTest(unittest.TestCase):
             minute=30,
             second=15,
             timezone_offset=5.5,
+            latitude=26.2389,
+            longitude=73.0243,
             language="hi",
             ayanamsa="lahiri",
         )
 
         self.assertEqual(request.year, 2026)
+        self.assertEqual(request.latitude, 26.2389)
+        self.assertEqual(request.longitude, 73.0243)
         self.assertEqual(request.language, "hi")
         self.assertEqual(request.ayanamsa, "lahiri")
 
     def test_invalid_month_fails(self) -> None:
         with self.assertRaises(ValidationError):
-            PanchangRequest(year=2026, month=13, day=29)
+            PanchangRequest(
+                year=2026,
+                month=13,
+                day=29,
+                latitude=26.2389,
+                longitude=73.0243,
+            )
 
     def test_invalid_hour_fails(self) -> None:
         with self.assertRaises(ValidationError):
-            PanchangRequest(year=2026, month=6, day=29, hour=24)
+            PanchangRequest(
+                year=2026,
+                month=6,
+                day=29,
+                hour=24,
+                latitude=26.2389,
+                longitude=73.0243,
+            )
 
     def test_invalid_timezone_fails(self) -> None:
         with self.assertRaises(ValidationError):
-            PanchangRequest(year=2026, month=6, day=29, timezone_offset=-13)
+            PanchangRequest(
+                year=2026,
+                month=6,
+                day=29,
+                timezone_offset=-13,
+                latitude=26.2389,
+                longitude=73.0243,
+            )
+
+    def test_invalid_latitude_fails(self) -> None:
+        with self.assertRaises(ValidationError):
+            PanchangRequest(
+                year=2026,
+                month=6,
+                day=29,
+                latitude=91.0,
+                longitude=73.0243,
+            )
+
+    def test_invalid_longitude_fails(self) -> None:
+        with self.assertRaises(ValidationError):
+            PanchangRequest(
+                year=2026,
+                month=6,
+                day=29,
+                latitude=26.2389,
+                longitude=181.0,
+            )
 
     def test_default_values_work(self) -> None:
-        request = PanchangRequest(year=2026, month=6, day=29)
+        request = PanchangRequest(
+            year=2026,
+            month=6,
+            day=29,
+            latitude=26.2389,
+            longitude=73.0243,
+        )
 
         self.assertEqual(request.hour, 12)
         self.assertEqual(request.minute, 0)
@@ -59,11 +109,25 @@ class PanchangRequestSchemaTest(unittest.TestCase):
 
     def test_invalid_language_fails(self) -> None:
         with self.assertRaises(ValidationError):
-            PanchangRequest(year=2026, month=6, day=29, language="sa")
+            PanchangRequest(
+                year=2026,
+                month=6,
+                day=29,
+                latitude=26.2389,
+                longitude=73.0243,
+                language="sa",
+            )
 
     def test_invalid_ayanamsa_fails(self) -> None:
         with self.assertRaises(ValidationError):
-            PanchangRequest(year=2026, month=6, day=29, ayanamsa="raman")
+            PanchangRequest(
+                year=2026,
+                month=6,
+                day=29,
+                latitude=26.2389,
+                longitude=73.0243,
+                ayanamsa="raman",
+            )
 
 
 @unittest.skipIf(PanchangResponse is None, "pydantic is not installed")
@@ -81,6 +145,8 @@ class PanchangResponseSchemaTest(unittest.TestCase):
         self.assertEqual(response.yoga.yoga_index, 4)
         self.assertEqual(response.karana.name_en, "Gara")
         self.assertEqual(response.vara.name_en, "Monday")
+        self.assertEqual(response.sunrise.event, "sunrise")
+        self.assertEqual(response.sunset.event, "sunset")
 
 
 def _planet_summary(planet: str, sidereal_longitude: float) -> dict[str, object]:
@@ -159,6 +225,18 @@ def _aggregator_output() -> dict[str, object]:
             "name_hi": "सोमवार",
             "name_sa": "Somavara",
             "ruling_planet": "moon",
+        },
+        "sunrise": {
+            "event": "sunrise",
+            "local_time": "05:49:24",
+            "utc_datetime": "2026-06-29T00:19:24Z",
+            "timezone_offset": 5.5,
+        },
+        "sunset": {
+            "event": "sunset",
+            "local_time": "19:31:49",
+            "utc_datetime": "2026-06-29T14:01:49Z",
+            "timezone_offset": 5.5,
         },
     }
 
