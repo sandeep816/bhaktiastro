@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Basic Panchang assembly from Julian Day, ayanamsa, planets, Tithi, Nakshatra, Yoga, Karana, and Vara.
 - Immutable Vara weekday constants and civil-date Vara lookup with tests.
 - Deterministic Karana lookup from Sun-Moon sidereal angle with boundary tests.
 - Immutable constants for all 11 Karanas with repeating and fixed groups.
