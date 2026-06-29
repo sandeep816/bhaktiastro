@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic Nakshatra lookup from sidereal longitude with Pada boundary tests.
 - Immutable constants for all 27 Nakshatras with degree boundaries and tests.
 - Planet position engine for Sun through Ketu with sidereal longitudes and unit tests.
 - Ayanamsa calculation helper for Lahiri, Raman, and KP modes with unit tests.
