@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Immutable constants for all 27 Panchang Yogas with degree boundaries.
 - Deterministic Tithi lookup from Sun-Moon sidereal angle with boundary tests.
 - Immutable constants for all 30 Tithis with paksha and angle boundaries.
 - Deterministic Nakshatra lookup from sidereal longitude with Pada boundary tests.
