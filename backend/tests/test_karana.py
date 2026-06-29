@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
-from backend.app.astrology.karana import get_karana
+from backend.app.astrology import karana
+from backend.app.astrology.karana import get_karana, get_karana_with_boundary
 from backend.app.constants.karana import FIXED_KARANA_TYPE, REPEATING_KARANA_TYPE
 
 
@@ -88,6 +92,80 @@ class KaranaLookupTest(unittest.TestCase):
     def test_non_finite_longitude_raises_value_error(self) -> None:
         with self.assertRaises(ValueError):
             get_karana(0.0, float("nan"))
+
+    def test_get_karana_with_boundary_returns_end_time(self) -> None:
+        fake_julian_result = SimpleNamespace(
+            utc_datetime=datetime(2026, 6, 29, 6, 30, tzinfo=timezone.utc),
+            julian_day_ut=2461220.7708333335,
+        )
+        boundary_utc = datetime(2026, 6, 29, 8, 30, tzinfo=timezone.utc)
+
+        with _patch_boundary_dependencies(fake_julian_result, boundary_utc) as mocks:
+            result = get_karana_with_boundary(2026, 6, 29, 12, 0, 0, 5.5)
+
+        self.assertEqual(result["half_tithi_index"], 1)
+        self.assertEqual(result["name_en"], "Bava")
+        self.assertEqual(result["current_angle"], 7.0)
+        self.assertEqual(result["end_angle"], 12.0)
+        self.assertEqual(result["end_angle"] % 6.0, 0.0)
+        self.assertEqual(result["end_time_utc"], "2026-06-29T08:30:00Z")
+        self.assertEqual(result["end_time_local"], "2026-06-29T14:00:00+05:30")
+        self.assertGreater(
+            datetime.fromisoformat(result["end_time_local"]),
+            datetime.fromisoformat("2026-06-29T12:00:00+05:30"),
+        )
+        mocks["find_next_longitude_boundary"].assert_called_once()
+        self.assertEqual(
+            mocks["find_next_longitude_boundary"].call_args.args[2],
+            12.0,
+        )
+
+
+class _patch_boundary_dependencies:
+    """Context manager for Karana boundary dependency patches."""
+
+    def __init__(
+        self,
+        fake_julian_result: SimpleNamespace,
+        boundary_utc: datetime,
+    ) -> None:
+        self.fake_julian_result = fake_julian_result
+        self.boundary_utc = boundary_utc
+
+    def __enter__(self) -> dict[str, object]:
+        self._patchers = {
+            "calculate_julian_day": patch.object(
+                karana.julian,
+                "calculate_julian_day",
+                return_value=self.fake_julian_result,
+            ),
+            "get_ayanamsa": patch.object(
+                karana.ayanamsa,
+                "get_ayanamsa",
+                return_value=24.0,
+            ),
+            "get_planet_positions": patch.object(
+                karana.planet_positions,
+                "get_planet_positions",
+                return_value=[
+                    {"planet": "sun", "sidereal_longitude": 3.0},
+                    {"planet": "moon", "sidereal_longitude": 10.0},
+                ],
+            ),
+            "find_next_longitude_boundary": patch.object(
+                karana.search,
+                "find_next_longitude_boundary",
+                return_value=self.boundary_utc,
+            ),
+        }
+        self._mocks = {
+            name: patcher.start() for name, patcher in self._patchers.items()
+        }
+        return self._mocks
+
+    def __exit__(self, exc_type: object, exc: object, traceback: object) -> None:
+        for patcher in reversed(tuple(self._patchers.values())):
+            patcher.stop()
 
 
 if __name__ == "__main__":

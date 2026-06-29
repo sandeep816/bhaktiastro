@@ -84,7 +84,15 @@ class BasicPanchangTest(unittest.TestCase):
             0,
             5.5,
         )
-        mocks["get_karana"].assert_called_once_with(10.0, 40.0)
+        mocks["get_karana_with_boundary"].assert_called_once_with(
+            2026,
+            6,
+            29,
+            12,
+            0,
+            0,
+            5.5,
+        )
 
     def test_vara_is_calculated_from_local_date(self) -> None:
         with self._patched_dependencies() as mocks:
@@ -323,10 +331,14 @@ class _PanchangPatchContext:
                     "end_time_utc": "2026-06-29T10:30:00Z",
                 },
             ),
-            "get_karana": patch.object(
+            "get_karana_with_boundary": patch.object(
                 panchang.karana,
-                "get_karana",
-                return_value={"karana_index": 4},
+                "get_karana_with_boundary",
+                return_value={
+                    "karana_index": 4,
+                    "end_time_local": "2026-06-29T14:00:00+05:30",
+                    "end_time_utc": "2026-06-29T08:30:00Z",
+                },
             ),
             "get_vara": patch.object(
                 panchang.vara,

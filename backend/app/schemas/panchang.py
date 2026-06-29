@@ -255,6 +255,14 @@ class KaranaInfo(BaseModel):
         ...,
         description="Degrees remaining in the current Karana.",
     )
+    end_time_local: Optional[str] = Field(
+        None,
+        description="Local datetime when the current Karana ends.",
+    )
+    end_time_utc: Optional[str] = Field(
+        None,
+        description="UTC datetime when the current Karana ends.",
+    )
 
 
 class VaraInfo(BaseModel):

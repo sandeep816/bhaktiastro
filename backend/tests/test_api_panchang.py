@@ -93,6 +93,7 @@ class PanchangApiTest(unittest.TestCase):
             "1985-04-20T20:00:00Z",
         )
         self.assertEqual(data["yoga"]["end_time_utc"], "1985-04-20T21:00:00Z")
+        self.assertEqual(data["karana"]["end_time_utc"], "1985-04-20T18:30:00Z")
         for key in (
             "tithi",
             "nakshatra",
@@ -294,6 +295,8 @@ def _panchang_response_payload() -> dict[str, object]:
             "end_angle": 30.0,
             "degrees_completed": 5.55,
             "degrees_remaining": 0.45,
+            "end_time_local": "1985-04-21T00:00:00+05:30",
+            "end_time_utc": "1985-04-20T18:30:00Z",
         },
         "vara": {
             "index": 7,

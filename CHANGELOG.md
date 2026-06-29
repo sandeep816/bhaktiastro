@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Karana end-time calculation using Moon-Sun angle boundary search.
 - Panchang Yoga end-time calculation using Sun-Moon longitude boundary search.
 - Nakshatra end-time calculation using Moon longitude boundary search.
 - Tithi end-time calculation using reusable longitude boundary binary search.

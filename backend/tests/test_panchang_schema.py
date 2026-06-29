@@ -150,6 +150,7 @@ class PanchangResponseSchemaTest(unittest.TestCase):
         self.assertEqual(response.yoga.yoga_index, 4)
         self.assertEqual(response.yoga.end_time_utc, "2026-06-29T10:30:00Z")
         self.assertEqual(response.karana.name_en, "Gara")
+        self.assertEqual(response.karana.end_time_utc, "2026-06-29T08:30:00Z")
         self.assertEqual(response.vara.name_en, "Monday")
         self.assertEqual(response.sunrise.event, "sunrise")
         self.assertEqual(response.sunset.event, "sunset")
@@ -234,6 +235,8 @@ def _aggregator_output() -> dict[str, object]:
             "end_angle": 36.0,
             "degrees_completed": 0.0,
             "degrees_remaining": 6.0,
+            "end_time_local": "2026-06-29T14:00:00+05:30",
+            "end_time_utc": "2026-06-29T08:30:00Z",
         },
         "vara": {
             "index": 2,

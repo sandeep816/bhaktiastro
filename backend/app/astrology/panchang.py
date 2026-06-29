@@ -118,7 +118,15 @@ def calculate_basic_panchang(
             second,
             timezone_offset,
         ),
-        "karana": karana.get_karana(sun_sidereal_longitude, moon_sidereal_longitude),
+        "karana": karana.get_karana_with_boundary(
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            second,
+            timezone_offset,
+        ),
         "vara": vara.get_vara(local_date),
         "sunrise": rise_set.get_sunrise(
             year,
