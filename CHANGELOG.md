@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Panchang Yoga end-time calculation using Sun-Moon longitude boundary search.
 - Nakshatra end-time calculation using Moon longitude boundary search.
 - Tithi end-time calculation using reusable longitude boundary binary search.
 - Moonrise and moonset in basic Panchang output, API schema, examples, and docs.

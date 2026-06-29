@@ -109,9 +109,14 @@ def calculate_basic_panchang(
             second,
             timezone_offset,
         ),
-        "yoga": yoga.get_panchang_yoga(
-            sun_sidereal_longitude,
-            moon_sidereal_longitude,
+        "yoga": yoga.get_panchang_yoga_with_boundary(
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            second,
+            timezone_offset,
         ),
         "karana": karana.get_karana(sun_sidereal_longitude, moon_sidereal_longitude),
         "vara": vara.get_vara(local_date),

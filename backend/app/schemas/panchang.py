@@ -225,6 +225,14 @@ class YogaInfo(BaseModel):
         ...,
         description="Degrees remaining in the current Yoga.",
     )
+    end_time_local: Optional[str] = Field(
+        None,
+        description="Local datetime when the current Yoga ends.",
+    )
+    end_time_utc: Optional[str] = Field(
+        None,
+        description="UTC datetime when the current Yoga ends.",
+    )
 
 
 class KaranaInfo(BaseModel):
