@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- FastAPI Panchang route with request/response schemas and integration tests.
 - Pydantic schemas for basic Panchang request validation and response output.
 - Basic Panchang assembly from Julian Day, ayanamsa, planets, Tithi, Nakshatra, Yoga, Karana, and Vara.
 - Immutable Vara weekday constants and civil-date Vara lookup with tests.
