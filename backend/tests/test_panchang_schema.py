@@ -143,6 +143,10 @@ class PanchangResponseSchemaTest(unittest.TestCase):
         self.assertEqual(response.tithi.tithi_number, 3)
         self.assertEqual(response.tithi.end_time_utc, "2026-06-29T08:30:00Z")
         self.assertEqual(response.nakshatra.name_en, "Rohini")
+        self.assertEqual(
+            response.nakshatra.end_time_utc,
+            "2026-06-29T12:30:00Z",
+        )
         self.assertEqual(response.yoga.yoga_index, 4)
         self.assertEqual(response.karana.name_en, "Gara")
         self.assertEqual(response.vara.name_en, "Monday")
@@ -199,6 +203,10 @@ def _aggregator_output() -> dict[str, object]:
             "start_degree": 40.0,
             "end_degree": 53.3333333333,
             "degree_within_nakshatra": 0.0,
+            "current_degree": 40.0,
+            "degrees_remaining": 13.333333,
+            "end_time_local": "2026-06-29T18:00:00+05:30",
+            "end_time_utc": "2026-06-29T12:30:00Z",
         },
         "yoga": {
             "yoga_index": 4,

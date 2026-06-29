@@ -100,7 +100,15 @@ def calculate_basic_panchang(
             second,
             timezone_offset,
         ),
-        "nakshatra": nakshatra.get_nakshatra(moon_sidereal_longitude),
+        "nakshatra": nakshatra.get_nakshatra_with_boundary(
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            second,
+            timezone_offset,
+        ),
         "yoga": yoga.get_panchang_yoga(
             sun_sidereal_longitude,
             moon_sidereal_longitude,

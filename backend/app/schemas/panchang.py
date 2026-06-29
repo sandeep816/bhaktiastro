@@ -189,6 +189,22 @@ class NakshatraInfo(BaseModel):
         ...,
         description="Degree completed within the Nakshatra.",
     )
+    current_degree: Optional[float] = Field(
+        None,
+        description="Current Moon sidereal degree used for Nakshatra.",
+    )
+    degrees_remaining: Optional[float] = Field(
+        None,
+        description="Degrees remaining in the current Nakshatra.",
+    )
+    end_time_local: Optional[str] = Field(
+        None,
+        description="Local datetime when the current Nakshatra ends.",
+    )
+    end_time_utc: Optional[str] = Field(
+        None,
+        description="UTC datetime when the current Nakshatra ends.",
+    )
 
 
 class YogaInfo(BaseModel):
