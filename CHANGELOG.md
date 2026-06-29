@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic Karana lookup from Sun-Moon sidereal angle with boundary tests.
 - Immutable constants for all 11 Karanas with repeating and fixed groups.
 - Deterministic Panchang Yoga lookup from Sun-Moon sidereal sum with boundary tests.
 - Immutable constants for all 27 Panchang Yogas with degree boundaries.
