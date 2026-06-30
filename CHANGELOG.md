@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Panchang API response-shape regression tests for boundary timing fields.
 - Karana end-time calculation using Moon-Sun angle boundary search.
 - Panchang Yoga end-time calculation using Sun-Moon longitude boundary search.
 - Nakshatra end-time calculation using Moon longitude boundary search.
@@ -38,6 +39,9 @@ All notable changes to BhaktiAstro will be documented in this file.
 - Basic application configuration constants.
 - Basic logging helper.
 - Project README.
+
+### Changed
+- Tightened Panchang response schemas to require boundary timing fields and reject undocumented response keys.
 
 ## [0.1.0] - TBD
 

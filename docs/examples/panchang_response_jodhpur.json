@@ -1,108 +1,97 @@
 {
+  "julian_day": {
+    "utc_datetime": "1985-04-20T12:40:00+00:00",
+    "julian_day_ut": 2446176.027777778
+  },
   "ayanamsa": {
     "value": 23.651764213530612
   },
-  "julian_day": {
-    "julian_day_ut": 2446176.027777778,
-    "utc_datetime": "1985-04-20T12:40:00+00:00"
-  },
-  "karana": {
-    "current_angle": 3.290856,
-    "degrees_completed": 3.290856,
-    "degrees_remaining": 2.709144,
-    "end_angle": 6.0,
-    "end_time_local": "1985-04-21T00:12:48+05:30",
-    "end_time_utc": "1985-04-20T18:42:48Z",
-    "half_tithi_index": 0,
-    "karana_index": 11,
-    "name_en": "Kimstughna",
-    "name_hi": "किंस्तुघ्न",
-    "name_sa": "Kimstughna",
-    "start_angle": 0.0,
-    "type": "Fixed"
-  },
-  "moon": {
-    "degree_in_rashi": 10.0149,
-    "dms": {
-      "degrees": 10,
-      "minutes": 0,
-      "seconds": 53.7
-    },
-    "planet": "moon",
+  "sun": {
+    "planet": "sun",
+    "sidereal_longitude": 6.724057,
+    "tropical_longitude": 30.375821,
     "rashi_index": 0,
     "rashi_name_hi": "मेष",
-    "retrograde": false,
-    "sidereal_longitude": 10.014913,
-    "speed": 11.79695,
-    "tropical_longitude": 33.666677
-  },
-  "moonrise": {
-    "event": "moonrise",
-    "local_time": "06:15:04",
-    "timezone_offset": 5.5,
-    "utc_datetime": "1985-04-20T00:45:04Z"
-  },
-  "moonset": {
-    "event": "moonset",
-    "local_time": "19:15:15",
-    "timezone_offset": 5.5,
-    "utc_datetime": "1985-04-20T13:45:15Z"
-  },
-  "nakshatra": {
-    "current_degree": 10.014913,
-    "degree_within_nakshatra": 10.014913,
-    "degrees_remaining": 3.31842,
-    "end_degree": 13.333333333333334,
-    "end_time_local": "1985-04-21T00:55:00+05:30",
-    "end_time_utc": "1985-04-20T19:25:00Z",
-    "index": 0,
-    "name_en": "Ashwini",
-    "name_hi": "अश्विनी",
-    "name_sa": "Ashvini",
-    "pada": 4,
-    "ruling_planet": "ketu",
-    "start_degree": 0.0
-  },
-  "sun": {
     "degree_in_rashi": 6.7241,
     "dms": {
       "degrees": 6,
       "minutes": 43,
       "seconds": 26.6
     },
-    "planet": "sun",
+    "speed": 0.976348,
+    "retrograde": false
+  },
+  "moon": {
+    "planet": "moon",
+    "sidereal_longitude": 10.014913,
+    "tropical_longitude": 33.666677,
     "rashi_index": 0,
     "rashi_name_hi": "मेष",
-    "retrograde": false,
-    "sidereal_longitude": 6.724057,
-    "speed": 0.976348,
-    "tropical_longitude": 30.375821
-  },
-  "sunrise": {
-    "event": "sunrise",
-    "local_time": "06:11:14",
-    "timezone_offset": 5.5,
-    "utc_datetime": "1985-04-20T00:41:14Z"
-  },
-  "sunset": {
-    "event": "sunset",
-    "local_time": "19:02:51",
-    "timezone_offset": 5.5,
-    "utc_datetime": "1985-04-20T13:32:51Z"
+    "degree_in_rashi": 10.0149,
+    "dms": {
+      "degrees": 10,
+      "minutes": 0,
+      "seconds": 53.7
+    },
+    "speed": 11.79695,
+    "retrograde": false
   },
   "tithi": {
-    "current_angle": 3.290856,
-    "degrees_completed": 3.290856,
-    "degrees_remaining": 8.709144,
-    "end_angle": 12.0,
-    "end_time_local": "1985-04-21T13:28:45+05:30",
-    "end_time_utc": "1985-04-21T07:58:45Z",
+    "tithi_number": 1,
     "name_en": "Pratipada",
     "name_hi": "प्रतिपदा",
     "name_sa": "Pratipada",
     "paksha": "Shukla",
     "start_angle": 0.0,
-    "tithi_number": 1
+    "end_angle": 12.0,
+    "current_angle": 3.290856,
+    "degrees_completed": 3.290856,
+    "degrees_remaining": 8.709144,
+    "end_time_local": "1985-04-21T13:28:45+05:30",
+    "end_time_utc": "1985-04-21T07:58:45Z"
+  },
+  "nakshatra": {
+    "index": 0,
+    "name_en": "Ashwini",
+    "name_hi": "अश्विनी",
+    "name_sa": "Ashvini",
+    "pada": 4,
+    "ruling_planet": "ketu",
+    "start_degree": 0.0,
+    "end_degree": 13.333333333333334,
+    "degree_within_nakshatra": 10.014913,
+    "current_degree": 10.014913,
+    "degrees_remaining": 3.31842,
+    "end_time_local": "1985-04-21T00:55:00+05:30",
+    "end_time_utc": "1985-04-20T19:25:00Z"
+  },
+  "yoga": {
+    "yoga_index": 2,
+    "name_en": "Priti",
+    "name_hi": "प्रीति",
+    "name_sa": "Priti",
+    "start_degree": 13.333333333333334,
+    "end_degree": 26.666666666666668,
+    "current_degree": 16.73897,
+    "degrees_completed": 3.405637,
+    "degrees_remaining": 9.927696,
+    "end_time_local": "1985-04-21T12:49:22+05:30",
+    "end_time_utc": "1985-04-21T07:19:22Z"
+  },
+  "karana": {
+    "karana_index": 11,
+    "name_en": "Kimstughna",
+    "name_hi": "किंस्तुघ्न",
+    "name_sa": "Kimstughna",
+    "type": "Fixed",
+    "half_tithi_index": 0,
+    "current_angle": 3.290856,
+    "start_angle": 0.0,
+    "end_angle": 6.0,
+    "degrees_completed": 3.290856,
+    "degrees_remaining": 2.709144,
+    "end_time_local": "1985-04-21T00:12:48+05:30",
+    "end_time_utc": "1985-04-20T18:42:48Z"
   },
   "vara": {
     "index": 7,
@@ -111,17 +100,28 @@
     "name_sa": "Shanivara",
     "ruling_planet": "saturn"
   },
-  "yoga": {
-    "current_degree": 16.73897,
-    "degrees_completed": 3.405637,
-    "degrees_remaining": 9.927696,
-    "end_degree": 26.666666666666668,
-    "end_time_local": "1985-04-21T12:49:22+05:30",
-    "end_time_utc": "1985-04-21T07:19:22Z",
-    "name_en": "Priti",
-    "name_hi": "प्रीति",
-    "name_sa": "Priti",
-    "start_degree": 13.333333333333334,
-    "yoga_index": 2
+  "sunrise": {
+    "event": "sunrise",
+    "local_time": "06:11:14",
+    "utc_datetime": "1985-04-20T00:41:14Z",
+    "timezone_offset": 5.5
+  },
+  "sunset": {
+    "event": "sunset",
+    "local_time": "19:02:51",
+    "utc_datetime": "1985-04-20T13:32:51Z",
+    "timezone_offset": 5.5
+  },
+  "moonrise": {
+    "event": "moonrise",
+    "local_time": "06:15:04",
+    "utc_datetime": "1985-04-20T00:45:04Z",
+    "timezone_offset": 5.5
+  },
+  "moonset": {
+    "event": "moonset",
+    "local_time": "19:15:15",
+    "utc_datetime": "1985-04-20T13:45:15Z",
+    "timezone_offset": 5.5
   }
 }

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PanchangRequest(BaseModel):
@@ -74,7 +74,13 @@ class PanchangRequest(BaseModel):
     )
 
 
-class JulianDayInfo(BaseModel):
+class StrictResponseModel(BaseModel):
+    """Base model for response sections with stable, explicit keys."""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class JulianDayInfo(StrictResponseModel):
     """Julian Day section of a Panchang response."""
 
     utc_datetime: str = Field(
@@ -87,7 +93,7 @@ class JulianDayInfo(BaseModel):
     )
 
 
-class AyanamsaInfo(BaseModel):
+class AyanamsaInfo(StrictResponseModel):
     """Ayanamsa section of a Panchang response."""
 
     value: float = Field(
@@ -96,7 +102,7 @@ class AyanamsaInfo(BaseModel):
     )
 
 
-class DmsInfo(BaseModel):
+class DmsInfo(StrictResponseModel):
     """Degrees, minutes, and seconds for a planetary rashi position."""
 
     degrees: int = Field(..., description="Whole degrees.")
@@ -104,7 +110,7 @@ class DmsInfo(BaseModel):
     seconds: float = Field(..., description="Seconds.")
 
 
-class PlanetSummary(BaseModel):
+class PlanetSummary(StrictResponseModel):
     """Sun or Moon summary from the planet position engine."""
 
     planet: str = Field(..., description="Planet key.")
@@ -112,37 +118,37 @@ class PlanetSummary(BaseModel):
         ...,
         description="Sidereal longitude in degrees.",
     )
-    tropical_longitude: Optional[float] = Field(
-        None,
-        description="Tropical longitude in degrees when available.",
+    tropical_longitude: float = Field(
+        ...,
+        description="Tropical longitude in degrees.",
     )
-    rashi_index: Optional[int] = Field(
-        None,
-        description="Zero-based rashi index when available.",
+    rashi_index: int = Field(
+        ...,
+        description="Zero-based rashi index.",
     )
-    rashi_name_hi: Optional[str] = Field(
-        None,
-        description="Hindi rashi name when available.",
+    rashi_name_hi: str = Field(
+        ...,
+        description="Hindi rashi name.",
     )
-    degree_in_rashi: Optional[float] = Field(
-        None,
-        description="Degree within the rashi when available.",
+    degree_in_rashi: float = Field(
+        ...,
+        description="Degree within the rashi.",
     )
-    dms: Optional[DmsInfo] = Field(
-        None,
+    dms: DmsInfo = Field(
+        ...,
         description="Degree-minute-second position within the rashi.",
     )
-    speed: Optional[float] = Field(
-        None,
-        description="Planet speed when available.",
+    speed: float = Field(
+        ...,
+        description="Planet speed.",
     )
-    retrograde: Optional[bool] = Field(
-        None,
-        description="Retrograde status when available.",
+    retrograde: bool = Field(
+        ...,
+        description="Retrograde status.",
     )
 
 
-class TithiInfo(BaseModel):
+class TithiInfo(StrictResponseModel):
     """Tithi section of a Panchang response."""
 
     tithi_number: int = Field(..., description="Tithi number from 1 to 30.")
@@ -161,17 +167,17 @@ class TithiInfo(BaseModel):
         ...,
         description="Degrees remaining in the current Tithi.",
     )
-    end_time_local: Optional[str] = Field(
-        None,
+    end_time_local: str = Field(
+        ...,
         description="Local datetime when the current Tithi ends.",
     )
-    end_time_utc: Optional[str] = Field(
-        None,
+    end_time_utc: str = Field(
+        ...,
         description="UTC datetime when the current Tithi ends.",
     )
 
 
-class NakshatraInfo(BaseModel):
+class NakshatraInfo(StrictResponseModel):
     """Nakshatra section of a Panchang response."""
 
     index: int = Field(..., description="Zero-based Nakshatra index.")
@@ -189,25 +195,25 @@ class NakshatraInfo(BaseModel):
         ...,
         description="Degree completed within the Nakshatra.",
     )
-    current_degree: Optional[float] = Field(
-        None,
+    current_degree: float = Field(
+        ...,
         description="Current Moon sidereal degree used for Nakshatra.",
     )
-    degrees_remaining: Optional[float] = Field(
-        None,
+    degrees_remaining: float = Field(
+        ...,
         description="Degrees remaining in the current Nakshatra.",
     )
-    end_time_local: Optional[str] = Field(
-        None,
+    end_time_local: str = Field(
+        ...,
         description="Local datetime when the current Nakshatra ends.",
     )
-    end_time_utc: Optional[str] = Field(
-        None,
+    end_time_utc: str = Field(
+        ...,
         description="UTC datetime when the current Nakshatra ends.",
     )
 
 
-class YogaInfo(BaseModel):
+class YogaInfo(StrictResponseModel):
     """Panchang Yoga section of a Panchang response."""
 
     yoga_index: int = Field(..., description="Yoga index from 1 to 27.")
@@ -225,17 +231,17 @@ class YogaInfo(BaseModel):
         ...,
         description="Degrees remaining in the current Yoga.",
     )
-    end_time_local: Optional[str] = Field(
-        None,
+    end_time_local: str = Field(
+        ...,
         description="Local datetime when the current Yoga ends.",
     )
-    end_time_utc: Optional[str] = Field(
-        None,
+    end_time_utc: str = Field(
+        ...,
         description="UTC datetime when the current Yoga ends.",
     )
 
 
-class KaranaInfo(BaseModel):
+class KaranaInfo(StrictResponseModel):
     """Karana section of a Panchang response."""
 
     karana_index: int = Field(..., description="Karana constants index.")
@@ -255,17 +261,17 @@ class KaranaInfo(BaseModel):
         ...,
         description="Degrees remaining in the current Karana.",
     )
-    end_time_local: Optional[str] = Field(
-        None,
+    end_time_local: str = Field(
+        ...,
         description="Local datetime when the current Karana ends.",
     )
-    end_time_utc: Optional[str] = Field(
-        None,
+    end_time_utc: str = Field(
+        ...,
         description="UTC datetime when the current Karana ends.",
     )
 
 
-class VaraInfo(BaseModel):
+class VaraInfo(StrictResponseModel):
     """Vara section of a Panchang response."""
 
     index: int = Field(..., description="Vara index from 1 to 7.")
@@ -275,7 +281,7 @@ class VaraInfo(BaseModel):
     ruling_planet: str = Field(..., description="Vara ruling planet.")
 
 
-class RiseSetInfo(BaseModel):
+class RiseSetInfo(StrictResponseModel):
     """Rise/set section of a Panchang response."""
 
     event: str = Field(..., description="Rise/set event name.")
@@ -293,7 +299,7 @@ class RiseSetInfo(BaseModel):
     )
 
 
-class PanchangResponse(BaseModel):
+class PanchangResponse(StrictResponseModel):
     """Response schema matching calculate_basic_panchang output."""
 
     julian_day: JulianDayInfo = Field(..., description="Julian Day information.")

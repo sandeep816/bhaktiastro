@@ -27,6 +27,27 @@ except ModuleNotFoundError:
 class PanchangApiTest(unittest.TestCase):
     """Validate Panchang API behavior."""
 
+    top_level_response_keys = {
+        "julian_day",
+        "ayanamsa",
+        "sun",
+        "moon",
+        "tithi",
+        "nakshatra",
+        "yoga",
+        "karana",
+        "vara",
+        "sunrise",
+        "sunset",
+        "moonrise",
+        "moonset",
+    }
+    boundary_timing_keys = {
+        "degrees_remaining",
+        "end_time_local",
+        "end_time_utc",
+    }
+
     def test_router_exposes_post_panchang(self) -> None:
         routes = [
             route
@@ -106,6 +127,26 @@ class PanchangApiTest(unittest.TestCase):
             "moonset",
         ):
             self.assertIn(key, data)
+
+    def test_route_response_keys_remain_stable(self) -> None:
+        with patch(
+            "backend.app.api.v1.panchang.calculate_basic_panchang",
+            return_value=_panchang_response_payload(),
+        ):
+            response = get_panchang(
+                PanchangRequest(
+                    year=1985,
+                    month=4,
+                    day=20,
+                    latitude=26.2389,
+                    longitude=73.0243,
+                )
+            )
+
+        data = response.model_dump(mode="json")
+        self.assertEqual(set(data.keys()), self.top_level_response_keys)
+        for section in ("tithi", "nakshatra", "yoga", "karana"):
+            self.assertTrue(self.boundary_timing_keys.issubset(data[section].keys()))
 
     def test_missing_moonrise_and_moonset_response_does_not_crash(self) -> None:
         payload = _panchang_response_payload()

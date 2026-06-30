@@ -134,6 +134,66 @@ class PanchangRequestSchemaTest(unittest.TestCase):
 class PanchangResponseSchemaTest(unittest.TestCase):
     """Validate Panchang response schema compatibility."""
 
+    panchang_element_keys = {
+        "tithi": {
+            "tithi_number",
+            "name_en",
+            "name_hi",
+            "name_sa",
+            "paksha",
+            "start_angle",
+            "end_angle",
+            "current_angle",
+            "degrees_completed",
+            "degrees_remaining",
+            "end_time_local",
+            "end_time_utc",
+        },
+        "nakshatra": {
+            "index",
+            "name_en",
+            "name_hi",
+            "name_sa",
+            "pada",
+            "ruling_planet",
+            "start_degree",
+            "end_degree",
+            "degree_within_nakshatra",
+            "current_degree",
+            "degrees_remaining",
+            "end_time_local",
+            "end_time_utc",
+        },
+        "yoga": {
+            "yoga_index",
+            "name_en",
+            "name_hi",
+            "name_sa",
+            "start_degree",
+            "end_degree",
+            "current_degree",
+            "degrees_completed",
+            "degrees_remaining",
+            "end_time_local",
+            "end_time_utc",
+        },
+        "karana": {
+            "karana_index",
+            "name_en",
+            "name_hi",
+            "name_sa",
+            "type",
+            "half_tithi_index",
+            "current_angle",
+            "start_angle",
+            "end_angle",
+            "degrees_completed",
+            "degrees_remaining",
+            "end_time_local",
+            "end_time_utc",
+        },
+    }
+
     def test_response_model_accepts_aggregator_output(self) -> None:
         response = PanchangResponse(**_aggregator_output())
 
@@ -156,6 +216,35 @@ class PanchangResponseSchemaTest(unittest.TestCase):
         self.assertEqual(response.sunset.event, "sunset")
         self.assertEqual(response.moonrise.event, "moonrise")
         self.assertEqual(response.moonset.event, "moonset")
+
+    def test_panchang_element_response_keys_remain_stable(self) -> None:
+        response = PanchangResponse(**_aggregator_output()).model_dump()
+
+        for section, expected_keys in self.panchang_element_keys.items():
+            self.assertEqual(set(response[section].keys()), expected_keys)
+
+    def test_panchang_elements_require_boundary_timing_fields(self) -> None:
+        for section in ("tithi", "nakshatra", "yoga", "karana"):
+            for field in ("degrees_remaining", "end_time_local", "end_time_utc"):
+                payload = _aggregator_output()
+                del payload[section][field]
+
+                with self.subTest(section=section, field=field):
+                    with self.assertRaises(ValidationError):
+                        PanchangResponse(**payload)
+
+    def test_response_rejects_extra_keys(self) -> None:
+        payload = _aggregator_output()
+        payload["tithi"]["boundary_label"] = "not part of API"
+
+        with self.assertRaises(ValidationError):
+            PanchangResponse(**payload)
+
+        payload = _aggregator_output()
+        payload["extra_section"] = {}
+
+        with self.assertRaises(ValidationError):
+            PanchangResponse(**payload)
 
 
 def _planet_summary(planet: str, sidereal_longitude: float) -> dict[str, object]:

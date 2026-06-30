@@ -76,7 +76,13 @@ Response body:
 }
 ```
 
-The `tithi`, `nakshatra`, `yoga`, and `karana` sections include `end_time_local` and `end_time_utc` for their next boundaries.
+The `tithi`, `nakshatra`, `yoga`, and `karana` sections include consistent boundary timing fields:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `degrees_remaining` | number | Degrees remaining until the current Panchang element ends. |
+| `end_time_local` | string | Local ISO-8601 datetime when the current Panchang element ends. |
+| `end_time_utc` | string | UTC ISO-8601 datetime with `Z` suffix when the current Panchang element ends. |
 
 See `docs/examples/panchang_response_jodhpur.json` for a complete response generated from the current API route for Jodhpur, 20 Apr 1985, 18:10 IST.
 
