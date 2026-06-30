@@ -114,6 +114,14 @@ Run tests when testable code exists:
 pytest
 ```
 
+### Run Panchang smoke test
+
+Print a local Panchang sample response without starting the FastAPI server:
+
+```bash
+python scripts/smoke_panchang.py
+```
+
 Run formatting and linting when configured in the task:
 
 ```bash
