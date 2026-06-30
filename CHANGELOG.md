@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Structural Panchang validation fixtures for Jodhpur 1985 and Delhi 2000 with accuracy documentation.
 - Panchang API response-shape regression tests for boundary timing fields.
 - Karana end-time calculation using Moon-Sun angle boundary search.
 - Panchang Yoga end-time calculation using Sun-Moon longitude boundary search.

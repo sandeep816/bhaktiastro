@@ -1,0 +1,127 @@
+{
+  "julian_day": {
+    "utc_datetime": "2000-01-01T06:30:00+00:00",
+    "julian_day_ut": 2451544.7708333335
+  },
+  "ayanamsa": {
+    "value": 23.85708358929668
+  },
+  "sun": {
+    "planet": "sun",
+    "sidereal_longitude": 256.278219,
+    "tropical_longitude": 280.135302,
+    "rashi_index": 8,
+    "rashi_name_hi": "धनु",
+    "degree_in_rashi": 16.2782,
+    "dms": {
+      "degrees": 16,
+      "minutes": 16,
+      "seconds": 41.6
+    },
+    "speed": 1.019409,
+    "retrograde": false
+  },
+  "moon": {
+    "planet": "moon",
+    "sidereal_longitude": 196.707818,
+    "tropical_longitude": 220.564901,
+    "rashi_index": 6,
+    "rashi_name_hi": "तुला",
+    "degree_in_rashi": 16.7078,
+    "dms": {
+      "degrees": 16,
+      "minutes": 42,
+      "seconds": 28.1
+    },
+    "speed": 12.056728,
+    "retrograde": false
+  },
+  "tithi": {
+    "tithi_number": 26,
+    "name_en": "Ekadashi",
+    "name_hi": "एकादशी",
+    "name_sa": "Ekadashi",
+    "paksha": "Krishna",
+    "start_angle": 300.0,
+    "end_angle": 312.0,
+    "current_angle": 300.429599,
+    "degrees_completed": 0.429599,
+    "degrees_remaining": 11.570401,
+    "end_time_local": "2000-01-02T13:22:15+05:30",
+    "end_time_utc": "2000-01-02T07:52:15Z"
+  },
+  "nakshatra": {
+    "index": 14,
+    "name_en": "Swati",
+    "name_hi": "स्वाती",
+    "name_sa": "Swati",
+    "pada": 4,
+    "ruling_planet": "rahu",
+    "start_degree": 186.66666666666669,
+    "end_degree": 200.0,
+    "degree_within_nakshatra": 10.041156,
+    "current_degree": 196.707818,
+    "degrees_remaining": 3.292182,
+    "end_time_local": "2000-01-01T18:36:33+05:30",
+    "end_time_utc": "2000-01-01T13:06:33Z"
+  },
+  "yoga": {
+    "yoga_index": 7,
+    "name_en": "Sukarman",
+    "name_hi": "सुकर्मा",
+    "name_sa": "Sukarma",
+    "start_degree": 80.0,
+    "end_degree": 93.33333333333334,
+    "current_degree": 92.986037,
+    "degrees_completed": 12.986039,
+    "degrees_remaining": 0.347294,
+    "end_time_local": "2000-01-01T12:39:22+05:30",
+    "end_time_utc": "2000-01-01T07:09:22Z"
+  },
+  "karana": {
+    "karana_index": 1,
+    "name_en": "Bava",
+    "name_hi": "बव",
+    "name_sa": "Bava",
+    "type": "Repeating",
+    "half_tithi_index": 50,
+    "current_angle": 300.429599,
+    "start_angle": 300.0,
+    "end_angle": 306.0,
+    "degrees_completed": 0.429599,
+    "degrees_remaining": 5.570401,
+    "end_time_local": "2000-01-02T00:09:50+05:30",
+    "end_time_utc": "2000-01-01T18:39:50Z"
+  },
+  "vara": {
+    "index": 7,
+    "name_en": "Saturday",
+    "name_hi": "शनिवार",
+    "name_sa": "Shanivara",
+    "ruling_planet": "saturn"
+  },
+  "sunrise": {
+    "event": "sunrise",
+    "local_time": "07:14:53",
+    "utc_datetime": "2000-01-01T01:44:53Z",
+    "timezone_offset": 5.5
+  },
+  "sunset": {
+    "event": "sunset",
+    "local_time": "17:33:54",
+    "utc_datetime": "2000-01-01T12:03:54Z",
+    "timezone_offset": 5.5
+  },
+  "moonrise": {
+    "event": "moonrise",
+    "local_time": "02:22:32",
+    "utc_datetime": "1999-12-31T20:52:32Z",
+    "timezone_offset": 5.5
+  },
+  "moonset": {
+    "event": "moonset",
+    "local_time": "13:58:40",
+    "utc_datetime": "2000-01-01T08:28:40Z",
+    "timezone_offset": 5.5
+  }
+}
