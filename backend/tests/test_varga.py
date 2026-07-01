@@ -20,10 +20,10 @@ def test_normalize_varga_number_rejects_invalid_number() -> None:
 
 
 def test_placeholder_varga_is_registered_but_not_implemented() -> None:
-    assert 16 in varga.get_registered_vargas()
+    assert 20 in varga.get_registered_vargas()
 
-    with pytest.raises(NotImplementedError, match="D16 is registered"):
-        varga.calculate_varga_position(16, 15.0)
+    with pytest.raises(NotImplementedError, match="D20 is registered"):
+        varga.calculate_varga_position(20, 15.0)
 
 
 def test_calculate_hora_position_odd_sign_first_half_returns_sun_hora() -> None:
@@ -473,6 +473,94 @@ def test_calculate_dwadashamsa_position_rejects_invalid_input() -> None:
 
     with pytest.raises(ValueError, match="data must include sidereal_longitude"):
         varga.calculate_dwadashamsa_position({"planet": "venus"})
+
+
+def test_calculate_shodasamsa_position_movable_first_part_starts_mesha() -> None:
+    result = varga.calculate_shodasamsa_position(1.0)
+
+    assert result["varga"] == "D16"
+    assert result["varga_number"] == 16
+    assert result["shodasamsa_part"] == 1
+    assert result["shodasamsa_rashi"]["sanskrit"] == "Mesha"
+    assert result["rashi"]["sanskrit"] == "Mesha"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_shodasamsa_position_fixed_first_part_starts_simha() -> None:
+    result = varga.calculate_shodasamsa_position(31.0)
+
+    assert result["shodasamsa_part"] == 1
+    assert result["shodasamsa_rashi"]["sanskrit"] == "Simha"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_rashi"]["modality"] == "Fixed"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_shodasamsa_position_dual_first_part_starts_dhanu() -> None:
+    result = varga.calculate_shodasamsa_position(61.0)
+
+    assert result["shodasamsa_part"] == 1
+    assert result["shodasamsa_rashi"]["sanskrit"] == "Dhanu"
+    assert result["source_rashi"]["sanskrit"] == "Mithuna"
+    assert result["source_rashi"]["modality"] == "Dual"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_shodasamsa_position_last_part_counts_from_start() -> None:
+    result = varga.calculate_shodasamsa_position(29.0)
+
+    assert result["shodasamsa_part"] == 16
+    assert result["shodasamsa_rashi"]["sanskrit"] == "Karka"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 29.0
+    assert result["division_index"] == 16
+
+
+def test_calculate_shodasamsa_boundary_between_parts() -> None:
+    boundary = 30.0 / 16.0
+    result = varga.calculate_shodasamsa_position(boundary)
+
+    assert result["shodasamsa_part"] == 2
+    assert result["shodasamsa_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == round(boundary, 6)
+
+
+def test_calculate_shodasamsa_position_wraps_from_late_rashis() -> None:
+    result = varga.calculate_shodasamsa_position(329.0)
+
+    assert result["source_rashi"]["sanskrit"] == "Kumbha"
+    assert result["source_rashi"]["modality"] == "Fixed"
+    assert result["shodasamsa_part"] == 16
+    assert result["shodasamsa_rashi"]["sanskrit"] == "Vrishchika"
+
+
+def test_calculate_shodasamsa_position_accepts_planet_shaped_data() -> None:
+    result = varga.calculate_shodasamsa_position(
+        {
+            "planet": "mercury",
+            "sidereal_longitude": 61.0,
+        }
+    )
+
+    assert result["varga_code"] == "D16"
+    assert result["source_rashi"]["sanskrit"] == "Mithuna"
+    assert result["shodasamsa_part"] == 1
+    assert result["shodasamsa_rashi"]["sanskrit"] == "Dhanu"
+
+
+def test_calculate_shodasamsa_position_rejects_invalid_input() -> None:
+    with pytest.raises(TypeError, match="sidereal_longitude must be a real number"):
+        varga.calculate_shodasamsa_position(True)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="longitude must be finite"):
+        varga.calculate_shodasamsa_position(float("nan"))
+
+    with pytest.raises(ValueError, match="data must include sidereal_longitude"):
+        varga.calculate_shodasamsa_position({"planet": "mercury"})
 
 
 @pytest.mark.parametrize(

@@ -24,7 +24,11 @@ HORA_SUN_RASHI_INDEX = 5
 HORA_MOON_RASHI_INDEX = 4
 NAVAMSA_NUMBER = 9
 SAPTAMSA_NUMBER = 7
-SUPPORTED_PLACEHOLDER_VARGAS = (16, 20, 24, 27, 30, 40, 45, 60)
+SHODASAMSA_NUMBER = 16
+SHODASAMSA_DUAL_START_RASHI_INDEX = 9
+SHODASAMSA_FIXED_START_RASHI_INDEX = 5
+SHODASAMSA_MOVABLE_START_RASHI_INDEX = 1
+SUPPORTED_PLACEHOLDER_VARGAS = (20, 24, 27, 30, 40, 45, 60)
 
 
 class VargaPosition(TypedDict):
@@ -179,6 +183,17 @@ def calculate_dwadashamsa_position(
     )
 
 
+def calculate_shodasamsa_position(
+    planet_data_or_longitude: Mapping[str, Any] | float,
+) -> VargaPosition:
+    """Calculate D16 Shodasamsa placement from longitude or planet data."""
+
+    return calculate_varga_position(
+        SHODASAMSA_NUMBER,
+        _get_sidereal_longitude(planet_data_or_longitude),
+    )
+
+
 def build_varga_chart(
     chart_data: Mapping[str, Any],
     varga_number: int | str,
@@ -236,6 +251,45 @@ def get_registered_vargas() -> tuple[int, ...]:
     """Return registered Varga numbers."""
 
     return tuple(sorted(_VARGA_DEFINITIONS))
+
+
+def _calculate_shodasamsa_position(
+    sidereal_longitude: float,
+    definition: VargaDefinition,
+) -> VargaPosition:
+    """Calculate D16 Shodasamsa using modality-based start Rashis."""
+
+    source_longitude = rashi_engine.normalize_longitude(sidereal_longitude)
+    source_rashi = rashi_engine.get_rashi(source_longitude)
+    source_degree = rashi_engine.get_rashi_degree(source_longitude)
+    division_span = RASHI_SPAN_DEGREES / definition.number
+    shodasamsa_part = min(
+        int((source_degree + DIVISION_BOUNDARY_EPSILON) // division_span) + 1,
+        definition.number,
+    )
+    start_rashi_index = _get_shodasamsa_start_rashi_index(source_rashi)
+    shodasamsa_rashi_index = _wrap_rashi_index(
+        start_rashi_index + shodasamsa_part - 1
+    )
+    shodasamsa_longitude = (shodasamsa_rashi_index - 1) * RASHI_SPAN_DEGREES
+    shodasamsa_rashi = rashi_engine.get_rashi(shodasamsa_longitude)
+
+    return {
+        "varga": definition.code,
+        "varga_number": definition.number,
+        "varga_code": definition.code,
+        "varga_name": definition.name,
+        "source_longitude": source_longitude,
+        "source_rashi": source_rashi,
+        "source_degree": source_degree,
+        "division_index": shodasamsa_part,
+        "shodasamsa_part": shodasamsa_part,
+        "varga_longitude": shodasamsa_longitude,
+        "rashi_index": shodasamsa_rashi_index,
+        "rashi_degree": 0.0,
+        "rashi": shodasamsa_rashi,
+        "shodasamsa_rashi": shodasamsa_rashi,
+    }
 
 
 def _calculate_dwadashamsa_position(
@@ -501,6 +555,22 @@ def _get_navamsa_rashi_index(
     return _wrap_rashi_index(start_rashi_index + division_index - 1)
 
 
+def _get_shodasamsa_start_rashi_index(
+    source_rashi: rashi_engine.RashiResult,
+) -> int:
+    """Return the D16 start Rashi index from the source Rashi modality."""
+
+    modality = source_rashi["modality"]
+    if modality == "Movable":
+        return SHODASAMSA_MOVABLE_START_RASHI_INDEX
+    if modality == "Fixed":
+        return SHODASAMSA_FIXED_START_RASHI_INDEX
+    if modality == "Dual":
+        return SHODASAMSA_DUAL_START_RASHI_INDEX
+
+    raise ValueError(f"Unsupported Rashi modality: {modality}")
+
+
 def _build_varga_planet(
     planet_data: Mapping[str, Any],
     varga_number: int,
@@ -565,6 +635,16 @@ def _wrap_rashi_index(rashi_index: int) -> int:
 
 def _register_default_vargas() -> None:
     """Register supported Varga definitions."""
+
+    register_varga(
+        VargaDefinition(
+            number=SHODASAMSA_NUMBER,
+            code="D16",
+            name="Shodasamsa",
+            is_implemented=True,
+            calculator=cast(VargaCalculator, _calculate_shodasamsa_position),
+        )
+    )
 
     register_varga(
         VargaDefinition(
