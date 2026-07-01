@@ -12,6 +12,7 @@ from backend.app.astronomy import (
 )
 from backend.app.kundali import (
     bhava,
+    combustion,
     dignity,
     graha_lordship,
     lagna,
@@ -45,6 +46,7 @@ class PlanetChartPosition(planet_positions.PlanetPosition, total=False):
     mooltrikona: mooltrikona.PlanetMooltrikonaMetadata
     is_retrograde: bool
     motion_status: retrograde_motion.MotionStatus
+    combustion: combustion.PlanetCombustionMetadata
 
 
 class KundaliChart(TypedDict):
@@ -109,8 +111,13 @@ def assemble_kundali_chart(
         lagna.LagnaResult,
         graha_lordship.attach_rashi_lord(lagna_result),
     )
+    sun_sidereal_longitude = _get_sun_sidereal_longitude(planet_data)
     planets = [
-        _enrich_planet_with_rashi(position, lagna_result["rashi_index"])
+        _enrich_planet_with_rashi(
+            position,
+            lagna_result["rashi_index"],
+            sun_sidereal_longitude,
+        )
         for position in planet_data
     ]
 
@@ -124,6 +131,7 @@ def assemble_kundali_chart(
 def _enrich_planet_with_rashi(
     position: planet_positions.PlanetPosition,
     lagna_rashi_index: int,
+    sun_sidereal_longitude: float | None = None,
 ) -> PlanetChartPosition:
     """Copy a planet position and attach internal Rashi and house metadata."""
 
@@ -161,8 +169,34 @@ def _enrich_planet_with_rashi(
         speed = float(position["speed"])
         enriched_position["is_retrograde"] = retrograde_motion.is_retrograde(speed)
         enriched_position["motion_status"] = retrograde_motion.get_motion_status(speed)
+    if (
+        isinstance(planet, str)
+        and sun_sidereal_longitude is not None
+        and combustion.supports_combustion(planet)
+    ):
+        enriched_position["combustion"] = combustion.get_combustion_metadata(
+            planet,
+            sidereal_longitude,
+            sun_sidereal_longitude,
+        )
 
     return enriched_position
+
+
+def _get_sun_sidereal_longitude(
+    positions: list[planet_positions.PlanetPosition],
+) -> float | None:
+    """Return Sun sidereal longitude when it is available in planet positions."""
+
+    for position in positions:
+        if position.get("planet") != "sun":
+            continue
+        try:
+            return float(position["sidereal_longitude"])
+        except KeyError:
+            return None
+
+    return None
 
 
 def _supports_speed_motion_metadata(

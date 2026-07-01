@@ -150,6 +150,23 @@ class PlanetMooltrikonaInfo(StrictResponseModel):
     )
 
 
+class PlanetCombustionInfo(StrictResponseModel):
+    """Combustion foundation metadata for a planet."""
+
+    status: Literal["combust", "not_combust", "unsupported"] = Field(
+        ...,
+        description="Combustion status relative to the Sun.",
+    )
+    angular_distance: float = Field(
+        ...,
+        description="Shortest angular distance from the Sun in degrees.",
+    )
+    orb: float = Field(
+        ...,
+        description="Configured conservative combustion orb in degrees.",
+    )
+
+
 class KundaliPlanetInfo(StrictResponseModel):
     """Planet position section of a Kundali response."""
 
@@ -199,6 +216,10 @@ class KundaliPlanetInfo(StrictResponseModel):
     motion_status: Optional[Literal["retrograde", "direct", "stationary"]] = Field(
         None,
         description="Optional speed-based longitudinal motion status.",
+    )
+    combustion: Optional[PlanetCombustionInfo] = Field(
+        None,
+        description="Optional combustion metadata, when available.",
     )
 
 
