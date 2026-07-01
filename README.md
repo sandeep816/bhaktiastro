@@ -6,7 +6,8 @@ The project is built around one core principle: deterministic calculation first,
 
 ## Current Status
 
-This repository is in Phase 0 project setup.
+This repository has deterministic Panchang foundations and Sprint 4 Kundali
+Engine foundations in place.
 
 Created so far:
 - Project folder structure
@@ -18,8 +19,9 @@ Created so far:
 - `.env.example`
 - Basic `backend/app/config.py`
 - Basic `backend/app/logging.py`
-
-Application calculation code is not implemented yet.
+- Deterministic Panchang calculation and API foundations
+- Deterministic Kundali chart, metadata, yoga foundation, and JSON export
+  foundations
 
 ## Project Rules
 
@@ -32,7 +34,11 @@ Application calculation code is not implemented yet.
 - Timezone input must be explicit.
 - Any unverified formula must remain incomplete until source-verified.
 
-See [CODEX_INSTRUCTIONS.md](CODEX_INSTRUCTIONS.md), [FEATURES_v3.md](FEATURES_v3.md), [CALCULATIONS.md](CALCULATIONS.md), and [PROJECT_PHASES.md](PROJECT_PHASES.md) for the full project contract.
+See [CODEX_INSTRUCTIONS.md](CODEX_INSTRUCTIONS.md),
+[FEATURES_v3.md](FEATURES_v3.md), [CALCULATIONS.md](CALCULATIONS.md),
+[PROJECT_PHASES.md](PROJECT_PHASES.md), and
+[docs/KUNDALI_SPRINT_4.md](docs/KUNDALI_SPRINT_4.md) for the full project
+contract and current Kundali milestone notes.
 
 ## Architecture
 

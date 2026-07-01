@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Sprint 4 Kundali Engine documentation and completion checklist.
 - Milestone 1 reference validation plan and skipped placeholder accuracy tests.
 - Local Panchang smoke script for developer-only API-shaped JSON output.
 - Structural Panchang validation fixtures for Jodhpur 1985 and Delhi 2000 with accuracy documentation.

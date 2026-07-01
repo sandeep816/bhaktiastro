@@ -1,5 +1,91 @@
 # API
 
+## POST /api/v1/kundali
+
+Calculate the basic deterministic Kundali chart for one local birth date, time,
+and location.
+
+This endpoint includes Lagna, planet positions enriched with Rashi and
+house-placement metadata, and placeholder house groupings. It does not include
+predictions, interpretation text, divisional charts, or advanced house systems.
+
+### Request
+
+**URL:** `/api/v1/kundali`
+
+**Method:** `POST`
+
+**Content-Type:** `application/json`
+
+Example:
+
+```json
+{
+  "year": 1990,
+  "month": 1,
+  "day": 1,
+  "hour": 12,
+  "minute": 0,
+  "second": 0,
+  "timezone_offset": 5.5,
+  "latitude": 26.9124,
+  "longitude": 75.7873,
+  "ayanamsa": "lahiri"
+}
+```
+
+### Request Fields
+
+| Field | Type | Required | Default | Validation |
+| --- | --- | --- | --- | --- |
+| `year` | integer | yes | - | `1900` to `2100` |
+| `month` | integer | yes | - | `1` to `12` |
+| `day` | integer | yes | - | `1` to `31` |
+| `hour` | integer | no | `12` | `0` to `23` |
+| `minute` | integer | no | `0` | `0` to `59` |
+| `second` | integer | no | `0` | `0` to `59` |
+| `timezone_offset` | number | no | `5.5` | `-12` to `14` |
+| `latitude` | number | yes | - | `-90` to `90` |
+| `longitude` | number | yes | - | `-180` to `180` |
+| `ayanamsa` | string | no | `lahiri` | `lahiri` |
+
+### Response
+
+Successful responses return `200 OK`.
+
+Response body:
+
+```json
+{
+  "lagna": {},
+  "planets": [],
+  "houses": []
+}
+```
+
+The Kundali API response keeps these top-level fields stable:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `lagna` | object | Sidereal ascendant and Lagna Rashi metadata. |
+| `planets` | array | Planet positions and optional foundation metadata. |
+| `houses` | array | Twelve placeholder houses with grouped planets. |
+
+Optional planet metadata may include dignity, Mooltrikona, motion,
+combustion, and Graha Drishti fields when the underlying chart data supports
+them. The reusable JSON export helper can add export-only metadata, but the
+public API response remains `lagna`, `planets`, and `houses`.
+
+### Validation Errors
+
+Invalid request fields return FastAPI/Pydantic validation errors with status
+`422`.
+
+Calculation errors raised by the deterministic calculation layer return:
+
+- `400` for invalid calculation input, such as invalid date components
+- `500` for runtime calculation failures, such as unavailable Swiss Ephemeris
+
 ## POST /api/v1/panchang
 
 Calculate the basic deterministic Panchang for one local date and time.
