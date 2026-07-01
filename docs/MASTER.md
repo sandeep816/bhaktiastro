@@ -1,0 +1,157 @@
+# BhaktiAstro Master Working Document
+
+This document is the Codex working brief for the BhaktiAstro repository. Use it
+to keep each task scoped, testable, and aligned with the deterministic-first
+project rules.
+
+## Project Rules
+
+- Work on one task or milestone at a time.
+- Do not rewrite completed modules.
+- Do not duplicate existing functionality.
+- Preserve backward compatibility.
+- Follow the existing project structure.
+- Prefer reusable modules over one-off logic.
+- Keep changes incremental and reviewable.
+- Do not modify Panchang logic unless the task explicitly targets Panchang.
+- Do not modify astronomical calculations unless the task explicitly targets
+  astronomy.
+- Do not implement predictions before deterministic calculation foundations are
+  complete.
+- Do not add interpretation text before deterministic rule outputs are stable.
+- Never guess astrology formulas. If a formula is unverified, add a placeholder
+  or skipped test and document the verification need.
+
+## Completed Milestones
+
+- Sprint 1: Panchang and astronomy foundations.
+- Sprint 2: Panchang element foundations and boundary timing.
+- Sprint 3: Panchang API, fixtures, validation, and smoke coverage.
+- Sprint 4: Kundali Engine foundation.
+
+Sprint 4 completed:
+
+- Rashi Engine
+- Bhava Foundation
+- Lagna Foundation
+- Kundali Chart Assembly
+- Kundali API Foundation
+- Chart Format Foundation
+- Planet House Placement
+- Graha Lordship
+- Exaltation and Debilitation
+- Mooltrikona
+- Natural Graha Relationships
+- Retrograde Foundation
+- Combustion Foundation
+- Graha Drishti
+- Yoga Framework
+- Gajakesari Yoga Foundation
+- Raja Yoga Foundation
+- Dhana Yoga Foundation
+- Panch Mahapurusha Yoga Foundation
+- Kundali JSON Export
+- Sprint 4 documentation and completion checklist
+
+## Current Sprint
+
+Current sprint: Sprint 5 - Divisional Charts / Varga Engine.
+
+Primary sprint document: `docs/SPRINT-05.md`.
+
+Sprint 5 goal:
+
+- Build reusable infrastructure for divisional charts.
+- Keep Varga calculations separate from astronomy and Panchang logic.
+- Reuse existing Rashi and Kundali helpers.
+- Add each Varga incrementally with focused tests.
+
+## Next Task Instructions
+
+For each new Codex task:
+
+1. Read this file.
+2. Read the current sprint document.
+3. Inspect the existing implementation before editing.
+4. Add a reusable module only if one does not already exist.
+5. Keep the change limited to the requested milestone.
+6. Add or update focused tests only for the requested behavior.
+7. Run the narrowest relevant tests while developing.
+8. Run the full relevant suite before finishing code tasks.
+9. Stop after the requested task is complete.
+
+For documentation-only tasks:
+
+- Do not modify source code.
+- Do not modify tests.
+- Run docs tooling only if the repository already defines it.
+- Do not run runtime tests unless explicitly requested or required by the task.
+
+## Stop Point Rules
+
+Stop immediately after the current milestone is complete.
+
+Do not continue into the next roadmap item without a new user instruction. Do
+not add predictions, interpretation text, reports, UI, or API changes unless
+they are part of the active task.
+
+If a task reveals missing source verification:
+
+- Document the gap.
+- Add a placeholder only if required for structure.
+- Keep tests skipped or focused on safe behavior.
+- Do not mark the formula complete.
+
+## Testing Rules
+
+- No calculation is complete without focused tests.
+- Use boundary tests for signs, degrees, wrapping, and invalid inputs.
+- Preserve existing API response fields.
+- Run relevant API tests when an API contract is touched.
+- Run Panchang tests when Panchang behavior is touched.
+- Run the full suite before finishing calculation or API milestones.
+- Do not fake passing tests for unverified formulas.
+
+Current known manual-validation policy:
+
+- Manual astronomical validation remains separate from automated structural
+  tests.
+- Golden-value tests must stay skipped until values are verified against trusted
+  references.
+
+## Commit Message Rules
+
+One task equals one commit.
+
+Commit format:
+
+```text
+<type>(sprint-N): short task description
+```
+
+Recommended types:
+
+- `feat`
+- `fix`
+- `test`
+- `docs`
+- `refactor`
+- `chore`
+
+Examples:
+
+```text
+docs(sprint-5): add varga roadmap
+feat(sprint-5): add navamsa foundation
+test(sprint-5): cover invalid varga numbers
+fix(sprint-4): preserve kundali response shape
+```
+
+Before committing:
+
+- Relevant tests pass, or docs-only tooling has been checked if available.
+- `CHANGELOG.md` is updated when the task changes user-visible behavior or
+  project documentation.
+- No unrelated files are included.
+- No generated files, local secrets, virtualenvs, caches, or Swiss Ephemeris
+  data files are included.
