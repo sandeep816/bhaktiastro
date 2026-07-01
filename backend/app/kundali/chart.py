@@ -7,6 +7,7 @@ from typing import Optional, TypedDict, cast
 from backend.app.astronomy import ayanamsa, julian, planet_positions
 from backend.app.kundali import (
     bhava,
+    dignity,
     graha_lordship,
     lagna,
     placement,
@@ -34,6 +35,7 @@ class PlanetChartPosition(planet_positions.PlanetPosition, total=False):
     rashi_degree: float
     house_number: int
     house_index: int
+    dignity: dignity.PlanetDignityMetadata
 
 
 class KundaliChart(TypedDict):
@@ -135,6 +137,13 @@ def _enrich_planet_with_rashi(
         "house_number": house_placement["house_number"],
         "house_index": house_placement["house_index"],
     }
+    planet = position.get("planet")
+    if isinstance(planet, str) and dignity.supports_planet_dignity(planet):
+        enriched_position["dignity"] = dignity.get_planet_dignity_metadata(
+            planet,
+            house_placement["rashi"],
+        )
+
     return enriched_position
 
 

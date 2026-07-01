@@ -120,6 +120,23 @@ class LagnaInfo(StrictResponseModel):
     )
 
 
+class PlanetDignityInfo(StrictResponseModel):
+    """Exaltation/debilitation foundation metadata for a planet."""
+
+    status: Literal["exalted", "debilitated", "neutral"] = Field(
+        ...,
+        description="Planet dignity status in the current Rashi.",
+    )
+    exaltation_rashi: str = Field(
+        ...,
+        description="Sanskrit/transliteration Rashi where the planet is exalted.",
+    )
+    debilitation_rashi: str = Field(
+        ...,
+        description="Sanskrit/transliteration Rashi where the planet is debilitated.",
+    )
+
+
 class KundaliPlanetInfo(StrictResponseModel):
     """Planet position section of a Kundali response."""
 
@@ -153,6 +170,10 @@ class KundaliPlanetInfo(StrictResponseModel):
     house_index: Optional[int] = Field(
         None,
         description="Zero-based whole-sign house index, when available.",
+    )
+    dignity: Optional[PlanetDignityInfo] = Field(
+        None,
+        description="Optional planet dignity metadata, when available.",
     )
 
 
