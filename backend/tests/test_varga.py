@@ -19,11 +19,12 @@ def test_normalize_varga_number_rejects_invalid_number() -> None:
         varga.normalize_varga_number(8)
 
 
-def test_placeholder_varga_is_registered_but_not_implemented() -> None:
+def test_final_sprint_five_varga_is_registered_and_implemented() -> None:
     assert 60 in varga.get_registered_vargas()
 
-    with pytest.raises(NotImplementedError, match="D60 is registered"):
-        varga.calculate_varga_position(60, 15.0)
+    definition = varga.get_varga_definition("D60")
+    assert definition.is_implemented is True
+    assert definition.name == "Shastiamsa"
 
 
 def test_calculate_hora_position_odd_sign_first_half_returns_sun_hora() -> None:
@@ -1096,6 +1097,89 @@ def test_calculate_akshavedamsa_position_rejects_invalid_input() -> None:
 
     with pytest.raises(ValueError, match="data must include sidereal_longitude"):
         varga.calculate_akshavedamsa_position({"planet": "venus"})
+
+
+def test_calculate_shastiamsa_position_odd_first_part_starts_mesha() -> None:
+    result = varga.calculate_shastiamsa_position(0.25)
+
+    assert result["varga"] == "D60"
+    assert result["varga_number"] == 60
+    assert result["varga_name"] == "Shastiamsa"
+    assert result["shastiamsa_part"] == 1
+    assert result["shastiamsa_rashi"]["sanskrit"] == "Mesha"
+    assert result["rashi"]["sanskrit"] == "Mesha"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 0.25
+    assert result["division_index"] == 1
+
+
+def test_calculate_shastiamsa_position_even_first_part_starts_tula() -> None:
+    result = varga.calculate_shastiamsa_position(30.25)
+
+    assert result["shastiamsa_part"] == 1
+    assert result["shastiamsa_rashi"]["sanskrit"] == "Tula"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 0.25
+    assert result["division_index"] == 1
+
+
+def test_calculate_shastiamsa_boundary_zero_point_five_starts_second() -> None:
+    result = varga.calculate_shastiamsa_position(0.5)
+
+    assert result["shastiamsa_part"] == 2
+    assert result["shastiamsa_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 0.5
+
+
+def test_calculate_shastiamsa_boundary_twenty_nine_point_five_last() -> None:
+    result = varga.calculate_shastiamsa_position(29.5)
+
+    assert result["shastiamsa_part"] == 60
+    assert result["shastiamsa_rashi"]["sanskrit"] == "Meena"
+    assert result["source_degree"] == 29.5
+
+
+def test_calculate_shastiamsa_position_last_part_counts_from_start() -> None:
+    result = varga.calculate_shastiamsa_position(29.9)
+
+    assert result["shastiamsa_part"] == 60
+    assert result["shastiamsa_rashi"]["sanskrit"] == "Meena"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 29.9
+    assert result["division_index"] == 60
+
+
+def test_calculate_shastiamsa_position_wraps_from_late_rashis() -> None:
+    result = varga.calculate_shastiamsa_position(359.9)
+
+    assert result["source_rashi"]["sanskrit"] == "Meena"
+    assert result["shastiamsa_part"] == 60
+    assert result["shastiamsa_rashi"]["sanskrit"] == "Kanya"
+
+
+def test_calculate_shastiamsa_position_accepts_planet_shaped_data() -> None:
+    result = varga.calculate_shastiamsa_position(
+        {
+            "planet": "saturn",
+            "sidereal_longitude": 30.25,
+        }
+    )
+
+    assert result["varga_code"] == "D60"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["shastiamsa_part"] == 1
+    assert result["shastiamsa_rashi"]["sanskrit"] == "Tula"
+
+
+def test_calculate_shastiamsa_position_rejects_invalid_input() -> None:
+    with pytest.raises(TypeError, match="sidereal_longitude must be a real number"):
+        varga.calculate_shastiamsa_position(False)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="longitude must be finite"):
+        varga.calculate_shastiamsa_position(float("inf"))
+
+    with pytest.raises(ValueError, match="data must include sidereal_longitude"):
+        varga.calculate_shastiamsa_position({"planet": "saturn"})
 
 
 @pytest.mark.parametrize(

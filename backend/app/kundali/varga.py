@@ -35,6 +35,10 @@ KHAVEDAMSA_EVEN_START_RASHI_INDEX = 7
 KHAVEDAMSA_ODD_START_RASHI_INDEX = 1
 NAVAMSA_NUMBER = 9
 SAPTAMSA_NUMBER = 7
+SHASTIAMSA_NUMBER = 60
+SHASTIAMSA_EVEN_START_RASHI_INDEX = 7
+SHASTIAMSA_ODD_START_RASHI_INDEX = 1
+SHASTIAMSA_SPAN_DEGREES = 0.5
 SHODASAMSA_NUMBER = 16
 SHODASAMSA_DUAL_START_RASHI_INDEX = 9
 SHODASAMSA_FIXED_START_RASHI_INDEX = 5
@@ -42,7 +46,7 @@ SHODASAMSA_MOVABLE_START_RASHI_INDEX = 1
 SIDDHAMSA_NUMBER = 24
 SIDDHAMSA_EVEN_START_RASHI_INDEX = 4
 SIDDHAMSA_ODD_START_RASHI_INDEX = 5
-SUPPORTED_PLACEHOLDER_VARGAS = (60,)
+SUPPORTED_PLACEHOLDER_VARGAS: tuple[int, ...] = ()
 TRIMSAMSA_NUMBER = 30
 VIMSHAMSA_NUMBER = 20
 VIMSHAMSA_DUAL_START_RASHI_INDEX = 5
@@ -295,6 +299,17 @@ def calculate_akshavedamsa_position(
     )
 
 
+def calculate_shastiamsa_position(
+    planet_data_or_longitude: Mapping[str, Any] | float,
+) -> VargaPosition:
+    """Calculate D60 Shastiamsa placement from longitude or planet data."""
+
+    return calculate_varga_position(
+        SHASTIAMSA_NUMBER,
+        _get_sidereal_longitude(planet_data_or_longitude),
+    )
+
+
 def build_varga_chart(
     chart_data: Mapping[str, Any],
     varga_number: int | str,
@@ -352,6 +367,50 @@ def get_registered_vargas() -> tuple[int, ...]:
     """Return registered Varga numbers."""
 
     return tuple(sorted(_VARGA_DEFINITIONS))
+
+
+def _calculate_shastiamsa_position(
+    sidereal_longitude: float,
+    definition: VargaDefinition,
+) -> VargaPosition:
+    """Calculate D60 Shastiamsa using odd/even sign start rules."""
+
+    source_longitude = rashi_engine.normalize_longitude(sidereal_longitude)
+    source_rashi = rashi_engine.get_rashi(source_longitude)
+    source_rashi_index = source_rashi["index"]
+    source_degree = rashi_engine.get_rashi_degree(source_longitude)
+    shastiamsa_part = min(
+        int((source_degree + DIVISION_BOUNDARY_EPSILON) // SHASTIAMSA_SPAN_DEGREES)
+        + 1,
+        definition.number,
+    )
+    start_rashi_index = (
+        SHASTIAMSA_ODD_START_RASHI_INDEX
+        if source_rashi_index % 2 == 1
+        else SHASTIAMSA_EVEN_START_RASHI_INDEX
+    )
+    shastiamsa_rashi_index = _wrap_rashi_index(
+        start_rashi_index + shastiamsa_part - 1
+    )
+    shastiamsa_longitude = (shastiamsa_rashi_index - 1) * RASHI_SPAN_DEGREES
+    shastiamsa_rashi = rashi_engine.get_rashi(shastiamsa_longitude)
+
+    return {
+        "varga": definition.code,
+        "varga_number": definition.number,
+        "varga_code": definition.code,
+        "varga_name": definition.name,
+        "source_longitude": source_longitude,
+        "source_rashi": source_rashi,
+        "source_degree": source_degree,
+        "division_index": shastiamsa_part,
+        "shastiamsa_part": shastiamsa_part,
+        "varga_longitude": shastiamsa_longitude,
+        "rashi_index": shastiamsa_rashi_index,
+        "rashi_degree": 0.0,
+        "rashi": shastiamsa_rashi,
+        "shastiamsa_rashi": shastiamsa_rashi,
+    }
 
 
 def _calculate_akshavedamsa_position(
@@ -1049,6 +1108,16 @@ def _wrap_rashi_index(rashi_index: int) -> int:
 
 def _register_default_vargas() -> None:
     """Register supported Varga definitions."""
+
+    register_varga(
+        VargaDefinition(
+            number=SHASTIAMSA_NUMBER,
+            code="D60",
+            name="Shastiamsa",
+            is_implemented=True,
+            calculator=cast(VargaCalculator, _calculate_shastiamsa_position),
+        )
+    )
 
     register_varga(
         VargaDefinition(
