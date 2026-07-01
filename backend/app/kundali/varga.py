@@ -11,6 +11,10 @@ from backend.app.constants.rashi import RASHI_COUNT, RASHI_SPAN_DEGREES
 from backend.app.kundali import rashi as rashi_engine
 
 DEGREE_PRECISION = 6
+AKSHAVEDAMSA_NUMBER = 45
+AKSHAVEDAMSA_DUAL_START_RASHI_INDEX = 9
+AKSHAVEDAMSA_FIXED_START_RASHI_INDEX = 5
+AKSHAVEDAMSA_MOVABLE_START_RASHI_INDEX = 1
 BHAMSA_NUMBER = 27
 BHAMSA_DUAL_START_RASHI_INDEX = 9
 BHAMSA_FIXED_START_RASHI_INDEX = 5
@@ -38,7 +42,7 @@ SHODASAMSA_MOVABLE_START_RASHI_INDEX = 1
 SIDDHAMSA_NUMBER = 24
 SIDDHAMSA_EVEN_START_RASHI_INDEX = 4
 SIDDHAMSA_ODD_START_RASHI_INDEX = 5
-SUPPORTED_PLACEHOLDER_VARGAS = (45, 60)
+SUPPORTED_PLACEHOLDER_VARGAS = (60,)
 TRIMSAMSA_NUMBER = 30
 VIMSHAMSA_NUMBER = 20
 VIMSHAMSA_DUAL_START_RASHI_INDEX = 5
@@ -280,6 +284,17 @@ def calculate_khavedamsa_position(
     )
 
 
+def calculate_akshavedamsa_position(
+    planet_data_or_longitude: Mapping[str, Any] | float,
+) -> VargaPosition:
+    """Calculate D45 Akshavedamsa placement from longitude or planet data."""
+
+    return calculate_varga_position(
+        AKSHAVEDAMSA_NUMBER,
+        _get_sidereal_longitude(planet_data_or_longitude),
+    )
+
+
 def build_varga_chart(
     chart_data: Mapping[str, Any],
     varga_number: int | str,
@@ -337,6 +352,47 @@ def get_registered_vargas() -> tuple[int, ...]:
     """Return registered Varga numbers."""
 
     return tuple(sorted(_VARGA_DEFINITIONS))
+
+
+def _calculate_akshavedamsa_position(
+    sidereal_longitude: float,
+    definition: VargaDefinition,
+) -> VargaPosition:
+    """Calculate D45 Akshavedamsa using modality-based start Rashis."""
+
+    source_longitude = rashi_engine.normalize_longitude(sidereal_longitude)
+    source_rashi = rashi_engine.get_rashi(source_longitude)
+    source_degree = rashi_engine.get_rashi_degree(source_longitude)
+    division_span = RASHI_SPAN_DEGREES / definition.number
+    akshavedamsa_part = min(
+        int((source_degree + DIVISION_BOUNDARY_EPSILON) // division_span) + 1,
+        definition.number,
+    )
+    start_rashi_index = _get_akshavedamsa_start_rashi_index(source_rashi)
+    akshavedamsa_rashi_index = _wrap_rashi_index(
+        start_rashi_index + akshavedamsa_part - 1
+    )
+    akshavedamsa_longitude = (
+        akshavedamsa_rashi_index - 1
+    ) * RASHI_SPAN_DEGREES
+    akshavedamsa_rashi = rashi_engine.get_rashi(akshavedamsa_longitude)
+
+    return {
+        "varga": definition.code,
+        "varga_number": definition.number,
+        "varga_code": definition.code,
+        "varga_name": definition.name,
+        "source_longitude": source_longitude,
+        "source_rashi": source_rashi,
+        "source_degree": source_degree,
+        "division_index": akshavedamsa_part,
+        "akshavedamsa_part": akshavedamsa_part,
+        "varga_longitude": akshavedamsa_longitude,
+        "rashi_index": akshavedamsa_rashi_index,
+        "rashi_degree": 0.0,
+        "rashi": akshavedamsa_rashi,
+        "akshavedamsa_rashi": akshavedamsa_rashi,
+    }
 
 
 def _calculate_khavedamsa_position(
@@ -883,6 +939,19 @@ def _get_bhamsa_start_rashi_index(
     )
 
 
+def _get_akshavedamsa_start_rashi_index(
+    source_rashi: rashi_engine.RashiResult,
+) -> int:
+    """Return the D45 start Rashi index from the source Rashi modality."""
+
+    return _get_modality_start_rashi_index(
+        source_rashi,
+        movable_start=AKSHAVEDAMSA_MOVABLE_START_RASHI_INDEX,
+        fixed_start=AKSHAVEDAMSA_FIXED_START_RASHI_INDEX,
+        dual_start=AKSHAVEDAMSA_DUAL_START_RASHI_INDEX,
+    )
+
+
 def _get_modality_start_rashi_index(
     source_rashi: rashi_engine.RashiResult,
     *,
@@ -980,6 +1049,16 @@ def _wrap_rashi_index(rashi_index: int) -> int:
 
 def _register_default_vargas() -> None:
     """Register supported Varga definitions."""
+
+    register_varga(
+        VargaDefinition(
+            number=AKSHAVEDAMSA_NUMBER,
+            code="D45",
+            name="Akshavedamsa",
+            is_implemented=True,
+            calculator=cast(VargaCalculator, _calculate_akshavedamsa_position),
+        )
+    )
 
     register_varga(
         VargaDefinition(
