@@ -6,6 +6,7 @@ from importlib import import_module
 import math
 from typing import Any, TypedDict
 
+from backend.app.astronomy import retrograde as retrograde_motion
 from backend.app.kundali import rashi as rashi_engine
 
 KETU_OFFSET_DEGREES = 180.0
@@ -124,7 +125,7 @@ def _is_retrograde(planet: str, speed: float) -> bool:
     if planet == "rahu":
         return True
 
-    return speed < 0
+    return retrograde_motion.is_retrograde(speed)
 
 
 def _position_from_longitude(

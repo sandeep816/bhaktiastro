@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from typing import Optional, TypedDict, cast
 
-from backend.app.astronomy import ayanamsa, julian, planet_positions
+from backend.app.astronomy import (
+    ayanamsa,
+    julian,
+    planet_positions,
+    retrograde as retrograde_motion,
+)
 from backend.app.kundali import (
     bhava,
     dignity,
@@ -38,6 +43,8 @@ class PlanetChartPosition(planet_positions.PlanetPosition, total=False):
     house_index: int
     dignity: dignity.PlanetDignityMetadata
     mooltrikona: mooltrikona.PlanetMooltrikonaMetadata
+    is_retrograde: bool
+    motion_status: retrograde_motion.MotionStatus
 
 
 class KundaliChart(TypedDict):
@@ -150,8 +157,27 @@ def _enrich_planet_with_rashi(
             PlanetChartPosition,
             mooltrikona.attach_mooltrikona_status(enriched_position),
         )
+    if isinstance(planet, str) and _supports_speed_motion_metadata(planet, position):
+        speed = float(position["speed"])
+        enriched_position["is_retrograde"] = retrograde_motion.is_retrograde(speed)
+        enriched_position["motion_status"] = retrograde_motion.get_motion_status(speed)
 
     return enriched_position
+
+
+def _supports_speed_motion_metadata(
+    planet: str,
+    position: planet_positions.PlanetPosition,
+) -> bool:
+    """Return whether speed-based motion metadata is safe for this planet."""
+
+    return planet in {
+        "mars",
+        "mercury",
+        "jupiter",
+        "venus",
+        "saturn",
+    } and "speed" in position
 
 
 def _build_placeholder_houses(

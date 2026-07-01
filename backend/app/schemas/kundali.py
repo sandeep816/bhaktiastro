@@ -192,6 +192,14 @@ class KundaliPlanetInfo(StrictResponseModel):
         None,
         description="Optional planet Mooltrikona metadata, when available.",
     )
+    is_retrograde: Optional[bool] = Field(
+        None,
+        description="Optional speed-based retrograde status, when available.",
+    )
+    motion_status: Optional[Literal["retrograde", "direct", "stationary"]] = Field(
+        None,
+        description="Optional speed-based longitudinal motion status.",
+    )
 
 
 class HousePlaceholderInfo(StrictResponseModel):
