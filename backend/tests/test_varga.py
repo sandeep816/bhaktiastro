@@ -20,10 +20,10 @@ def test_normalize_varga_number_rejects_invalid_number() -> None:
 
 
 def test_placeholder_varga_is_registered_but_not_implemented() -> None:
-    assert 3 in varga.get_registered_vargas()
+    assert 10 in varga.get_registered_vargas()
 
-    with pytest.raises(NotImplementedError, match="D3 is registered"):
-        varga.calculate_varga_position(3, 15.0)
+    with pytest.raises(NotImplementedError, match="D10 is registered"):
+        varga.calculate_varga_position(10, 15.0)
 
 
 def test_calculate_hora_position_odd_sign_first_half_returns_sun_hora() -> None:
@@ -116,6 +116,92 @@ def test_calculate_hora_position_rejects_invalid_input() -> None:
 
     with pytest.raises(ValueError, match="data must include sidereal_longitude"):
         varga.calculate_hora_position({"planet": "sun"})
+
+
+def test_calculate_drekkana_position_first_ten_degrees_returns_same_rashi() -> None:
+    result = varga.calculate_drekkana_position(5.0)
+
+    assert result["varga"] == "D3"
+    assert result["varga_number"] == 3
+    assert result["drekkana_part"] == 1
+    assert result["drekkana_rashi"]["sanskrit"] == "Mesha"
+    assert result["rashi"]["sanskrit"] == "Mesha"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 5.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_drekkana_position_second_ten_degrees_returns_fifth_rashi() -> None:
+    result = varga.calculate_drekkana_position(15.0)
+
+    assert result["drekkana_part"] == 2
+    assert result["drekkana_rashi"]["sanskrit"] == "Simha"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 15.0
+    assert result["division_index"] == 2
+
+
+def test_calculate_drekkana_position_third_ten_degrees_returns_ninth_rashi() -> None:
+    result = varga.calculate_drekkana_position(25.0)
+
+    assert result["drekkana_part"] == 3
+    assert result["drekkana_rashi"]["sanskrit"] == "Dhanu"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 25.0
+    assert result["division_index"] == 3
+
+
+def test_calculate_drekkana_position_boundary_ten_degrees_starts_second_part() -> None:
+    result = varga.calculate_drekkana_position(10.0)
+
+    assert result["drekkana_part"] == 2
+    assert result["drekkana_rashi"]["sanskrit"] == "Simha"
+    assert result["source_degree"] == 10.0
+
+
+def test_calculate_drekkana_boundary_twenty_degrees_starts_third_part() -> None:
+    result = varga.calculate_drekkana_position(20.0)
+
+    assert result["drekkana_part"] == 3
+    assert result["drekkana_rashi"]["sanskrit"] == "Dhanu"
+    assert result["source_degree"] == 20.0
+
+
+def test_calculate_drekkana_position_wraps_from_late_rashis() -> None:
+    second_part = varga.calculate_drekkana_position(315.0)
+    third_part = varga.calculate_drekkana_position(355.0)
+
+    assert second_part["source_rashi"]["sanskrit"] == "Kumbha"
+    assert second_part["drekkana_part"] == 2
+    assert second_part["drekkana_rashi"]["sanskrit"] == "Mithuna"
+    assert third_part["source_rashi"]["sanskrit"] == "Meena"
+    assert third_part["drekkana_part"] == 3
+    assert third_part["drekkana_rashi"]["sanskrit"] == "Vrishchika"
+
+
+def test_calculate_drekkana_position_accepts_planet_shaped_data() -> None:
+    result = varga.calculate_drekkana_position(
+        {
+            "planet": "mars",
+            "sidereal_longitude": 45.0,
+        }
+    )
+
+    assert result["varga_code"] == "D3"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["drekkana_part"] == 2
+    assert result["drekkana_rashi"]["sanskrit"] == "Kanya"
+
+
+def test_calculate_drekkana_position_rejects_invalid_input() -> None:
+    with pytest.raises(TypeError, match="sidereal_longitude must be a real number"):
+        varga.calculate_drekkana_position(True)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="longitude must be finite"):
+        varga.calculate_drekkana_position(float("nan"))
+
+    with pytest.raises(ValueError, match="data must include sidereal_longitude"):
+        varga.calculate_drekkana_position({"planet": "mars"})
 
 
 @pytest.mark.parametrize(

@@ -11,12 +11,14 @@ from backend.app.constants.rashi import RASHI_COUNT, RASHI_SPAN_DEGREES
 from backend.app.kundali import rashi as rashi_engine
 
 DEGREE_PRECISION = 6
+DREKKANA_NUMBER = 3
+DREKKANA_SPAN_DEGREES = 10.0
 HORA_NUMBER = 2
 HORA_SPLIT_DEGREES = 15.0
 HORA_SUN_RASHI_INDEX = 5
 HORA_MOON_RASHI_INDEX = 4
 NAVAMSA_NUMBER = 9
-SUPPORTED_PLACEHOLDER_VARGAS = (3, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60)
+SUPPORTED_PLACEHOLDER_VARGAS = (10, 12, 16, 20, 24, 27, 30, 40, 45, 60)
 
 
 class VargaPosition(TypedDict):
@@ -127,6 +129,17 @@ def calculate_hora_position(
     )
 
 
+def calculate_drekkana_position(
+    planet_data_or_longitude: Mapping[str, Any] | float,
+) -> VargaPosition:
+    """Calculate D3 Drekkana placement from longitude or planet-shaped data."""
+
+    return calculate_varga_position(
+        DREKKANA_NUMBER,
+        _get_sidereal_longitude(planet_data_or_longitude),
+    )
+
+
 def build_varga_chart(
     chart_data: Mapping[str, Any],
     varga_number: int | str,
@@ -184,6 +197,44 @@ def get_registered_vargas() -> tuple[int, ...]:
     """Return registered Varga numbers."""
 
     return tuple(sorted(_VARGA_DEFINITIONS))
+
+
+def _calculate_drekkana_position(
+    sidereal_longitude: float,
+    definition: VargaDefinition,
+) -> VargaPosition:
+    """Calculate D3 Drekkana placement using 1st/5th/9th Rashi rule."""
+
+    source_longitude = rashi_engine.normalize_longitude(sidereal_longitude)
+    source_rashi = rashi_engine.get_rashi(source_longitude)
+    source_rashi_index = source_rashi["index"]
+    source_degree = rashi_engine.get_rashi_degree(source_longitude)
+    drekkana_part = min(
+        int(source_degree // DREKKANA_SPAN_DEGREES) + 1,
+        definition.number,
+    )
+    drekkana_rashi_index = _wrap_rashi_index(
+        source_rashi_index + ((drekkana_part - 1) * 4)
+    )
+    drekkana_longitude = (drekkana_rashi_index - 1) * RASHI_SPAN_DEGREES
+    drekkana_rashi = rashi_engine.get_rashi(drekkana_longitude)
+
+    return {
+        "varga": definition.code,
+        "varga_number": definition.number,
+        "varga_code": definition.code,
+        "varga_name": definition.name,
+        "source_longitude": source_longitude,
+        "source_rashi": source_rashi,
+        "source_degree": source_degree,
+        "division_index": drekkana_part,
+        "drekkana_part": drekkana_part,
+        "varga_longitude": drekkana_longitude,
+        "rashi_index": drekkana_rashi_index,
+        "rashi_degree": 0.0,
+        "rashi": drekkana_rashi,
+        "drekkana_rashi": drekkana_rashi,
+    }
 
 
 def _calculate_hora_position(
@@ -350,6 +401,16 @@ def _wrap_rashi_index(rashi_index: int) -> int:
 
 def _register_default_vargas() -> None:
     """Register supported Varga definitions."""
+
+    register_varga(
+        VargaDefinition(
+            number=DREKKANA_NUMBER,
+            code="D3",
+            name="Drekkana",
+            is_implemented=True,
+            calculator=cast(VargaCalculator, _calculate_drekkana_position),
+        )
+    )
 
     register_varga(
         VargaDefinition(
