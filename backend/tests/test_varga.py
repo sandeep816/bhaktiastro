@@ -20,10 +20,10 @@ def test_normalize_varga_number_rejects_invalid_number() -> None:
 
 
 def test_placeholder_varga_is_registered_but_not_implemented() -> None:
-    assert 12 in varga.get_registered_vargas()
+    assert 16 in varga.get_registered_vargas()
 
-    with pytest.raises(NotImplementedError, match="D12 is registered"):
-        varga.calculate_varga_position(12, 15.0)
+    with pytest.raises(NotImplementedError, match="D16 is registered"):
+        varga.calculate_varga_position(16, 15.0)
 
 
 def test_calculate_hora_position_odd_sign_first_half_returns_sun_hora() -> None:
@@ -387,6 +387,92 @@ def test_calculate_dasamsa_position_rejects_invalid_input() -> None:
 
     with pytest.raises(ValueError, match="data must include sidereal_longitude"):
         varga.calculate_dasamsa_position({"planet": "saturn"})
+
+
+def test_calculate_dwadashamsa_position_first_part_starts_same_rashi() -> None:
+    result = varga.calculate_dwadashamsa_position(1.0)
+
+    assert result["varga"] == "D12"
+    assert result["varga_number"] == 12
+    assert result["dwadashamsa_part"] == 1
+    assert result["dwadashamsa_rashi"]["sanskrit"] == "Mesha"
+    assert result["rashi"]["sanskrit"] == "Mesha"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_dwadashamsa_position_middle_part_counts_from_source() -> None:
+    result = varga.calculate_dwadashamsa_position(13.0)
+
+    assert result["dwadashamsa_part"] == 6
+    assert result["dwadashamsa_rashi"]["sanskrit"] == "Kanya"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 13.0
+    assert result["division_index"] == 6
+
+
+def test_calculate_dwadashamsa_position_last_part_counts_from_source() -> None:
+    result = varga.calculate_dwadashamsa_position(29.0)
+
+    assert result["dwadashamsa_part"] == 12
+    assert result["dwadashamsa_rashi"]["sanskrit"] == "Meena"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 29.0
+    assert result["division_index"] == 12
+
+
+def test_calculate_dwadashamsa_boundary_two_point_five_starts_second() -> None:
+    result = varga.calculate_dwadashamsa_position(2.5)
+
+    assert result["dwadashamsa_part"] == 2
+    assert result["dwadashamsa_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 2.5
+
+
+def test_calculate_dwadashamsa_boundary_twenty_seven_point_five_last() -> None:
+    result = varga.calculate_dwadashamsa_position(27.5)
+
+    assert result["dwadashamsa_part"] == 12
+    assert result["dwadashamsa_rashi"]["sanskrit"] == "Meena"
+    assert result["source_degree"] == 27.5
+
+
+def test_calculate_dwadashamsa_position_wraps_from_late_rashis() -> None:
+    kumbha_result = varga.calculate_dwadashamsa_position(329.0)
+    meena_result = varga.calculate_dwadashamsa_position(359.0)
+
+    assert kumbha_result["source_rashi"]["sanskrit"] == "Kumbha"
+    assert kumbha_result["dwadashamsa_part"] == 12
+    assert kumbha_result["dwadashamsa_rashi"]["sanskrit"] == "Makara"
+    assert meena_result["source_rashi"]["sanskrit"] == "Meena"
+    assert meena_result["dwadashamsa_part"] == 12
+    assert meena_result["dwadashamsa_rashi"]["sanskrit"] == "Kumbha"
+
+
+def test_calculate_dwadashamsa_position_accepts_planet_shaped_data() -> None:
+    result = varga.calculate_dwadashamsa_position(
+        {
+            "planet": "venus",
+            "sidereal_longitude": 13.0,
+        }
+    )
+
+    assert result["varga_code"] == "D12"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["dwadashamsa_part"] == 6
+    assert result["dwadashamsa_rashi"]["sanskrit"] == "Kanya"
+
+
+def test_calculate_dwadashamsa_position_rejects_invalid_input() -> None:
+    with pytest.raises(TypeError, match="sidereal_longitude must be a real number"):
+        varga.calculate_dwadashamsa_position(False)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="longitude must be finite"):
+        varga.calculate_dwadashamsa_position(float("inf"))
+
+    with pytest.raises(ValueError, match="data must include sidereal_longitude"):
+        varga.calculate_dwadashamsa_position({"planet": "venus"})
 
 
 @pytest.mark.parametrize(
