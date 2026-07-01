@@ -60,6 +60,44 @@ def test_calculate_navamsa_position_preserves_float_degree_inside_varga_rashi() 
     assert result["varga_longitude"] == 11.25
 
 
+def test_calculate_navamsa_position_accepts_planet_shaped_data() -> None:
+    result = varga.calculate_navamsa_position(
+        {
+            "planet": "sun",
+            "sidereal_longitude": 30.0,
+            "rashi": {"index": 2, "sanskrit": "Vrishabha"},
+        }
+    )
+
+    assert result["varga_number"] == 9
+    assert result["source_longitude"] == 30.0
+    assert result["rashi_index"] == 10
+    assert result["rashi"]["sanskrit"] == "Makara"
+
+
+def test_calculate_navamsa_position_normalizes_longitude() -> None:
+    wrapped = varga.calculate_navamsa_position(360.0)
+    negative = varga.calculate_navamsa_position(-1.0)
+
+    assert wrapped["source_longitude"] == 0.0
+    assert wrapped["rashi_index"] == 1
+    assert negative["source_longitude"] == 359.0
+    assert negative["rashi_index"] == 12
+
+
+def test_calculate_navamsa_position_rejects_invalid_longitude() -> None:
+    with pytest.raises(TypeError, match="sidereal_longitude must be a real number"):
+        varga.calculate_navamsa_position(True)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="longitude must be finite"):
+        varga.calculate_navamsa_position(float("nan"))
+
+
+def test_calculate_navamsa_position_rejects_mapping_without_longitude() -> None:
+    with pytest.raises(ValueError, match="data must include sidereal_longitude"):
+        varga.calculate_navamsa_position({"planet": "sun"})
+
+
 def test_build_varga_chart_generates_navamsa_lagna_and_planets() -> None:
     result = varga.build_varga_chart(
         {

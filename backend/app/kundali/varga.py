@@ -101,6 +101,17 @@ def calculate_varga_position(
     return definition.calculator(sidereal_longitude, definition)
 
 
+def calculate_navamsa_position(
+    planet_data_or_longitude: Mapping[str, Any] | float,
+) -> VargaPosition:
+    """Calculate D9 Navamsa placement from longitude or planet-shaped data."""
+
+    return calculate_varga_position(
+        NAVAMSA_NUMBER,
+        _get_sidereal_longitude(planet_data_or_longitude),
+    )
+
+
 def build_varga_chart(
     chart_data: Mapping[str, Any],
     varga_number: int | str,
@@ -237,6 +248,28 @@ def _build_varga_planet(
         "source_longitude": rashi_engine.normalize_longitude(source_longitude),
         "varga_position": calculate_varga_position(varga_number, source_longitude),
     }
+
+
+def _get_sidereal_longitude(
+    data_or_longitude: Mapping[str, Any] | float,
+) -> float:
+    """Return sidereal longitude from a numeric value or chart data mapping."""
+
+    if isinstance(data_or_longitude, Mapping):
+        if "sidereal_longitude" not in data_or_longitude:
+            raise ValueError("data must include sidereal_longitude")
+        longitude = data_or_longitude["sidereal_longitude"]
+        if isinstance(longitude, bool) or not isinstance(longitude, Real):
+            raise TypeError("sidereal_longitude must be a real number")
+        return float(longitude)
+
+    if isinstance(data_or_longitude, bool) or not isinstance(
+        data_or_longitude,
+        Real,
+    ):
+        raise TypeError("sidereal_longitude must be a real number")
+
+    return float(data_or_longitude)
 
 
 def _normalize_varga_code(varga_number: str) -> int:
