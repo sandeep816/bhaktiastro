@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Literal, Optional
+from typing import Literal, Optional, Sequence
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -167,6 +167,17 @@ class PlanetCombustionInfo(StrictResponseModel):
     )
 
 
+class PlanetAspectInfo(StrictResponseModel):
+    """House-based Graha Drishti foundation metadata for a planet."""
+
+    planet: str = Field(..., description="Planet key.")
+    house_number: int = Field(..., description="Planet placement house number.")
+    aspected_houses: Sequence[int] = Field(
+        ...,
+        description="One-based house numbers aspected by this planet.",
+    )
+
+
 class KundaliPlanetInfo(StrictResponseModel):
     """Planet position section of a Kundali response."""
 
@@ -220,6 +231,10 @@ class KundaliPlanetInfo(StrictResponseModel):
     combustion: Optional[PlanetCombustionInfo] = Field(
         None,
         description="Optional combustion metadata, when available.",
+    )
+    aspects: Optional[PlanetAspectInfo] = Field(
+        None,
+        description="Optional house-based Graha Drishti metadata.",
     )
 
 

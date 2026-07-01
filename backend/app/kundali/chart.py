@@ -14,6 +14,7 @@ from backend.app.kundali import (
     bhava,
     combustion,
     dignity,
+    drishti,
     graha_lordship,
     lagna,
     mooltrikona,
@@ -47,6 +48,7 @@ class PlanetChartPosition(planet_positions.PlanetPosition, total=False):
     is_retrograde: bool
     motion_status: retrograde_motion.MotionStatus
     combustion: combustion.PlanetCombustionMetadata
+    aspects: drishti.PlanetAspects
 
 
 class KundaliChart(TypedDict):
@@ -179,6 +181,8 @@ def _enrich_planet_with_rashi(
             sidereal_longitude,
             sun_sidereal_longitude,
         )
+    if isinstance(planet, str) and drishti.supports_drishti(planet):
+        enriched_position["aspects"] = drishti.get_planet_aspects(enriched_position)
 
     return enriched_position
 
