@@ -20,10 +20,10 @@ def test_normalize_varga_number_rejects_invalid_number() -> None:
 
 
 def test_placeholder_varga_is_registered_but_not_implemented() -> None:
-    assert 10 in varga.get_registered_vargas()
+    assert 12 in varga.get_registered_vargas()
 
-    with pytest.raises(NotImplementedError, match="D10 is registered"):
-        varga.calculate_varga_position(10, 15.0)
+    with pytest.raises(NotImplementedError, match="D12 is registered"):
+        varga.calculate_varga_position(12, 15.0)
 
 
 def test_calculate_hora_position_odd_sign_first_half_returns_sun_hora() -> None:
@@ -291,6 +291,102 @@ def test_calculate_saptamsa_position_rejects_invalid_input() -> None:
 
     with pytest.raises(ValueError, match="data must include sidereal_longitude"):
         varga.calculate_saptamsa_position({"planet": "jupiter"})
+
+
+def test_calculate_dasamsa_position_odd_sign_first_part_starts_same_rashi() -> None:
+    result = varga.calculate_dasamsa_position(1.0)
+
+    assert result["varga"] == "D10"
+    assert result["varga_number"] == 10
+    assert result["dasamsa_part"] == 1
+    assert result["dasamsa_rashi"]["sanskrit"] == "Mesha"
+    assert result["rashi"]["sanskrit"] == "Mesha"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_dasamsa_position_odd_sign_last_part_counts_from_same() -> None:
+    result = varga.calculate_dasamsa_position(29.0)
+
+    assert result["dasamsa_part"] == 10
+    assert result["dasamsa_rashi"]["sanskrit"] == "Makara"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 29.0
+    assert result["division_index"] == 10
+
+
+def test_calculate_dasamsa_position_even_sign_first_part_starts_ninth() -> None:
+    result = varga.calculate_dasamsa_position(31.0)
+
+    assert result["dasamsa_part"] == 1
+    assert result["dasamsa_rashi"]["sanskrit"] == "Makara"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_dasamsa_position_even_sign_last_part_counts_from_ninth() -> None:
+    result = varga.calculate_dasamsa_position(59.0)
+
+    assert result["dasamsa_part"] == 10
+    assert result["dasamsa_rashi"]["sanskrit"] == "Tula"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 29.0
+    assert result["division_index"] == 10
+
+
+def test_calculate_dasamsa_position_boundary_three_degrees_starts_second_part() -> None:
+    result = varga.calculate_dasamsa_position(3.0)
+
+    assert result["dasamsa_part"] == 2
+    assert result["dasamsa_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 3.0
+
+
+def test_calculate_dasamsa_position_boundary_twenty_seven_degrees_part_ten() -> None:
+    result = varga.calculate_dasamsa_position(27.0)
+
+    assert result["dasamsa_part"] == 10
+    assert result["dasamsa_rashi"]["sanskrit"] == "Makara"
+    assert result["source_degree"] == 27.0
+
+
+def test_calculate_dasamsa_position_wraps_from_late_rashis() -> None:
+    odd_result = varga.calculate_dasamsa_position(329.0)
+    even_result = varga.calculate_dasamsa_position(359.0)
+
+    assert odd_result["source_rashi"]["sanskrit"] == "Kumbha"
+    assert odd_result["dasamsa_part"] == 10
+    assert odd_result["dasamsa_rashi"]["sanskrit"] == "Vrishchika"
+    assert even_result["source_rashi"]["sanskrit"] == "Meena"
+    assert even_result["dasamsa_part"] == 10
+    assert even_result["dasamsa_rashi"]["sanskrit"] == "Simha"
+
+
+def test_calculate_dasamsa_position_accepts_planet_shaped_data() -> None:
+    result = varga.calculate_dasamsa_position(
+        {
+            "planet": "saturn",
+            "sidereal_longitude": 31.0,
+        }
+    )
+
+    assert result["varga_code"] == "D10"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["dasamsa_part"] == 1
+    assert result["dasamsa_rashi"]["sanskrit"] == "Makara"
+
+
+def test_calculate_dasamsa_position_rejects_invalid_input() -> None:
+    with pytest.raises(TypeError, match="sidereal_longitude must be a real number"):
+        varga.calculate_dasamsa_position(True)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="longitude must be finite"):
+        varga.calculate_dasamsa_position(float("nan"))
+
+    with pytest.raises(ValueError, match="data must include sidereal_longitude"):
+        varga.calculate_dasamsa_position({"planet": "saturn"})
 
 
 @pytest.mark.parametrize(

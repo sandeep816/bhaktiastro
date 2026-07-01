@@ -11,6 +11,8 @@ from backend.app.constants.rashi import RASHI_COUNT, RASHI_SPAN_DEGREES
 from backend.app.kundali import rashi as rashi_engine
 
 DEGREE_PRECISION = 6
+DASAMSA_NUMBER = 10
+DASAMSA_SPAN_DEGREES = 3.0
 DIVISION_BOUNDARY_EPSILON = 0.000001
 DREKKANA_NUMBER = 3
 DREKKANA_SPAN_DEGREES = 10.0
@@ -20,7 +22,7 @@ HORA_SUN_RASHI_INDEX = 5
 HORA_MOON_RASHI_INDEX = 4
 NAVAMSA_NUMBER = 9
 SAPTAMSA_NUMBER = 7
-SUPPORTED_PLACEHOLDER_VARGAS = (10, 12, 16, 20, 24, 27, 30, 40, 45, 60)
+SUPPORTED_PLACEHOLDER_VARGAS = (12, 16, 20, 24, 27, 30, 40, 45, 60)
 
 
 class VargaPosition(TypedDict):
@@ -153,6 +155,17 @@ def calculate_saptamsa_position(
     )
 
 
+def calculate_dasamsa_position(
+    planet_data_or_longitude: Mapping[str, Any] | float,
+) -> VargaPosition:
+    """Calculate D10 Dasamsa placement from longitude or planet-shaped data."""
+
+    return calculate_varga_position(
+        DASAMSA_NUMBER,
+        _get_sidereal_longitude(planet_data_or_longitude),
+    )
+
+
 def build_varga_chart(
     chart_data: Mapping[str, Any],
     varga_number: int | str,
@@ -210,6 +223,47 @@ def get_registered_vargas() -> tuple[int, ...]:
     """Return registered Varga numbers."""
 
     return tuple(sorted(_VARGA_DEFINITIONS))
+
+
+def _calculate_dasamsa_position(
+    sidereal_longitude: float,
+    definition: VargaDefinition,
+) -> VargaPosition:
+    """Calculate D10 Dasamsa placement using odd/even sign start rules."""
+
+    source_longitude = rashi_engine.normalize_longitude(sidereal_longitude)
+    source_rashi = rashi_engine.get_rashi(source_longitude)
+    source_rashi_index = source_rashi["index"]
+    source_degree = rashi_engine.get_rashi_degree(source_longitude)
+    dasamsa_part = min(
+        int(source_degree // DASAMSA_SPAN_DEGREES) + 1,
+        definition.number,
+    )
+    start_rashi_index = (
+        source_rashi_index
+        if source_rashi_index % 2 == 1
+        else _wrap_rashi_index(source_rashi_index + 8)
+    )
+    dasamsa_rashi_index = _wrap_rashi_index(start_rashi_index + dasamsa_part - 1)
+    dasamsa_longitude = (dasamsa_rashi_index - 1) * RASHI_SPAN_DEGREES
+    dasamsa_rashi = rashi_engine.get_rashi(dasamsa_longitude)
+
+    return {
+        "varga": definition.code,
+        "varga_number": definition.number,
+        "varga_code": definition.code,
+        "varga_name": definition.name,
+        "source_longitude": source_longitude,
+        "source_rashi": source_rashi,
+        "source_degree": source_degree,
+        "division_index": dasamsa_part,
+        "dasamsa_part": dasamsa_part,
+        "varga_longitude": dasamsa_longitude,
+        "rashi_index": dasamsa_rashi_index,
+        "rashi_degree": 0.0,
+        "rashi": dasamsa_rashi,
+        "dasamsa_rashi": dasamsa_rashi,
+    }
 
 
 def _calculate_saptamsa_position(
@@ -458,6 +512,16 @@ def _wrap_rashi_index(rashi_index: int) -> int:
 
 def _register_default_vargas() -> None:
     """Register supported Varga definitions."""
+
+    register_varga(
+        VargaDefinition(
+            number=DASAMSA_NUMBER,
+            code="D10",
+            name="Dasamsa",
+            is_implemented=True,
+            calculator=cast(VargaCalculator, _calculate_dasamsa_position),
+        )
+    )
 
     register_varga(
         VargaDefinition(
