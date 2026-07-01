@@ -204,6 +204,95 @@ def test_calculate_drekkana_position_rejects_invalid_input() -> None:
         varga.calculate_drekkana_position({"planet": "mars"})
 
 
+def test_calculate_saptamsa_position_odd_sign_first_part_starts_same_rashi() -> None:
+    result = varga.calculate_saptamsa_position(1.0)
+
+    assert result["varga"] == "D7"
+    assert result["varga_number"] == 7
+    assert result["saptamsa_part"] == 1
+    assert result["saptamsa_rashi"]["sanskrit"] == "Mesha"
+    assert result["rashi"]["sanskrit"] == "Mesha"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_saptamsa_position_odd_sign_last_part_wraps_from_start() -> None:
+    result = varga.calculate_saptamsa_position(29.0)
+
+    assert result["saptamsa_part"] == 7
+    assert result["saptamsa_rashi"]["sanskrit"] == "Tula"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 29.0
+    assert result["division_index"] == 7
+
+
+def test_calculate_saptamsa_position_even_sign_first_part_starts_seventh() -> None:
+    result = varga.calculate_saptamsa_position(31.0)
+
+    assert result["saptamsa_part"] == 1
+    assert result["saptamsa_rashi"]["sanskrit"] == "Vrishchika"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_saptamsa_position_even_sign_last_part_counts_from_seventh() -> None:
+    result = varga.calculate_saptamsa_position(59.0)
+
+    assert result["saptamsa_part"] == 7
+    assert result["saptamsa_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 29.0
+    assert result["division_index"] == 7
+
+
+def test_calculate_saptamsa_position_boundary_between_parts() -> None:
+    boundary = 30.0 / 7.0
+    result = varga.calculate_saptamsa_position(boundary)
+
+    assert result["saptamsa_part"] == 2
+    assert result["saptamsa_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == round(boundary, 6)
+
+
+def test_calculate_saptamsa_position_wraps_from_late_rashis() -> None:
+    odd_result = varga.calculate_saptamsa_position(329.0)
+    even_result = varga.calculate_saptamsa_position(359.0)
+
+    assert odd_result["source_rashi"]["sanskrit"] == "Kumbha"
+    assert odd_result["saptamsa_part"] == 7
+    assert odd_result["saptamsa_rashi"]["sanskrit"] == "Simha"
+    assert even_result["source_rashi"]["sanskrit"] == "Meena"
+    assert even_result["saptamsa_part"] == 7
+    assert even_result["saptamsa_rashi"]["sanskrit"] == "Meena"
+
+
+def test_calculate_saptamsa_position_accepts_planet_shaped_data() -> None:
+    result = varga.calculate_saptamsa_position(
+        {
+            "planet": "jupiter",
+            "sidereal_longitude": 31.0,
+        }
+    )
+
+    assert result["varga_code"] == "D7"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["saptamsa_part"] == 1
+    assert result["saptamsa_rashi"]["sanskrit"] == "Vrishchika"
+
+
+def test_calculate_saptamsa_position_rejects_invalid_input() -> None:
+    with pytest.raises(TypeError, match="sidereal_longitude must be a real number"):
+        varga.calculate_saptamsa_position(False)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="longitude must be finite"):
+        varga.calculate_saptamsa_position(float("inf"))
+
+    with pytest.raises(ValueError, match="data must include sidereal_longitude"):
+        varga.calculate_saptamsa_position({"planet": "jupiter"})
+
+
 @pytest.mark.parametrize(
     ("longitude", "expected_rashi_index", "expected_sanskrit"),
     [
