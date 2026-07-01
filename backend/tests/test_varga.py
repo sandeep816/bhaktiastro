@@ -20,10 +20,10 @@ def test_normalize_varga_number_rejects_invalid_number() -> None:
 
 
 def test_placeholder_varga_is_registered_but_not_implemented() -> None:
-    assert 30 in varga.get_registered_vargas()
+    assert 40 in varga.get_registered_vargas()
 
-    with pytest.raises(NotImplementedError, match="D30 is registered"):
-        varga.calculate_varga_position(30, 15.0)
+    with pytest.raises(NotImplementedError, match="D40 is registered"):
+        varga.calculate_varga_position(40, 15.0)
 
 
 def test_calculate_hora_position_odd_sign_first_half_returns_sun_hora() -> None:
@@ -814,6 +814,123 @@ def test_calculate_bhamsa_position_rejects_invalid_input() -> None:
 
     with pytest.raises(ValueError, match="data must include sidereal_longitude"):
         varga.calculate_bhamsa_position({"planet": "mars"})
+
+
+def test_calculate_trimsamsa_position_odd_mars_segment() -> None:
+    result = varga.calculate_trimsamsa_position(2.0)
+
+    assert result["varga"] == "D30"
+    assert result["varga_number"] == 30
+    assert result["varga_name"] == "Trimsamsa"
+    assert result["trimsamsa_lord"] == "Mars"
+    assert result["trimsamsa_rashi"]["sanskrit"] == "Mesha"
+    assert result["rashi"]["sanskrit"] == "Mesha"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 2.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_trimsamsa_position_odd_jupiter_segment() -> None:
+    result = varga.calculate_trimsamsa_position(12.0)
+
+    assert result["trimsamsa_lord"] == "Jupiter"
+    assert result["trimsamsa_rashi"]["sanskrit"] == "Dhanu"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 12.0
+    assert result["division_index"] == 3
+
+
+def test_calculate_trimsamsa_position_odd_venus_segment() -> None:
+    result = varga.calculate_trimsamsa_position(26.0)
+
+    assert result["trimsamsa_lord"] == "Venus"
+    assert result["trimsamsa_rashi"]["sanskrit"] == "Tula"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 26.0
+    assert result["division_index"] == 5
+
+
+def test_calculate_trimsamsa_position_even_venus_segment() -> None:
+    result = varga.calculate_trimsamsa_position(31.0)
+
+    assert result["trimsamsa_lord"] == "Venus"
+    assert result["trimsamsa_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_trimsamsa_position_even_jupiter_segment() -> None:
+    result = varga.calculate_trimsamsa_position(43.0)
+
+    assert result["trimsamsa_lord"] == "Jupiter"
+    assert result["trimsamsa_rashi"]["sanskrit"] == "Meena"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 13.0
+    assert result["division_index"] == 3
+
+
+def test_calculate_trimsamsa_position_even_mars_segment() -> None:
+    result = varga.calculate_trimsamsa_position(56.0)
+
+    assert result["trimsamsa_lord"] == "Mars"
+    assert result["trimsamsa_rashi"]["sanskrit"] == "Vrishchika"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 26.0
+    assert result["division_index"] == 5
+
+
+def test_calculate_trimsamsa_position_boundary_values_start_next_segment() -> None:
+    odd_five = varga.calculate_trimsamsa_position(5.0)
+    odd_ten = varga.calculate_trimsamsa_position(10.0)
+    odd_eighteen = varga.calculate_trimsamsa_position(18.0)
+    odd_twenty_five = varga.calculate_trimsamsa_position(25.0)
+    even_five = varga.calculate_trimsamsa_position(35.0)
+    even_twelve = varga.calculate_trimsamsa_position(42.0)
+    even_twenty = varga.calculate_trimsamsa_position(50.0)
+    even_twenty_five = varga.calculate_trimsamsa_position(55.0)
+
+    assert odd_five["trimsamsa_lord"] == "Saturn"
+    assert odd_five["trimsamsa_rashi"]["sanskrit"] == "Kumbha"
+    assert odd_ten["trimsamsa_lord"] == "Jupiter"
+    assert odd_ten["trimsamsa_rashi"]["sanskrit"] == "Dhanu"
+    assert odd_eighteen["trimsamsa_lord"] == "Mercury"
+    assert odd_eighteen["trimsamsa_rashi"]["sanskrit"] == "Mithuna"
+    assert odd_twenty_five["trimsamsa_lord"] == "Venus"
+    assert odd_twenty_five["trimsamsa_rashi"]["sanskrit"] == "Tula"
+    assert even_five["trimsamsa_lord"] == "Mercury"
+    assert even_five["trimsamsa_rashi"]["sanskrit"] == "Kanya"
+    assert even_twelve["trimsamsa_lord"] == "Jupiter"
+    assert even_twelve["trimsamsa_rashi"]["sanskrit"] == "Meena"
+    assert even_twenty["trimsamsa_lord"] == "Saturn"
+    assert even_twenty["trimsamsa_rashi"]["sanskrit"] == "Makara"
+    assert even_twenty_five["trimsamsa_lord"] == "Mars"
+    assert even_twenty_five["trimsamsa_rashi"]["sanskrit"] == "Vrishchika"
+
+
+def test_calculate_trimsamsa_position_accepts_planet_shaped_data() -> None:
+    result = varga.calculate_trimsamsa_position(
+        {
+            "planet": "saturn",
+            "sidereal_longitude": 43.0,
+        }
+    )
+
+    assert result["varga_code"] == "D30"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["trimsamsa_lord"] == "Jupiter"
+    assert result["trimsamsa_rashi"]["sanskrit"] == "Meena"
+
+
+def test_calculate_trimsamsa_position_rejects_invalid_input() -> None:
+    with pytest.raises(TypeError, match="sidereal_longitude must be a real number"):
+        varga.calculate_trimsamsa_position(True)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="longitude must be finite"):
+        varga.calculate_trimsamsa_position(float("nan"))
+
+    with pytest.raises(ValueError, match="data must include sidereal_longitude"):
+        varga.calculate_trimsamsa_position({"planet": "saturn"})
 
 
 @pytest.mark.parametrize(

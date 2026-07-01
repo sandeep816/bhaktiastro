@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 from numbers import Integral, Real
-from typing import Any, Callable, Optional, TypedDict, cast
+from typing import Any, Callable, Optional, Tuple, TypedDict, cast
 
 from backend.app.constants.rashi import RASHI_COUNT, RASHI_SPAN_DEGREES
 from backend.app.kundali import rashi as rashi_engine
@@ -35,11 +35,28 @@ SHODASAMSA_MOVABLE_START_RASHI_INDEX = 1
 SIDDHAMSA_NUMBER = 24
 SIDDHAMSA_EVEN_START_RASHI_INDEX = 4
 SIDDHAMSA_ODD_START_RASHI_INDEX = 5
-SUPPORTED_PLACEHOLDER_VARGAS = (30, 40, 45, 60)
+SUPPORTED_PLACEHOLDER_VARGAS = (40, 45, 60)
+TRIMSAMSA_NUMBER = 30
 VIMSHAMSA_NUMBER = 20
 VIMSHAMSA_DUAL_START_RASHI_INDEX = 5
 VIMSHAMSA_FIXED_START_RASHI_INDEX = 9
 VIMSHAMSA_MOVABLE_START_RASHI_INDEX = 1
+
+TrimsamsaSegment = Tuple[float, str, int]
+TRIMSAMSA_ODD_SEGMENTS: tuple[TrimsamsaSegment, ...] = (
+    (5.0, "Mars", 1),
+    (10.0, "Saturn", 11),
+    (18.0, "Jupiter", 9),
+    (25.0, "Mercury", 3),
+    (RASHI_SPAN_DEGREES, "Venus", 7),
+)
+TRIMSAMSA_EVEN_SEGMENTS: tuple[TrimsamsaSegment, ...] = (
+    (5.0, "Venus", 2),
+    (12.0, "Mercury", 6),
+    (20.0, "Jupiter", 12),
+    (25.0, "Saturn", 10),
+    (RASHI_SPAN_DEGREES, "Mars", 8),
+)
 
 
 class VargaPosition(TypedDict):
@@ -238,6 +255,17 @@ def calculate_bhamsa_position(
     )
 
 
+def calculate_trimsamsa_position(
+    planet_data_or_longitude: Mapping[str, Any] | float,
+) -> VargaPosition:
+    """Calculate D30 Trimsamsa placement from longitude or planet data."""
+
+    return calculate_varga_position(
+        TRIMSAMSA_NUMBER,
+        _get_sidereal_longitude(planet_data_or_longitude),
+    )
+
+
 def build_varga_chart(
     chart_data: Mapping[str, Any],
     varga_number: int | str,
@@ -295,6 +323,45 @@ def get_registered_vargas() -> tuple[int, ...]:
     """Return registered Varga numbers."""
 
     return tuple(sorted(_VARGA_DEFINITIONS))
+
+
+def _calculate_trimsamsa_position(
+    sidereal_longitude: float,
+    definition: VargaDefinition,
+) -> VargaPosition:
+    """Calculate D30 Trimsamsa using Parashari odd/even segments."""
+
+    source_longitude = rashi_engine.normalize_longitude(sidereal_longitude)
+    source_rashi = rashi_engine.get_rashi(source_longitude)
+    source_rashi_index = source_rashi["index"]
+    source_degree = rashi_engine.get_rashi_degree(source_longitude)
+    segments = (
+        TRIMSAMSA_ODD_SEGMENTS
+        if source_rashi_index % 2 == 1
+        else TRIMSAMSA_EVEN_SEGMENTS
+    )
+    trimsamsa_part, trimsamsa_lord, trimsamsa_rashi_index = (
+        _get_trimsamsa_segment(source_degree, segments)
+    )
+    trimsamsa_longitude = (trimsamsa_rashi_index - 1) * RASHI_SPAN_DEGREES
+    trimsamsa_rashi = rashi_engine.get_rashi(trimsamsa_longitude)
+
+    return {
+        "varga": definition.code,
+        "varga_number": definition.number,
+        "varga_code": definition.code,
+        "varga_name": definition.name,
+        "source_longitude": source_longitude,
+        "source_rashi": source_rashi,
+        "source_degree": source_degree,
+        "division_index": trimsamsa_part,
+        "trimsamsa_lord": trimsamsa_lord,
+        "varga_longitude": trimsamsa_longitude,
+        "rashi_index": trimsamsa_rashi_index,
+        "rashi_degree": 0.0,
+        "rashi": trimsamsa_rashi,
+        "trimsamsa_rashi": trimsamsa_rashi,
+    }
 
 
 def _calculate_bhamsa_position(
@@ -778,6 +845,19 @@ def _get_modality_start_rashi_index(
     raise ValueError(f"Unsupported Rashi modality: {modality}")
 
 
+def _get_trimsamsa_segment(
+    source_degree: float,
+    segments: tuple[TrimsamsaSegment, ...],
+) -> tuple[int, str, int]:
+    """Return the D30 segment index, lord, and Rashi index."""
+
+    for index, (upper_bound, lord, rashi_index) in enumerate(segments, start=1):
+        if source_degree < upper_bound:
+            return index, lord, rashi_index
+
+    return len(segments), segments[-1][1], segments[-1][2]
+
+
 def _build_varga_planet(
     planet_data: Mapping[str, Any],
     varga_number: int,
@@ -842,6 +922,16 @@ def _wrap_rashi_index(rashi_index: int) -> int:
 
 def _register_default_vargas() -> None:
     """Register supported Varga definitions."""
+
+    register_varga(
+        VargaDefinition(
+            number=TRIMSAMSA_NUMBER,
+            code="D30",
+            name="Trimsamsa",
+            is_implemented=True,
+            calculator=cast(VargaCalculator, _calculate_trimsamsa_position),
+        )
+    )
 
     register_varga(
         VargaDefinition(
