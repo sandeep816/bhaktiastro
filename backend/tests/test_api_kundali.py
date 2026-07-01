@@ -36,20 +36,10 @@ class KundaliApiTest(unittest.TestCase):
         self.assertIn("POST", routes[0].methods)
 
     def test_app_includes_kundali_route(self) -> None:
-        included_routes = []
-        for route in app.routes:
-            include_context = getattr(route, "include_context", None)
-            original_router = getattr(route, "original_router", None)
-            if include_context is None or original_router is None:
-                continue
-            if getattr(include_context, "prefix", None) != "/api/v1":
-                continue
-            included_routes.extend(original_router.routes)
-
         routes = [
             route
-            for route in included_routes
-            if getattr(route, "path", None) == "/kundali"
+            for route in app.routes
+            if getattr(route, "path", None) == "/api/v1/kundali"
         ]
 
         self.assertEqual(len(routes), 1)

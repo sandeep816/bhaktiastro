@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Literal, Optional, Sequence
+from typing import List, Literal, Optional, Sequence
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -249,7 +249,7 @@ class HousePlaceholderInfo(StrictResponseModel):
         ...,
         description="Degree completed within the placeholder house.",
     )
-    planets: list[KundaliPlanetInfo] = Field(
+    planets: List[KundaliPlanetInfo] = Field(
         default_factory=list,
         description="Planets grouped into this house, when available.",
     )
@@ -259,8 +259,8 @@ class KundaliResponse(StrictResponseModel):
     """Response schema matching basic Kundali chart assembly output."""
 
     lagna: LagnaInfo = Field(..., description="Lagna information.")
-    planets: list[KundaliPlanetInfo] = Field(..., description="Planet positions.")
-    houses: list[HousePlaceholderInfo] = Field(
+    planets: List[KundaliPlanetInfo] = Field(..., description="Planet positions.")
+    houses: List[HousePlaceholderInfo] = Field(
         ...,
         description="Placeholder house information.",
     )

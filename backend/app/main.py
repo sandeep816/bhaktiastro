@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Dict
+
 from fastapi import FastAPI
 
 from backend.app.api.v1.kundali import router as kundali_router
@@ -17,7 +19,7 @@ app = FastAPI(
 
 
 @app.get("/api/v1/health")
-def health_check() -> dict[str, str]:
+def health_check() -> Dict[str, str]:
     """Return basic service health."""
 
     return {
