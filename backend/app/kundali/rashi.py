@@ -47,25 +47,8 @@ def get_rashi(longitude: float) -> RashiResult:
         ValueError: If longitude is NaN or infinite.
     """
 
-    if isinstance(longitude, bool) or not isinstance(longitude, Real):
-        raise TypeError("longitude must be a real number")
-
-    longitude_float = float(longitude)
-    if not math.isfinite(longitude_float):
-        raise ValueError("longitude must be finite")
-
-    normalized_longitude = _normalize_longitude(longitude_float)
-    list_index = min(
-        int(normalized_longitude // RASHI_SPAN_DEGREES),
-        RASHI_COUNT - 1,
-    )
+    list_index = get_rashi_index(longitude) - 1
     rashi = RASHI_LIST[list_index]
-    degree_in_rashi = round(
-        normalized_longitude - rashi.start_degree,
-        DEGREE_PRECISION,
-    )
-    if degree_in_rashi < 0:
-        degree_in_rashi = 0.0
 
     return {
         "index": rashi.index,
@@ -77,15 +60,55 @@ def get_rashi(longitude: float) -> RashiResult:
         "modality": rashi.modality,
         "start_degree": rashi.start_degree,
         "end_degree": rashi.end_degree,
-        "degree_in_rashi": degree_in_rashi,
+        "degree_in_rashi": get_rashi_degree(longitude),
     }
 
 
-def _normalize_longitude(longitude: float) -> float:
+def normalize_longitude(longitude: float) -> float:
     """Normalize longitude into the `[0, 360)` range."""
 
-    normalized = round(longitude % FULL_CIRCLE_DEGREES, DEGREE_PRECISION)
+    longitude_float = _validate_longitude(longitude)
+    normalized = round(longitude_float % FULL_CIRCLE_DEGREES, DEGREE_PRECISION)
     if normalized == FULL_CIRCLE_DEGREES:
         return 0.0
     return normalized
 
+
+def get_rashi_index(longitude: float) -> int:
+    """Return the one-based Rashi index for a longitude."""
+
+    normalized_longitude = normalize_longitude(longitude)
+    return (
+        min(
+            int(normalized_longitude // RASHI_SPAN_DEGREES),
+            RASHI_COUNT - 1,
+        )
+        + 1
+    )
+
+
+def get_rashi_degree(longitude: float) -> float:
+    """Return the degree completed within the current Rashi."""
+
+    normalized_longitude = normalize_longitude(longitude)
+    list_index = get_rashi_index(normalized_longitude) - 1
+    degree_in_rashi = round(
+        normalized_longitude - RASHI_LIST[list_index].start_degree,
+        DEGREE_PRECISION,
+    )
+    if degree_in_rashi < 0:
+        return 0.0
+    return degree_in_rashi
+
+
+def _validate_longitude(longitude: float) -> float:
+    """Validate longitude as a finite real number."""
+
+    if isinstance(longitude, bool) or not isinstance(longitude, Real):
+        raise TypeError("longitude must be a real number")
+
+    longitude_float = float(longitude)
+    if not math.isfinite(longitude_float):
+        raise ValueError("longitude must be finite")
+
+    return longitude_float

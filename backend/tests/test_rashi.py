@@ -4,11 +4,22 @@ from __future__ import annotations
 
 import unittest
 
-from backend.app.kundali.rashi import get_rashi
+from backend.app.kundali.rashi import (
+    get_rashi,
+    get_rashi_degree,
+    get_rashi_index,
+    normalize_longitude,
+)
 
 
 class RashiLookupTest(unittest.TestCase):
     """Validate Rashi lookup boundaries and normalization."""
+
+    def test_normalize_longitude_wraps_into_circle(self) -> None:
+        self.assertEqual(normalize_longitude(0.0), 0.0)
+        self.assertEqual(normalize_longitude(360.0), 0.0)
+        self.assertEqual(normalize_longitude(370.5), 10.5)
+        self.assertEqual(normalize_longitude(-10.0), 350.0)
 
     def test_zero_degrees_is_aries(self) -> None:
         result = get_rashi(0.0)
@@ -50,6 +61,12 @@ class RashiLookupTest(unittest.TestCase):
         self.assertEqual(result["end_degree"], 60.0)
         self.assertEqual(result["degree_in_rashi"], 0.0)
 
+    def test_get_rashi_index_returns_one_based_index(self) -> None:
+        self.assertEqual(get_rashi_index(0.0), 1)
+        self.assertEqual(get_rashi_index(29.999), 1)
+        self.assertEqual(get_rashi_index(30.0), 2)
+        self.assertEqual(get_rashi_index(359.999), 12)
+
     def test_end_of_circle_is_pisces(self) -> None:
         result = get_rashi(359.999)
 
@@ -71,6 +88,13 @@ class RashiLookupTest(unittest.TestCase):
         self.assertEqual(result["index"], 1)
         self.assertEqual(result["english"], "Aries")
         self.assertEqual(result["degree_in_rashi"], 15.234)
+
+    def test_get_rashi_degree_returns_degree_inside_sign(self) -> None:
+        self.assertEqual(get_rashi_degree(15.234), 15.234)
+        self.assertEqual(get_rashi_degree(30.0), 0.0)
+        self.assertEqual(get_rashi_degree(44.5), 14.5)
+        self.assertEqual(get_rashi_degree(375.234), 15.234)
+        self.assertEqual(get_rashi_degree(-1.0), 29.0)
 
     def test_full_circle_normalizes_to_aries(self) -> None:
         result = get_rashi(360.0)
@@ -96,4 +120,3 @@ class RashiLookupTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
