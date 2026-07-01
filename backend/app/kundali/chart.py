@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
-from typing import Optional, TypedDict
+from typing import Optional, TypedDict, cast
 
 from backend.app.astronomy import ayanamsa, julian, planet_positions
-from backend.app.kundali import bhava, lagna, placement, rashi as rashi_engine
+from backend.app.kundali import (
+    bhava,
+    graha_lordship,
+    lagna,
+    placement,
+    rashi as rashi_engine,
+)
 
 DEGREE_PRECISION = 6
 
@@ -88,6 +94,10 @@ def assemble_kundali_chart(
         longitude,
         ayanamsa_mode,
     )
+    lagna_result = cast(
+        lagna.LagnaResult,
+        graha_lordship.attach_rashi_lord(lagna_result),
+    )
     planets = [
         _enrich_planet_with_rashi(position, lagna_result["rashi_index"])
         for position in planet_data
@@ -117,7 +127,10 @@ def _enrich_planet_with_rashi(
     )
     enriched_position: PlanetChartPosition = {
         **position,
-        "rashi": house_placement["rashi"],
+        "rashi": cast(
+            rashi_engine.RashiResult,
+            graha_lordship.attach_rashi_lord(house_placement["rashi"]),
+        ),
         "rashi_degree": house_placement["rashi_degree"],
         "house_number": house_placement["house_number"],
         "house_index": house_placement["house_index"],
