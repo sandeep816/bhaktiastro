@@ -6,8 +6,8 @@ from importlib import import_module
 import math
 from typing import Any, TypedDict
 
-FULL_CIRCLE_DEGREES = 360.0
-RASHI_SPAN_DEGREES = 30.0
+from backend.app.kundali import rashi as rashi_engine
+
 KETU_OFFSET_DEGREES = 180.0
 PLANETARY_RESULT_PRECISION = 6
 RASHI_DEGREE_PRECISION = 4
@@ -23,22 +23,6 @@ PLANET_ORDER = (
     "saturn",
     "rahu",
 )
-
-RASHI_NAMES_HI = (
-    "मेष",
-    "वृषभ",
-    "मिथुन",
-    "कर्क",
-    "सिंह",
-    "कन्या",
-    "तुला",
-    "वृश्चिक",
-    "धनु",
-    "मकर",
-    "कुम्भ",
-    "मीन",
-)
-
 
 class Dms(TypedDict):
     """Degrees, minutes, and seconds."""
@@ -62,6 +46,14 @@ class PlanetPosition(TypedDict, total=False):
     retrograde: bool
 
 
+class InternalRashiData(TypedDict):
+    """Internal Rashi data derived from the Kundali Rashi utility."""
+
+    rashi: rashi_engine.RashiResult
+    rashi_index: int
+    rashi_degree: float
+
+
 def _load_swisseph() -> Any:
     """Load the Swiss Ephemeris module.
 
@@ -81,15 +73,7 @@ def _load_swisseph() -> Any:
 
 def _normalize_deg(value: float) -> float:
     """Normalize a degree value into the `[0, 360)` range."""
-    return value % FULL_CIRCLE_DEGREES
-
-
-def _deg_to_rashi(longitude: float) -> tuple[int, float]:
-    """Convert longitude to rashi index and degree within rashi."""
-    normalized_longitude = _normalize_deg(longitude)
-    rashi_index = int(normalized_longitude // RASHI_SPAN_DEGREES)
-    degree_in_rashi = normalized_longitude % RASHI_SPAN_DEGREES
-    return rashi_index, degree_in_rashi
+    return rashi_engine.normalize_longitude(value)
 
 
 def _deg_to_dms(value: float) -> Dms:
@@ -148,15 +132,27 @@ def _position_from_longitude(
     sidereal_longitude: float,
 ) -> PlanetPosition:
     """Build shared rashi fields from a sidereal longitude."""
-    rashi_index, degree_in_rashi = _deg_to_rashi(sidereal_longitude)
+    rashi_data = _rashi_data_from_longitude(sidereal_longitude)
+    degree_in_rashi = rashi_data["rashi_degree"]
 
     return {
         "planet": planet,
         "sidereal_longitude": round(sidereal_longitude, PLANETARY_RESULT_PRECISION),
-        "rashi_index": rashi_index,
-        "rashi_name_hi": RASHI_NAMES_HI[rashi_index],
+        "rashi_index": rashi_data["rashi_index"],
+        "rashi_name_hi": rashi_data["rashi"]["hindi"],
         "degree_in_rashi": round(degree_in_rashi, RASHI_DEGREE_PRECISION),
         "dms": _deg_to_dms(degree_in_rashi),
+    }
+
+
+def _rashi_data_from_longitude(sidereal_longitude: float) -> InternalRashiData:
+    """Return internal Rashi data without changing public planet fields."""
+
+    rashi = rashi_engine.get_rashi(sidereal_longitude)
+    return {
+        "rashi": rashi,
+        "rashi_index": rashi["index"] - 1,
+        "rashi_degree": rashi_engine.get_rashi_degree(sidereal_longitude),
     }
 
 

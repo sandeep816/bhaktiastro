@@ -88,6 +88,30 @@ def test_get_planet_positions_calculates_sidereal_rashi_and_dms(
     assert sun["dms"] == {"degrees": 6, "minutes": 43, "seconds": 48.0}
 
 
+def test_get_planet_positions_maps_boundary_longitude_with_rashi_engine(
+    fake_swisseph: FakeSwissEphemeris,
+) -> None:
+    fake_swisseph.positions[fake_swisseph.SUN] = (53.72, 0.0, 0.0, 0.983)
+
+    positions = planet_positions.get_planet_positions(2446176.027777, 23.72)
+    sun = next(position for position in positions if position["planet"] == "sun")
+
+    assert sun["sidereal_longitude"] == 30.0
+    assert sun["rashi_index"] == 1
+    assert sun["rashi_name_hi"] == "वृषभ"
+    assert sun["degree_in_rashi"] == 0.0
+    assert sun["dms"] == {"degrees": 0, "minutes": 0, "seconds": 0.0}
+
+
+def test_internal_rashi_data_uses_kundali_rashi_result() -> None:
+    rashi_data = planet_positions._rashi_data_from_longitude(375.234)
+
+    assert rashi_data["rashi"]["index"] == 1
+    assert rashi_data["rashi"]["english"] == "Aries"
+    assert rashi_data["rashi_index"] == 0
+    assert rashi_data["rashi_degree"] == 15.234
+
+
 def test_get_planet_positions_sets_retrograde_using_project_rules(
     fake_swisseph: FakeSwissEphemeris,
 ) -> None:
