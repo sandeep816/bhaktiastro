@@ -111,6 +111,83 @@ def test_assemble_kundali_chart_attaches_rashi_metadata_to_planets(
     assert sun["house_index"] == 1
 
 
+def test_assemble_varga_charts_returns_supported_chart_keys() -> None:
+    result = chart.assemble_varga_charts(_fake_chart_for_vargas())
+
+    assert set(result) == {
+        "D2",
+        "D3",
+        "D7",
+        "D9",
+        "D10",
+        "D12",
+        "D16",
+        "D20",
+        "D24",
+        "D27",
+        "D30",
+        "D40",
+        "D45",
+        "D60",
+    }
+
+
+def test_assemble_varga_charts_contains_planet_entries_for_each_chart() -> None:
+    result = chart.assemble_varga_charts(_fake_chart_for_vargas())
+
+    assert result
+    assert all(len(varga_chart["planets"]) == 2 for varga_chart in result.values())
+    assert all(
+        "varga_position" in planet
+        for varga_chart in result.values()
+        for planet in varga_chart["planets"]
+    )
+
+
+def test_assemble_varga_charts_includes_d9_navamsa() -> None:
+    result = chart.assemble_varga_charts(_fake_chart_for_vargas())
+
+    assert "D9" in result
+    assert result["D9"]["varga_name"] == "Navamsa"
+    assert result["D9"]["planets"][0]["varga_position"]["varga_code"] == "D9"
+
+
+def test_assemble_kundali_chart_can_include_internal_varga_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fake_lagna = _fake_lagna()
+    fake_julian = SimpleNamespace(julian_day_ut=2447893.770833)
+    fake_planets = [
+        {"planet": "sun", "sidereal_longitude": 270.0},
+        {"planet": "moon", "sidereal_longitude": 30.5},
+    ]
+    monkeypatch.setattr(chart.julian, "calculate_julian_day", lambda *args: fake_julian)
+    monkeypatch.setattr(chart.ayanamsa, "get_ayanamsa", lambda *args: 24.0)
+    monkeypatch.setattr(
+        chart.planet_positions,
+        "get_planet_positions",
+        lambda *args: fake_planets,
+    )
+    monkeypatch.setattr(chart.lagna, "calculate_lagna", lambda *args: fake_lagna)
+
+    result = chart.assemble_kundali_chart(
+        1990,
+        1,
+        1,
+        12,
+        0,
+        0,
+        5.5,
+        26.9124,
+        75.7873,
+        include_vargas=True,
+    )
+
+    assert set(result) == {"lagna", "planets", "houses", "vargas"}
+    assert "D9" in result["vargas"]
+    assert len(result["vargas"]["D9"]["planets"]) == 2
+
+
 def test_placeholder_houses_have_twelve_houses() -> None:
     houses = chart._build_placeholder_houses()
 
@@ -209,4 +286,21 @@ def _fake_lagna() -> chart.lagna.LagnaResult:
         },
         "rashi_index": 1,
         "rashi_degree": 23.25,
+    }
+
+
+def _fake_chart_for_vargas() -> chart.KundaliChart:
+    return {
+        "lagna": _fake_lagna(),
+        "planets": [
+            {
+                "planet": "sun",
+                "sidereal_longitude": 270.0,
+            },
+            {
+                "planet": "moon",
+                "sidereal_longitude": 30.5,
+            },
+        ],
+        "houses": [],
     }

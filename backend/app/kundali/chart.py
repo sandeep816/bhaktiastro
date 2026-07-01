@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Optional, TypedDict, cast
 
 from backend.app.astronomy import (
@@ -20,9 +21,26 @@ from backend.app.kundali import (
     mooltrikona,
     placement,
     rashi as rashi_engine,
+    varga,
 )
 
 DEGREE_PRECISION = 6
+SUPPORTED_VARGA_NUMBERS = (
+    varga.HORA_NUMBER,
+    varga.DREKKANA_NUMBER,
+    varga.SAPTAMSA_NUMBER,
+    varga.NAVAMSA_NUMBER,
+    varga.DASAMSA_NUMBER,
+    varga.DWADASHAMSA_NUMBER,
+    varga.SHODASAMSA_NUMBER,
+    varga.VIMSHAMSA_NUMBER,
+    varga.SIDDHAMSA_NUMBER,
+    varga.BHAMSA_NUMBER,
+    varga.TRIMSAMSA_NUMBER,
+    varga.KHAVEDAMSA_NUMBER,
+    varga.AKSHAVEDAMSA_NUMBER,
+    varga.SHASTIAMSA_NUMBER,
+)
 
 
 class HousePlaceholder(TypedDict, total=False):
@@ -51,12 +69,13 @@ class PlanetChartPosition(planet_positions.PlanetPosition, total=False):
     aspects: drishti.PlanetAspects
 
 
-class KundaliChart(TypedDict):
+class KundaliChart(TypedDict, total=False):
     """Basic internal Kundali chart structure."""
 
     lagna: lagna.LagnaResult
     planets: list[PlanetChartPosition]
     houses: list[HousePlaceholder]
+    vargas: dict[str, varga.VargaChart]
 
 
 def assemble_kundali_chart(
@@ -70,13 +89,15 @@ def assemble_kundali_chart(
     latitude: float,
     longitude: float,
     ayanamsa_mode: Optional[str] = None,
+    include_vargas: bool = False,
 ) -> KundaliChart:
     """Assemble a basic internal Kundali chart.
 
     This foundation chart contains Lagna, sidereal planet positions enriched
     with Rashi metadata, and 12 placeholder houses. It deliberately avoids
-    predictions, divisional charts, advanced house systems, and public API
-    integration.
+    predictions, advanced house systems, and public API integration. Varga
+    charts remain optional internal metadata until the public schema supports
+    them.
     """
 
     julian_day = julian.calculate_julian_day(
@@ -123,11 +144,36 @@ def assemble_kundali_chart(
         for position in planet_data
     ]
 
-    return {
+    chart_data: KundaliChart = {
         "lagna": lagna_result,
         "planets": planets,
         "houses": _build_placeholder_houses(planets),
     }
+    if include_vargas:
+        chart_data["vargas"] = assemble_varga_charts(chart_data)
+
+    return chart_data
+
+
+def assemble_varga_charts(
+    chart_data: Mapping[str, object],
+) -> dict[str, varga.VargaChart]:
+    """Build supported Varga charts from assembled Kundali chart data."""
+
+    if not isinstance(chart_data, Mapping):
+        raise TypeError("chart_data must be a mapping")
+
+    varga_charts: dict[str, varga.VargaChart] = {}
+    for varga_number in SUPPORTED_VARGA_NUMBERS:
+        definition = varga.get_varga_definition(varga_number)
+        if not definition.is_implemented:
+            continue
+        varga_charts[definition.code] = varga.build_varga_chart(
+            chart_data,
+            definition.number,
+        )
+
+    return varga_charts
 
 
 def _enrich_planet_with_rashi(
