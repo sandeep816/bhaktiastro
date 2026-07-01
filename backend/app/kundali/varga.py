@@ -11,6 +11,10 @@ from backend.app.constants.rashi import RASHI_COUNT, RASHI_SPAN_DEGREES
 from backend.app.kundali import rashi as rashi_engine
 
 DEGREE_PRECISION = 6
+BHAMSA_NUMBER = 27
+BHAMSA_DUAL_START_RASHI_INDEX = 9
+BHAMSA_FIXED_START_RASHI_INDEX = 5
+BHAMSA_MOVABLE_START_RASHI_INDEX = 1
 DASAMSA_NUMBER = 10
 DASAMSA_SPAN_DEGREES = 3.0
 DIVISION_BOUNDARY_EPSILON = 0.000001
@@ -31,7 +35,7 @@ SHODASAMSA_MOVABLE_START_RASHI_INDEX = 1
 SIDDHAMSA_NUMBER = 24
 SIDDHAMSA_EVEN_START_RASHI_INDEX = 4
 SIDDHAMSA_ODD_START_RASHI_INDEX = 5
-SUPPORTED_PLACEHOLDER_VARGAS = (27, 30, 40, 45, 60)
+SUPPORTED_PLACEHOLDER_VARGAS = (30, 40, 45, 60)
 VIMSHAMSA_NUMBER = 20
 VIMSHAMSA_DUAL_START_RASHI_INDEX = 5
 VIMSHAMSA_FIXED_START_RASHI_INDEX = 9
@@ -223,6 +227,17 @@ def calculate_siddhamsa_position(
     )
 
 
+def calculate_bhamsa_position(
+    planet_data_or_longitude: Mapping[str, Any] | float,
+) -> VargaPosition:
+    """Calculate D27 Bhamsa placement from longitude or planet data."""
+
+    return calculate_varga_position(
+        BHAMSA_NUMBER,
+        _get_sidereal_longitude(planet_data_or_longitude),
+    )
+
+
 def build_varga_chart(
     chart_data: Mapping[str, Any],
     varga_number: int | str,
@@ -280,6 +295,43 @@ def get_registered_vargas() -> tuple[int, ...]:
     """Return registered Varga numbers."""
 
     return tuple(sorted(_VARGA_DEFINITIONS))
+
+
+def _calculate_bhamsa_position(
+    sidereal_longitude: float,
+    definition: VargaDefinition,
+) -> VargaPosition:
+    """Calculate D27 Bhamsa using modality-based start Rashis."""
+
+    source_longitude = rashi_engine.normalize_longitude(sidereal_longitude)
+    source_rashi = rashi_engine.get_rashi(source_longitude)
+    source_degree = rashi_engine.get_rashi_degree(source_longitude)
+    division_span = RASHI_SPAN_DEGREES / definition.number
+    bhamsa_part = min(
+        int((source_degree + DIVISION_BOUNDARY_EPSILON) // division_span) + 1,
+        definition.number,
+    )
+    start_rashi_index = _get_bhamsa_start_rashi_index(source_rashi)
+    bhamsa_rashi_index = _wrap_rashi_index(start_rashi_index + bhamsa_part - 1)
+    bhamsa_longitude = (bhamsa_rashi_index - 1) * RASHI_SPAN_DEGREES
+    bhamsa_rashi = rashi_engine.get_rashi(bhamsa_longitude)
+
+    return {
+        "varga": definition.code,
+        "varga_number": definition.number,
+        "varga_code": definition.code,
+        "varga_name": definition.name,
+        "source_longitude": source_longitude,
+        "source_rashi": source_rashi,
+        "source_degree": source_degree,
+        "division_index": bhamsa_part,
+        "bhamsa_part": bhamsa_part,
+        "varga_longitude": bhamsa_longitude,
+        "rashi_index": bhamsa_rashi_index,
+        "rashi_degree": 0.0,
+        "rashi": bhamsa_rashi,
+        "bhamsa_rashi": bhamsa_rashi,
+    }
 
 
 def _calculate_siddhamsa_position(
@@ -693,6 +745,19 @@ def _get_vimshamsa_start_rashi_index(
     )
 
 
+def _get_bhamsa_start_rashi_index(
+    source_rashi: rashi_engine.RashiResult,
+) -> int:
+    """Return the D27 start Rashi index from the source Rashi modality."""
+
+    return _get_modality_start_rashi_index(
+        source_rashi,
+        movable_start=BHAMSA_MOVABLE_START_RASHI_INDEX,
+        fixed_start=BHAMSA_FIXED_START_RASHI_INDEX,
+        dual_start=BHAMSA_DUAL_START_RASHI_INDEX,
+    )
+
+
 def _get_modality_start_rashi_index(
     source_rashi: rashi_engine.RashiResult,
     *,
@@ -777,6 +842,16 @@ def _wrap_rashi_index(rashi_index: int) -> int:
 
 def _register_default_vargas() -> None:
     """Register supported Varga definitions."""
+
+    register_varga(
+        VargaDefinition(
+            number=BHAMSA_NUMBER,
+            code="D27",
+            name="Bhamsa",
+            is_implemented=True,
+            calculator=cast(VargaCalculator, _calculate_bhamsa_position),
+        )
+    )
 
     register_varga(
         VargaDefinition(
