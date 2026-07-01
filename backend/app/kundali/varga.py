@@ -11,8 +11,12 @@ from backend.app.constants.rashi import RASHI_COUNT, RASHI_SPAN_DEGREES
 from backend.app.kundali import rashi as rashi_engine
 
 DEGREE_PRECISION = 6
+HORA_NUMBER = 2
+HORA_SPLIT_DEGREES = 15.0
+HORA_SUN_RASHI_INDEX = 5
+HORA_MOON_RASHI_INDEX = 4
 NAVAMSA_NUMBER = 9
-SUPPORTED_PLACEHOLDER_VARGAS = (2, 3, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60)
+SUPPORTED_PLACEHOLDER_VARGAS = (3, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60)
 
 
 class VargaPosition(TypedDict):
@@ -112,6 +116,17 @@ def calculate_navamsa_position(
     )
 
 
+def calculate_hora_position(
+    planet_data_or_longitude: Mapping[str, Any] | float,
+) -> VargaPosition:
+    """Calculate D2 Hora placement from longitude or planet-shaped data."""
+
+    return calculate_varga_position(
+        HORA_NUMBER,
+        _get_sidereal_longitude(planet_data_or_longitude),
+    )
+
+
 def build_varga_chart(
     chart_data: Mapping[str, Any],
     varga_number: int | str,
@@ -169,6 +184,48 @@ def get_registered_vargas() -> tuple[int, ...]:
     """Return registered Varga numbers."""
 
     return tuple(sorted(_VARGA_DEFINITIONS))
+
+
+def _calculate_hora_position(
+    sidereal_longitude: float,
+    definition: VargaDefinition,
+) -> VargaPosition:
+    """Calculate D2 Hora placement using the Parashari Sun/Moon rule."""
+
+    source_longitude = rashi_engine.normalize_longitude(sidereal_longitude)
+    source_rashi = rashi_engine.get_rashi(source_longitude)
+    source_rashi_index = source_rashi["index"]
+    source_degree = rashi_engine.get_rashi_degree(source_longitude)
+    is_first_half = source_degree < HORA_SPLIT_DEGREES
+    is_odd_rashi = source_rashi_index % 2 == 1
+
+    if is_odd_rashi == is_first_half:
+        hora_lord = "Sun"
+        hora_rashi_index = HORA_SUN_RASHI_INDEX
+    else:
+        hora_lord = "Moon"
+        hora_rashi_index = HORA_MOON_RASHI_INDEX
+
+    hora_longitude = (hora_rashi_index - 1) * RASHI_SPAN_DEGREES
+    hora_rashi = rashi_engine.get_rashi(hora_longitude)
+    division_index = 1 if is_first_half else 2
+
+    return {
+        "varga": definition.code,
+        "varga_number": definition.number,
+        "varga_code": definition.code,
+        "varga_name": definition.name,
+        "source_longitude": source_longitude,
+        "source_rashi": source_rashi,
+        "source_degree": source_degree,
+        "division_index": division_index,
+        "varga_longitude": hora_longitude,
+        "rashi_index": hora_rashi_index,
+        "rashi_degree": 0.0,
+        "rashi": hora_rashi,
+        "hora_lord": hora_lord,
+        "hora_rashi": hora_rashi,
+    }
 
 
 def _calculate_navamsa_position(
@@ -293,6 +350,16 @@ def _wrap_rashi_index(rashi_index: int) -> int:
 
 def _register_default_vargas() -> None:
     """Register supported Varga definitions."""
+
+    register_varga(
+        VargaDefinition(
+            number=HORA_NUMBER,
+            code="D2",
+            name="Hora",
+            is_implemented=True,
+            calculator=cast(VargaCalculator, _calculate_hora_position),
+        )
+    )
 
     for placeholder in SUPPORTED_PLACEHOLDER_VARGAS:
         register_varga(

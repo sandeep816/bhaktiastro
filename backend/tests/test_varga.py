@@ -20,10 +20,102 @@ def test_normalize_varga_number_rejects_invalid_number() -> None:
 
 
 def test_placeholder_varga_is_registered_but_not_implemented() -> None:
-    assert 2 in varga.get_registered_vargas()
+    assert 3 in varga.get_registered_vargas()
 
-    with pytest.raises(NotImplementedError, match="D2 is registered"):
-        varga.calculate_varga_position(2, 15.0)
+    with pytest.raises(NotImplementedError, match="D3 is registered"):
+        varga.calculate_varga_position(3, 15.0)
+
+
+def test_calculate_hora_position_odd_sign_first_half_returns_sun_hora() -> None:
+    result = varga.calculate_hora_position(10.0)
+
+    assert result["varga"] == "D2"
+    assert result["varga_number"] == 2
+    assert result["hora_lord"] == "Sun"
+    assert result["hora_rashi"]["sanskrit"] == "Simha"
+    assert result["rashi"]["sanskrit"] == "Simha"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 10.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_hora_position_odd_sign_second_half_returns_moon_hora() -> None:
+    result = varga.calculate_hora_position(20.0)
+
+    assert result["hora_lord"] == "Moon"
+    assert result["hora_rashi"]["sanskrit"] == "Karka"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 20.0
+    assert result["division_index"] == 2
+
+
+def test_calculate_hora_position_even_sign_first_half_returns_moon_hora() -> None:
+    result = varga.calculate_hora_position(40.0)
+
+    assert result["hora_lord"] == "Moon"
+    assert result["hora_rashi"]["sanskrit"] == "Karka"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 10.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_hora_position_even_sign_second_half_returns_sun_hora() -> None:
+    result = varga.calculate_hora_position(50.0)
+
+    assert result["hora_lord"] == "Sun"
+    assert result["hora_rashi"]["sanskrit"] == "Simha"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 20.0
+    assert result["division_index"] == 2
+
+
+def test_calculate_hora_position_boundary_fifteen_degrees_starts_second_half() -> None:
+    odd_result = varga.calculate_hora_position(15.0)
+    even_result = varga.calculate_hora_position(45.0)
+
+    assert odd_result["hora_lord"] == "Moon"
+    assert odd_result["hora_rashi"]["sanskrit"] == "Karka"
+    assert odd_result["source_degree"] == 15.0
+    assert odd_result["division_index"] == 2
+    assert even_result["hora_lord"] == "Sun"
+    assert even_result["hora_rashi"]["sanskrit"] == "Simha"
+    assert even_result["source_degree"] == 15.0
+    assert even_result["division_index"] == 2
+
+
+def test_calculate_hora_position_accepts_planet_shaped_data() -> None:
+    result = varga.calculate_hora_position(
+        {
+            "planet": "moon",
+            "sidereal_longitude": 40.0,
+        }
+    )
+
+    assert result["varga_code"] == "D2"
+    assert result["hora_lord"] == "Moon"
+    assert result["hora_rashi"]["sanskrit"] == "Karka"
+
+
+def test_calculate_hora_position_normalizes_longitude() -> None:
+    wrapped = varga.calculate_hora_position(360.0)
+    negative = varga.calculate_hora_position(-1.0)
+
+    assert wrapped["source_longitude"] == 0.0
+    assert wrapped["hora_lord"] == "Sun"
+    assert negative["source_longitude"] == 359.0
+    assert negative["source_rashi"]["sanskrit"] == "Meena"
+    assert negative["hora_lord"] == "Sun"
+
+
+def test_calculate_hora_position_rejects_invalid_input() -> None:
+    with pytest.raises(TypeError, match="sidereal_longitude must be a real number"):
+        varga.calculate_hora_position(False)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="longitude must be finite"):
+        varga.calculate_hora_position(float("inf"))
+
+    with pytest.raises(ValueError, match="data must include sidereal_longitude"):
+        varga.calculate_hora_position({"planet": "sun"})
 
 
 @pytest.mark.parametrize(
