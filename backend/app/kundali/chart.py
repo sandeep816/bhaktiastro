@@ -10,6 +10,7 @@ from backend.app.kundali import (
     dignity,
     graha_lordship,
     lagna,
+    mooltrikona,
     placement,
     rashi as rashi_engine,
 )
@@ -36,6 +37,7 @@ class PlanetChartPosition(planet_positions.PlanetPosition, total=False):
     house_number: int
     house_index: int
     dignity: dignity.PlanetDignityMetadata
+    mooltrikona: mooltrikona.PlanetMooltrikonaMetadata
 
 
 class KundaliChart(TypedDict):
@@ -142,6 +144,11 @@ def _enrich_planet_with_rashi(
         enriched_position["dignity"] = dignity.get_planet_dignity_metadata(
             planet,
             house_placement["rashi"],
+        )
+    if isinstance(planet, str) and mooltrikona.supports_mooltrikona(planet):
+        enriched_position = cast(
+            PlanetChartPosition,
+            mooltrikona.attach_mooltrikona_status(enriched_position),
         )
 
     return enriched_position

@@ -137,6 +137,19 @@ class PlanetDignityInfo(StrictResponseModel):
     )
 
 
+class PlanetMooltrikonaInfo(StrictResponseModel):
+    """Mooltrikona foundation metadata for a planet."""
+
+    rashi: str = Field(
+        ...,
+        description="Sanskrit/transliteration Mooltrikona Rashi for the planet.",
+    )
+    is_mooltrikona: bool = Field(
+        ...,
+        description="Whether the planet is currently in its Mooltrikona Rashi.",
+    )
+
+
 class KundaliPlanetInfo(StrictResponseModel):
     """Planet position section of a Kundali response."""
 
@@ -174,6 +187,10 @@ class KundaliPlanetInfo(StrictResponseModel):
     dignity: Optional[PlanetDignityInfo] = Field(
         None,
         description="Optional planet dignity metadata, when available.",
+    )
+    mooltrikona: Optional[PlanetMooltrikonaInfo] = Field(
+        None,
+        description="Optional planet Mooltrikona metadata, when available.",
     )
 
 
