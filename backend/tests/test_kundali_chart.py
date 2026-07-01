@@ -63,6 +63,8 @@ def test_assemble_kundali_chart_creates_basic_chart(
     assert result["lagna"] == fake_lagna
     assert len(result["planets"]) == 2
     assert len(result["houses"]) == 12
+    assert all("house_number" in planet for planet in result["planets"])
+    assert all("house_index" in planet for planet in result["planets"])
 
 
 def test_assemble_kundali_chart_attaches_rashi_metadata_to_planets(
@@ -105,6 +107,8 @@ def test_assemble_kundali_chart_attaches_rashi_metadata_to_planets(
     assert sun["rashi_degree"] == 0.5
     assert sun["rashi_index"] == 1
     assert sun["degree_in_rashi"] == 0.5
+    assert sun["house_number"] == 2
+    assert sun["house_index"] == 1
 
 
 def test_placeholder_houses_have_twelve_houses() -> None:
@@ -117,6 +121,7 @@ def test_placeholder_houses_have_twelve_houses() -> None:
         "start_degree": 0.0,
         "end_degree": 30.0,
         "house_degree": 0.0,
+        "planets": [],
     }
     assert houses[-1] == {
         "house_number": 12,
@@ -124,7 +129,40 @@ def test_placeholder_houses_have_twelve_houses() -> None:
         "start_degree": 330.0,
         "end_degree": 360.0,
         "house_degree": 0.0,
+        "planets": [],
     }
+
+
+def test_placeholder_houses_group_planets_by_house() -> None:
+    planets = [
+        {
+            "planet": "sun",
+            "sidereal_longitude": 30.5,
+            "rashi_index": 1,
+            "rashi_name_hi": "वृषभ",
+            "degree_in_rashi": 0.5,
+            "rashi": {
+                "index": 2,
+                "english": "Taurus",
+                "hindi": "वृषभ",
+                "sanskrit": "Vrishabha",
+                "lord": "Venus",
+                "element": "Earth",
+                "modality": "Fixed",
+                "start_degree": 30.0,
+                "end_degree": 60.0,
+                "degree_in_rashi": 0.5,
+            },
+            "rashi_degree": 0.5,
+            "house_number": 2,
+            "house_index": 1,
+        }
+    ]
+
+    houses = chart._build_placeholder_houses(planets)
+
+    assert houses[0]["planets"] == []
+    assert houses[1]["planets"] == planets
 
 
 def test_assemble_kundali_chart_works_for_jaipur_sample_birth_data() -> None:
@@ -146,7 +184,9 @@ def test_assemble_kundali_chart_works_for_jaipur_sample_birth_data() -> None:
     assert len(result["planets"]) == 9
     assert all("rashi" in planet for planet in result["planets"])
     assert all("rashi_degree" in planet for planet in result["planets"])
+    assert all("house_number" in planet for planet in result["planets"])
     assert len(result["houses"]) == 12
+    assert sum(len(house["planets"]) for house in result["houses"]) == 9
 
 
 def _fake_lagna() -> chart.lagna.LagnaResult:

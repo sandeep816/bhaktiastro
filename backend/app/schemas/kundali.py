@@ -146,6 +146,14 @@ class KundaliPlanetInfo(StrictResponseModel):
         ...,
         description="Degree completed within the Rashi.",
     )
+    house_number: Optional[int] = Field(
+        None,
+        description="One-based whole-sign house number, when available.",
+    )
+    house_index: Optional[int] = Field(
+        None,
+        description="Zero-based whole-sign house index, when available.",
+    )
 
 
 class HousePlaceholderInfo(StrictResponseModel):
@@ -158,6 +166,10 @@ class HousePlaceholderInfo(StrictResponseModel):
     house_degree: float = Field(
         ...,
         description="Degree completed within the placeholder house.",
+    )
+    planets: list[KundaliPlanetInfo] = Field(
+        default_factory=list,
+        description="Planets grouped into this house, when available.",
     )
 
 

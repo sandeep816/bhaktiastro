@@ -13,7 +13,7 @@ def test_north_indian_formatter_returns_twelve_houses() -> None:
     formatted = formatter.format_north_indian_chart(_sample_chart())
 
     assert formatted["chart_type"] == "north_indian"
-    assert formatted["house_placement_status"] == "placeholder"
+    assert formatted["house_placement_status"] == "whole_sign_foundation"
     assert len(formatted["houses"]) == 12
     assert formatted["houses"][0]["house_number"] == 1
     assert formatted["houses"][-1]["house_number"] == 12
@@ -23,7 +23,7 @@ def test_south_indian_formatter_returns_twelve_houses() -> None:
     formatted = formatter.format_south_indian_chart(_sample_chart())
 
     assert formatted["chart_type"] == "south_indian"
-    assert formatted["house_placement_status"] == "placeholder"
+    assert formatted["house_placement_status"] == "whole_sign_foundation"
     assert len(formatted["houses"]) == 12
 
 
@@ -31,17 +31,22 @@ def test_formatter_includes_lagna_house() -> None:
     formatted = formatter.format_north_indian_chart(_sample_chart())
 
     assert formatted["lagna_house"]["house_number"] == 1
-    assert formatted["lagna_house"]["placement_status"] == "placeholder"
+    assert formatted["lagna_house"]["placement_status"] == "whole_sign_foundation"
     assert formatted["lagna_house"]["lagna"]["rashi"]["english"] == "Aries"
 
 
-def test_formatter_keeps_planets_separate_when_house_placement_is_placeholder() -> None:
+def test_formatter_groups_planets_by_house_when_house_placement_exists() -> None:
     formatted = formatter.format_south_indian_chart(_sample_chart())
 
     assert len(formatted["planets"]) == 2
     assert formatted["planets"][0]["planet"] == "sun"
     assert formatted["houses"][0]["planets"] == []
-    assert formatted["houses"][1]["planets"] == []
+    assert [planet["planet"] for planet in formatted["houses"][1]["planets"]] == [
+        "moon"
+    ]
+    assert [planet["planet"] for planet in formatted["houses"][9]["planets"]] == [
+        "sun"
+    ]
 
 
 def test_formatter_does_not_mutate_original_chart_data() -> None:
@@ -105,6 +110,8 @@ def _sample_chart() -> dict[str, object]:
                     "degree_in_rashi": 0.0,
                 },
                 "rashi_degree": 0.0,
+                "house_number": 10,
+                "house_index": 9,
             },
             {
                 "planet": "moon",
@@ -127,6 +134,8 @@ def _sample_chart() -> dict[str, object]:
                     "degree_in_rashi": 0.5,
                 },
                 "rashi_degree": 0.5,
+                "house_number": 2,
+                "house_index": 1,
             },
         ],
         "houses": [
