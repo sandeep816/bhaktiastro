@@ -20,10 +20,10 @@ def test_normalize_varga_number_rejects_invalid_number() -> None:
 
 
 def test_placeholder_varga_is_registered_but_not_implemented() -> None:
-    assert 24 in varga.get_registered_vargas()
+    assert 27 in varga.get_registered_vargas()
 
-    with pytest.raises(NotImplementedError, match="D24 is registered"):
-        varga.calculate_varga_position(24, 15.0)
+    with pytest.raises(NotImplementedError, match="D27 is registered"):
+        varga.calculate_varga_position(27, 15.0)
 
 
 def test_calculate_hora_position_odd_sign_first_half_returns_sun_hora() -> None:
@@ -649,6 +649,82 @@ def test_calculate_vimshamsa_position_rejects_invalid_input() -> None:
 
     with pytest.raises(ValueError, match="data must include sidereal_longitude"):
         varga.calculate_vimshamsa_position({"planet": "jupiter"})
+
+
+def test_calculate_siddhamsa_position_odd_first_part_starts_simha() -> None:
+    result = varga.calculate_siddhamsa_position(1.0)
+
+    assert result["varga"] == "D24"
+    assert result["varga_number"] == 24
+    assert result["varga_name"] == "Siddhamsa"
+    assert result["siddhamsa_part"] == 1
+    assert result["siddhamsa_rashi"]["sanskrit"] == "Simha"
+    assert result["rashi"]["sanskrit"] == "Simha"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_siddhamsa_position_even_first_part_starts_karka() -> None:
+    result = varga.calculate_siddhamsa_position(31.0)
+
+    assert result["siddhamsa_part"] == 1
+    assert result["siddhamsa_rashi"]["sanskrit"] == "Karka"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["source_degree"] == 1.0
+    assert result["division_index"] == 1
+
+
+def test_calculate_siddhamsa_position_last_part_counts_from_start() -> None:
+    result = varga.calculate_siddhamsa_position(29.0)
+
+    assert result["siddhamsa_part"] == 24
+    assert result["siddhamsa_rashi"]["sanskrit"] == "Karka"
+    assert result["source_rashi"]["sanskrit"] == "Mesha"
+    assert result["source_degree"] == 29.0
+    assert result["division_index"] == 24
+
+
+def test_calculate_siddhamsa_boundary_between_parts() -> None:
+    boundary = 30.0 / 24.0
+    result = varga.calculate_siddhamsa_position(boundary)
+
+    assert result["siddhamsa_part"] == 2
+    assert result["siddhamsa_rashi"]["sanskrit"] == "Kanya"
+    assert result["source_degree"] == round(boundary, 6)
+
+
+def test_calculate_siddhamsa_position_wraps_from_late_rashis() -> None:
+    result = varga.calculate_siddhamsa_position(329.0)
+
+    assert result["source_rashi"]["sanskrit"] == "Kumbha"
+    assert result["siddhamsa_part"] == 24
+    assert result["siddhamsa_rashi"]["sanskrit"] == "Karka"
+
+
+def test_calculate_siddhamsa_position_accepts_planet_shaped_data() -> None:
+    result = varga.calculate_siddhamsa_position(
+        {
+            "planet": "venus",
+            "sidereal_longitude": 31.0,
+        }
+    )
+
+    assert result["varga_code"] == "D24"
+    assert result["source_rashi"]["sanskrit"] == "Vrishabha"
+    assert result["siddhamsa_part"] == 1
+    assert result["siddhamsa_rashi"]["sanskrit"] == "Karka"
+
+
+def test_calculate_siddhamsa_position_rejects_invalid_input() -> None:
+    with pytest.raises(TypeError, match="sidereal_longitude must be a real number"):
+        varga.calculate_siddhamsa_position(True)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="longitude must be finite"):
+        varga.calculate_siddhamsa_position(float("nan"))
+
+    with pytest.raises(ValueError, match="data must include sidereal_longitude"):
+        varga.calculate_siddhamsa_position({"planet": "venus"})
 
 
 @pytest.mark.parametrize(

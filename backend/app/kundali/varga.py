@@ -28,7 +28,10 @@ SHODASAMSA_NUMBER = 16
 SHODASAMSA_DUAL_START_RASHI_INDEX = 9
 SHODASAMSA_FIXED_START_RASHI_INDEX = 5
 SHODASAMSA_MOVABLE_START_RASHI_INDEX = 1
-SUPPORTED_PLACEHOLDER_VARGAS = (24, 27, 30, 40, 45, 60)
+SIDDHAMSA_NUMBER = 24
+SIDDHAMSA_EVEN_START_RASHI_INDEX = 4
+SIDDHAMSA_ODD_START_RASHI_INDEX = 5
+SUPPORTED_PLACEHOLDER_VARGAS = (27, 30, 40, 45, 60)
 VIMSHAMSA_NUMBER = 20
 VIMSHAMSA_DUAL_START_RASHI_INDEX = 5
 VIMSHAMSA_FIXED_START_RASHI_INDEX = 9
@@ -209,6 +212,17 @@ def calculate_vimshamsa_position(
     )
 
 
+def calculate_siddhamsa_position(
+    planet_data_or_longitude: Mapping[str, Any] | float,
+) -> VargaPosition:
+    """Calculate D24 Siddhamsa placement from longitude or planet data."""
+
+    return calculate_varga_position(
+        SIDDHAMSA_NUMBER,
+        _get_sidereal_longitude(planet_data_or_longitude),
+    )
+
+
 def build_varga_chart(
     chart_data: Mapping[str, Any],
     varga_number: int | str,
@@ -266,6 +280,50 @@ def get_registered_vargas() -> tuple[int, ...]:
     """Return registered Varga numbers."""
 
     return tuple(sorted(_VARGA_DEFINITIONS))
+
+
+def _calculate_siddhamsa_position(
+    sidereal_longitude: float,
+    definition: VargaDefinition,
+) -> VargaPosition:
+    """Calculate D24 Siddhamsa using odd/even sign start rules."""
+
+    source_longitude = rashi_engine.normalize_longitude(sidereal_longitude)
+    source_rashi = rashi_engine.get_rashi(source_longitude)
+    source_rashi_index = source_rashi["index"]
+    source_degree = rashi_engine.get_rashi_degree(source_longitude)
+    division_span = RASHI_SPAN_DEGREES / definition.number
+    siddhamsa_part = min(
+        int((source_degree + DIVISION_BOUNDARY_EPSILON) // division_span) + 1,
+        definition.number,
+    )
+    start_rashi_index = (
+        SIDDHAMSA_ODD_START_RASHI_INDEX
+        if source_rashi_index % 2 == 1
+        else SIDDHAMSA_EVEN_START_RASHI_INDEX
+    )
+    siddhamsa_rashi_index = _wrap_rashi_index(
+        start_rashi_index + siddhamsa_part - 1
+    )
+    siddhamsa_longitude = (siddhamsa_rashi_index - 1) * RASHI_SPAN_DEGREES
+    siddhamsa_rashi = rashi_engine.get_rashi(siddhamsa_longitude)
+
+    return {
+        "varga": definition.code,
+        "varga_number": definition.number,
+        "varga_code": definition.code,
+        "varga_name": definition.name,
+        "source_longitude": source_longitude,
+        "source_rashi": source_rashi,
+        "source_degree": source_degree,
+        "division_index": siddhamsa_part,
+        "siddhamsa_part": siddhamsa_part,
+        "varga_longitude": siddhamsa_longitude,
+        "rashi_index": siddhamsa_rashi_index,
+        "rashi_degree": 0.0,
+        "rashi": siddhamsa_rashi,
+        "siddhamsa_rashi": siddhamsa_rashi,
+    }
 
 
 def _calculate_vimshamsa_position(
@@ -719,6 +777,16 @@ def _wrap_rashi_index(rashi_index: int) -> int:
 
 def _register_default_vargas() -> None:
     """Register supported Varga definitions."""
+
+    register_varga(
+        VargaDefinition(
+            number=SIDDHAMSA_NUMBER,
+            code="D24",
+            name="Siddhamsa",
+            is_implemented=True,
+            calculator=cast(VargaCalculator, _calculate_siddhamsa_position),
+        )
+    )
 
     register_varga(
         VargaDefinition(
