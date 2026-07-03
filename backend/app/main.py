@@ -6,6 +6,7 @@ from typing import Dict
 
 from fastapi import FastAPI
 
+from backend.app.api.v1.dasha import router as dasha_router
 from backend.app.api.v1.kundali import router as kundali_router
 from backend.app.api.v1.panchang import router as panchang_router
 from backend.app.config import APP_NAME, APP_VERSION
@@ -31,3 +32,4 @@ def health_check() -> Dict[str, str]:
 
 app.include_router(panchang_router, prefix="/api/v1")
 app.include_router(kundali_router, prefix="/api/v1")
+app.include_router(dasha_router, prefix="/api/v1")
