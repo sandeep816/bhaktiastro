@@ -10,6 +10,8 @@ from backend.app.constants.dasha import (
     VIMSHOTTARI_TOTAL_CYCLE_YEARS,
     get_dasha_duration,
     get_dasha_sequence,
+    get_nakshatra_dasha_lord,
+    get_nakshatra_dasha_lord_by_name,
     get_total_cycle_years,
 )
 
@@ -66,6 +68,46 @@ class DashaConstantsTest(unittest.TestCase):
     def test_total_vimshottari_cycle_is_120_years(self) -> None:
         self.assertEqual(get_total_cycle_years(), VIMSHOTTARI_TOTAL_CYCLE_YEARS)
         self.assertEqual(get_total_cycle_years(), 120)
+
+    def test_nakshatra_dasha_lord_mapping_uses_vimshottari_sequence(self) -> None:
+        self.assertEqual(get_nakshatra_dasha_lord(0), "ketu")
+        self.assertEqual(get_nakshatra_dasha_lord(1), "venus")
+        self.assertEqual(get_nakshatra_dasha_lord(8), "mercury")
+        self.assertEqual(get_nakshatra_dasha_lord(9), "ketu")
+        self.assertEqual(get_nakshatra_dasha_lord(26), "mercury")
+
+    def test_nakshatra_dasha_lord_by_name_uses_vimshottari_sequence(self) -> None:
+        self.assertEqual(get_nakshatra_dasha_lord_by_name("Ashwini"), "ketu")
+        self.assertEqual(get_nakshatra_dasha_lord_by_name("Bharani"), "venus")
+        self.assertEqual(get_nakshatra_dasha_lord_by_name("Ashlesha"), "mercury")
+        self.assertEqual(get_nakshatra_dasha_lord_by_name("Magha"), "ketu")
+        self.assertEqual(get_nakshatra_dasha_lord_by_name("Revati"), "mercury")
+
+    def test_nakshatra_dasha_lord_by_name_normalizes_input(self) -> None:
+        self.assertEqual(get_nakshatra_dasha_lord_by_name("  ashvini "), "ketu")
+        self.assertEqual(
+            get_nakshatra_dasha_lord_by_name("PURVA   PHALGUNI"),
+            "venus",
+        )
+
+    def test_invalid_nakshatra_dasha_lookup_fails_safely(self) -> None:
+        with self.assertRaises(ValueError):
+            get_nakshatra_dasha_lord(-1)
+
+        with self.assertRaises(ValueError):
+            get_nakshatra_dasha_lord(27)
+
+        with self.assertRaises(TypeError):
+            get_nakshatra_dasha_lord(True)  # type: ignore[arg-type]
+
+        with self.assertRaises(ValueError):
+            get_nakshatra_dasha_lord_by_name("Not a Nakshatra")
+
+        with self.assertRaises(ValueError):
+            get_nakshatra_dasha_lord_by_name("")
+
+        with self.assertRaises(TypeError):
+            get_nakshatra_dasha_lord_by_name(None)  # type: ignore[arg-type]
 
     def test_dasha_definitions_are_frozen(self) -> None:
         with self.assertRaises(FrozenInstanceError):
