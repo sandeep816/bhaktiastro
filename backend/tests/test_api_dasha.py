@@ -7,12 +7,14 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 try:
+    from fastapi import HTTPException
     from pydantic import ValidationError
 
     from backend.app.api.v1.dasha import get_dasha, router
     from backend.app.main import app
     from backend.app.schemas.dasha import DashaRequest
 except ModuleNotFoundError:
+    HTTPException = None  # type: ignore[assignment]
     ValidationError = None  # type: ignore[assignment]
     get_dasha = None  # type: ignore[assignment]
     router = None  # type: ignore[assignment]
@@ -96,6 +98,28 @@ class DashaApiTest(unittest.TestCase):
                 longitude=75.7873,
             )
 
+    def test_invalid_panchang_nakshatra_index_returns_400(self) -> None:
+        with patch(
+            "backend.app.api.v1.dasha.calculate_basic_panchang",
+            return_value=_panchang_birth_payload(nakshatra_index=27),
+        ):
+            with self.assertRaises(HTTPException) as exc_info:
+                get_dasha(_jaipur_request())
+
+        self.assertEqual(exc_info.exception.status_code, 400)
+        self.assertIn("nakshatra_index", exc_info.exception.detail)
+
+    def test_invalid_panchang_moon_longitude_returns_400(self) -> None:
+        with patch(
+            "backend.app.api.v1.dasha.calculate_basic_panchang",
+            return_value=_panchang_birth_payload(moon_longitude=float("nan")),
+        ):
+            with self.assertRaises(HTTPException) as exc_info:
+                get_dasha(_jaipur_request())
+
+        self.assertEqual(exc_info.exception.status_code, 400)
+        self.assertIn("moon_longitude", exc_info.exception.detail)
+
 
 def _iter_app_routes() -> list[object]:
     routes: list[object] = []
@@ -132,13 +156,16 @@ def _jaipur_request(target_datetime: str | None = None) -> DashaRequest:
     )
 
 
-def _panchang_birth_payload() -> dict[str, object]:
+def _panchang_birth_payload(
+    nakshatra_index: int = 0,
+    moon_longitude: float = 0.0,
+) -> dict[str, object]:
     return {
         "moon": {
-            "sidereal_longitude": 0.0,
+            "sidereal_longitude": moon_longitude,
         },
         "nakshatra": {
-            "index": 0,
+            "index": nakshatra_index,
         },
     }
 

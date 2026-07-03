@@ -79,6 +79,22 @@ class DashaRequestSchemaTest(unittest.TestCase):
                 longitude=181.0,
             )
 
+    def test_invalid_date_and_time_fail(self) -> None:
+        with self.assertRaises(ValidationError):
+            DashaRequest(
+                date="not-a-date",
+                latitude=26.9124,
+                longitude=75.7873,
+            )
+
+        with self.assertRaises(ValidationError):
+            DashaRequest(
+                date="2000-01-01",
+                time="25:00:00",
+                latitude=26.9124,
+                longitude=75.7873,
+            )
+
     def test_invalid_timezone_fails(self) -> None:
         with self.assertRaises(ValidationError):
             DashaRequest(
@@ -86,6 +102,50 @@ class DashaRequestSchemaTest(unittest.TestCase):
                 timezone_offset=-13.0,
                 latitude=26.9124,
                 longitude=75.7873,
+            )
+
+    def test_missing_required_fields_fail(self) -> None:
+        with self.assertRaises(ValidationError):
+            DashaRequest()
+
+        with self.assertRaises(ValidationError):
+            DashaRequest(
+                date="2000-01-01",
+                latitude=26.9124,
+            )
+
+    def test_invalid_target_date_and_datetime_fail(self) -> None:
+        with self.assertRaises(ValidationError):
+            DashaRequest(
+                date="2000-01-01",
+                latitude=26.9124,
+                longitude=75.7873,
+                target_date="not-a-date",
+            )
+
+        with self.assertRaises(ValidationError):
+            DashaRequest(
+                date="2000-01-01",
+                latitude=26.9124,
+                longitude=75.7873,
+                target_datetime="not-a-datetime",
+            )
+
+    def test_invalid_include_flags_fail_for_unparseable_values(self) -> None:
+        with self.assertRaises(ValidationError):
+            DashaRequest(
+                date="2000-01-01",
+                latitude=26.9124,
+                longitude=75.7873,
+                include_antardasha="not-a-bool",
+            )
+
+        with self.assertRaises(ValidationError):
+            DashaRequest(
+                date="2000-01-01",
+                latitude=26.9124,
+                longitude=75.7873,
+                include_pratyantardasha="not-a-bool",
             )
 
 
