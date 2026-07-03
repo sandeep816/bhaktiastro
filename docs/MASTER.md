@@ -96,7 +96,7 @@ Sprint 6 completed:
 
 Current sprint: Sprint 7 - Planet Strength Engine.
 
-Primary sprint document: `docs/SPRINT-07.md` when Sprint 7 planning begins.
+Primary sprint document: `docs/SPRINT-07.md`.
 
 Sprint 7 goal:
 
