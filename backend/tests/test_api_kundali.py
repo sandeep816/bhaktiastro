@@ -63,8 +63,17 @@ class KundaliApiTest(unittest.TestCase):
         data = response.model_dump(mode="json")
 
         self.assertFalse(request.include_vargas)
+        self.assertFalse(request.include_strength)
         self.assertEqual(set(data.keys()), {"lagna", "planets", "houses"})
         self.assertNotIn("vargas", data)
+        self.assertNotIn("strength", data)
+
+    def test_kundali_route_without_include_strength_remains_unchanged(self) -> None:
+        response = get_kundali(_jaipur_request())
+        data = response.model_dump(mode="json")
+
+        self.assertEqual(set(data.keys()), {"lagna", "planets", "houses"})
+        self.assertNotIn("strength", data)
 
     def test_kundali_route_can_include_supported_vargas(self) -> None:
         response = get_kundali(_jaipur_request(include_vargas=True))
@@ -99,6 +108,37 @@ class KundaliApiTest(unittest.TestCase):
         self.assertIn("D9", data["vargas"])
         self.assertEqual(data["vargas"]["D9"]["varga_code"], "D9")
         self.assertIn("lagna", data["vargas"]["D9"])
+
+    def test_kundali_route_can_include_strength_summary(self) -> None:
+        response = get_kundali(_jaipur_request(include_strength=True))
+        data = response.model_dump(mode="json")
+
+        self.assertIn("strength", data)
+        self.assertIn("planets", data["strength"])
+        self.assertIn("ranking", data["strength"])
+        self.assertEqual(data["strength"]["metadata"]["planet_count"], 9)
+
+    def test_strength_summary_contains_planets(self) -> None:
+        response = get_kundali(_jaipur_request(include_strength=True))
+        data = response.model_dump(mode="json")
+
+        self.assertEqual(len(data["strength"]["planets"]), 9)
+        self.assertTrue(
+            all(
+                {"planet", "shadbala", "ishta_kashta", "summary_status"}
+                <= set(planet)
+                for planet in data["strength"]["planets"]
+            )
+        )
+
+    def test_strength_summary_includes_strongest_and_weakest_planets(self) -> None:
+        response = get_kundali(_jaipur_request(include_strength=True))
+        data = response.model_dump(mode="json")
+
+        self.assertIn("strongest_planet", data["strength"])
+        self.assertIn("weakest_planet", data["strength"])
+        self.assertIsNotNone(data["strength"]["strongest_planet"])
+        self.assertIsNotNone(data["strength"]["weakest_planet"])
 
     def test_response_contains_planet_rashi_metadata(self) -> None:
         response = get_kundali(_jaipur_request())
@@ -178,7 +218,10 @@ def _iter_app_routes() -> list[object]:
     return routes
 
 
-def _jaipur_request(include_vargas: bool = False) -> KundaliRequest:
+def _jaipur_request(
+    include_vargas: bool = False,
+    include_strength: bool = False,
+) -> KundaliRequest:
     return KundaliRequest(
         year=1990,
         month=1,
@@ -191,6 +234,7 @@ def _jaipur_request(include_vargas: bool = False) -> KundaliRequest:
         longitude=75.7873,
         ayanamsa="lahiri",
         include_vargas=include_vargas,
+        include_strength=include_strength,
     )
 
 

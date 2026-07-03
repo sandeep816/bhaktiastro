@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, Literal, Optional, Sequence
+from typing import Any, List, Literal, Optional, Sequence
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_core import MISSING
@@ -74,6 +74,10 @@ class KundaliRequest(BaseModel):
     include_vargas: bool = Field(
         False,
         description="Opt-in flag to include supported Varga charts.",
+    )
+    include_strength: bool = Field(
+        False,
+        description="Opt-in flag to include Planet Strength Summary.",
     )
 
 
@@ -459,4 +463,8 @@ class KundaliResponse(StrictResponseModel):
     vargas: Optional[dict[str, VargaChartInfo]] = Field(
         MISSING,
         description="Optional supported Varga charts when explicitly requested.",
+    )
+    strength: Optional[dict[str, Any]] = Field(
+        MISSING,
+        description="Optional Planet Strength Summary when explicitly requested.",
     )
