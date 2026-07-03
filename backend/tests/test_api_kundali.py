@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 try:
@@ -38,7 +39,7 @@ class KundaliApiTest(unittest.TestCase):
     def test_app_includes_kundali_route(self) -> None:
         routes = [
             route
-            for route in app.routes
+            for route in _iter_app_routes()
             if getattr(route, "path", None) == "/api/v1/kundali"
         ]
 
@@ -55,6 +56,49 @@ class KundaliApiTest(unittest.TestCase):
         self.assertEqual(data["lagna"]["rashi_index"], data["lagna"]["rashi"]["index"])
         self.assertEqual(len(data["planets"]), 9)
         self.assertEqual(len(data["houses"]), 12)
+
+    def test_kundali_request_defaults_to_excluding_vargas(self) -> None:
+        request = _jaipur_request()
+        response = get_kundali(request)
+        data = response.model_dump(mode="json")
+
+        self.assertFalse(request.include_vargas)
+        self.assertEqual(set(data.keys()), {"lagna", "planets", "houses"})
+        self.assertNotIn("vargas", data)
+
+    def test_kundali_route_can_include_supported_vargas(self) -> None:
+        response = get_kundali(_jaipur_request(include_vargas=True))
+        data = response.model_dump(mode="json")
+
+        self.assertEqual(
+            set(data["vargas"]),
+            {
+                "D2",
+                "D3",
+                "D7",
+                "D9",
+                "D10",
+                "D12",
+                "D16",
+                "D20",
+                "D24",
+                "D27",
+                "D30",
+                "D40",
+                "D45",
+                "D60",
+            },
+        )
+        self.assertEqual(data["vargas"]["D9"]["varga_name"], "Navamsa")
+        self.assertEqual(len(data["vargas"]["D9"]["planets"]), 9)
+
+    def test_kundali_route_includes_d9_when_vargas_enabled(self) -> None:
+        response = get_kundali(_jaipur_request(include_vargas=True))
+        data = response.model_dump(mode="json")
+
+        self.assertIn("D9", data["vargas"])
+        self.assertEqual(data["vargas"]["D9"]["varga_code"], "D9")
+        self.assertIn("lagna", data["vargas"]["D9"])
 
     def test_response_contains_planet_rashi_metadata(self) -> None:
         response = get_kundali(_jaipur_request())
@@ -78,6 +122,7 @@ class KundaliApiTest(unittest.TestCase):
                 timezone_offset=5.5,
                 latitude=91.0,
                 longitude=75.7873,
+                include_vargas=True,
             )
 
     def test_invalid_timezone_returns_validation_error(self) -> None:
@@ -109,7 +154,31 @@ class KundaliApiTest(unittest.TestCase):
         )
 
 
-def _jaipur_request() -> KundaliRequest:
+def _iter_app_routes() -> list[object]:
+    routes: list[object] = []
+    for route in app.routes:
+        path = getattr(route, "path", None)
+        if path is not None:
+            routes.append(route)
+            continue
+
+        include_context = getattr(route, "include_context", None)
+        included_router = getattr(include_context, "included_router", None)
+        prefix = getattr(include_context, "prefix", "")
+        for included_route in getattr(included_router, "routes", []):
+            included_path = getattr(included_route, "path", None)
+            if included_path is not None:
+                routes.append(
+                    SimpleNamespace(
+                        path=f"{prefix}{included_path}",
+                        methods=getattr(included_route, "methods", None),
+                    )
+                )
+
+    return routes
+
+
+def _jaipur_request(include_vargas: bool = False) -> KundaliRequest:
     return KundaliRequest(
         year=1990,
         month=1,
@@ -121,6 +190,7 @@ def _jaipur_request() -> KundaliRequest:
         latitude=26.9124,
         longitude=75.7873,
         ayanamsa="lahiri",
+        include_vargas=include_vargas,
     )
 
 

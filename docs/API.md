@@ -6,8 +6,9 @@ Calculate the basic deterministic Kundali chart for one local birth date, time,
 and location.
 
 This endpoint includes Lagna, planet positions enriched with Rashi and
-house-placement metadata, and placeholder house groupings. It does not include
-predictions, interpretation text, divisional charts, or advanced house systems.
+house-placement metadata, and placeholder house groupings. Divisional charts
+are available only when explicitly requested. It does not include predictions,
+interpretation text, or advanced house systems.
 
 ### Request
 
@@ -30,7 +31,8 @@ Example:
   "timezone_offset": 5.5,
   "latitude": 26.9124,
   "longitude": 75.7873,
-  "ayanamsa": "lahiri"
+  "ayanamsa": "lahiri",
+  "include_vargas": false
 }
 ```
 
@@ -48,6 +50,7 @@ Example:
 | `latitude` | number | yes | - | `-90` to `90` |
 | `longitude` | number | yes | - | `-180` to `180` |
 | `ayanamsa` | string | no | `lahiri` | `lahiri` |
+| `include_vargas` | boolean | no | `false` | `true` or `false` |
 
 ### Response
 
@@ -70,11 +73,18 @@ The Kundali API response keeps these top-level fields stable:
 | `lagna` | object | Sidereal ascendant and Lagna Rashi metadata. |
 | `planets` | array | Planet positions and optional foundation metadata. |
 | `houses` | array | Twelve placeholder houses with grouped planets. |
+| `vargas` | object | Optional Varga charts, present only when `include_vargas` is `true`. |
 
 Optional planet metadata may include dignity, Mooltrikona, motion,
 combustion, and Graha Drishti fields when the underlying chart data supports
 them. The reusable JSON export helper can add export-only metadata, but the
-public API response remains `lagna`, `planets`, and `houses`.
+public API response remains `lagna`, `planets`, and `houses` unless Vargas are
+explicitly requested.
+
+When `include_vargas` is omitted or `false`, the response omits `vargas` and
+preserves the previous top-level response shape. When `include_vargas` is
+`true`, `vargas` contains the supported charts `D2`, `D3`, `D7`, `D9`, `D10`,
+`D12`, `D16`, `D20`, `D24`, `D27`, `D30`, `D40`, `D45`, and `D60`.
 
 ### Validation Errors
 

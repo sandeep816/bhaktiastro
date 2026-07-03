@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import List, Literal, Optional, Sequence
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic_core import MISSING
 
 from backend.app.schemas.panchang import DmsInfo
 
@@ -69,6 +70,10 @@ class KundaliRequest(BaseModel):
     ayanamsa: Literal["lahiri"] = Field(
         "lahiri",
         description="Ayanamsa mode for MVP calculations.",
+    )
+    include_vargas: bool = Field(
+        False,
+        description="Opt-in flag to include supported Varga charts.",
     )
 
 
@@ -255,6 +260,193 @@ class HousePlaceholderInfo(StrictResponseModel):
     )
 
 
+VargaCode = Literal[
+    "D2",
+    "D3",
+    "D7",
+    "D9",
+    "D10",
+    "D12",
+    "D16",
+    "D20",
+    "D24",
+    "D27",
+    "D30",
+    "D40",
+    "D45",
+    "D60",
+]
+
+
+class VargaPositionInfo(StrictResponseModel):
+    """Calculated placement for one body in a Varga chart."""
+
+    varga: Optional[VargaCode] = Field(
+        MISSING,
+        description="Legacy Varga code key, when emitted by a calculator.",
+    )
+    varga_number: int = Field(..., description="Divisional chart number.")
+    varga_code: VargaCode = Field(..., description="Divisional chart code.")
+    varga_name: str = Field(..., description="Divisional chart name.")
+    source_longitude: float = Field(
+        ...,
+        description="Source sidereal longitude in the base Kundali chart.",
+    )
+    source_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="Source Rashi metadata, when emitted by the calculator.",
+    )
+    source_degree: Optional[float] = Field(
+        MISSING,
+        description="Source degree within the source Rashi, when available.",
+    )
+    division_index: int = Field(..., description="One-based Varga division index.")
+    varga_longitude: float = Field(
+        ...,
+        description="Calculated Varga longitude in degrees.",
+    )
+    rashi_index: int = Field(..., description="One-based calculated Rashi index.")
+    rashi_degree: float = Field(
+        ...,
+        description="Degree completed within the calculated Varga Rashi.",
+    )
+    rashi: RashiInfo = Field(..., description="Calculated Varga Rashi metadata.")
+    hora_lord: Optional[str] = Field(
+        MISSING,
+        description="D2 Hora lord, when applicable.",
+    )
+    hora_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D2 Hora Rashi metadata, when applicable.",
+    )
+    drekkana_part: Optional[int] = Field(
+        MISSING,
+        description="D3 Drekkana part, when applicable.",
+    )
+    drekkana_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D3 Drekkana Rashi metadata, when applicable.",
+    )
+    saptamsa_part: Optional[int] = Field(
+        MISSING,
+        description="D7 Saptamsa part, when applicable.",
+    )
+    saptamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D7 Saptamsa Rashi metadata, when applicable.",
+    )
+    dasamsa_part: Optional[int] = Field(
+        MISSING,
+        description="D10 Dasamsa part, when applicable.",
+    )
+    dasamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D10 Dasamsa Rashi metadata, when applicable.",
+    )
+    dwadashamsa_part: Optional[int] = Field(
+        MISSING,
+        description="D12 Dwadashamsa part, when applicable.",
+    )
+    dwadashamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D12 Dwadashamsa Rashi metadata, when applicable.",
+    )
+    shodasamsa_part: Optional[int] = Field(
+        MISSING,
+        description="D16 Shodasamsa part, when applicable.",
+    )
+    shodasamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D16 Shodasamsa Rashi metadata, when applicable.",
+    )
+    vimshamsa_part: Optional[int] = Field(
+        MISSING,
+        description="D20 Vimshamsa part, when applicable.",
+    )
+    vimshamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D20 Vimshamsa Rashi metadata, when applicable.",
+    )
+    siddhamsa_part: Optional[int] = Field(
+        MISSING,
+        description="D24 Siddhamsa part, when applicable.",
+    )
+    siddhamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D24 Siddhamsa Rashi metadata, when applicable.",
+    )
+    bhamsa_part: Optional[int] = Field(
+        MISSING,
+        description="D27 Bhamsa part, when applicable.",
+    )
+    bhamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D27 Bhamsa Rashi metadata, when applicable.",
+    )
+    trimsamsa_lord: Optional[str] = Field(
+        MISSING,
+        description="D30 Trimsamsa lord, when applicable.",
+    )
+    trimsamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D30 Trimsamsa Rashi metadata, when applicable.",
+    )
+    khavedamsa_part: Optional[int] = Field(
+        MISSING,
+        description="D40 Khavedamsa part, when applicable.",
+    )
+    khavedamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D40 Khavedamsa Rashi metadata, when applicable.",
+    )
+    akshavedamsa_part: Optional[int] = Field(
+        MISSING,
+        description="D45 Akshavedamsa part, when applicable.",
+    )
+    akshavedamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D45 Akshavedamsa Rashi metadata, when applicable.",
+    )
+    shastiamsa_part: Optional[int] = Field(
+        MISSING,
+        description="D60 Shastiamsa part, when applicable.",
+    )
+    shastiamsa_rashi: Optional[RashiInfo] = Field(
+        MISSING,
+        description="D60 Shastiamsa Rashi metadata, when applicable.",
+    )
+
+
+class VargaPlanetInfo(StrictResponseModel):
+    """Planet placement in a Varga chart."""
+
+    planet: str = Field(..., description="Planet key.")
+    source_longitude: float = Field(
+        ...,
+        description="Source sidereal longitude in the base Kundali chart.",
+    )
+    varga_position: VargaPositionInfo = Field(
+        ...,
+        description="Calculated Varga placement for the planet.",
+    )
+
+
+class VargaChartInfo(StrictResponseModel):
+    """One supported Varga chart in a Kundali API response."""
+
+    varga_number: int = Field(..., description="Divisional chart number.")
+    varga_code: VargaCode = Field(..., description="Divisional chart code.")
+    varga_name: str = Field(..., description="Divisional chart name.")
+    lagna: Optional[VargaPositionInfo] = Field(
+        MISSING,
+        description="Calculated Varga placement for Lagna, when available.",
+    )
+    planets: List[VargaPlanetInfo] = Field(
+        default_factory=list,
+        description="Planet placements in this Varga chart.",
+    )
+
+
 class KundaliResponse(StrictResponseModel):
     """Response schema matching basic Kundali chart assembly output."""
 
@@ -263,4 +455,8 @@ class KundaliResponse(StrictResponseModel):
     houses: List[HousePlaceholderInfo] = Field(
         ...,
         description="Placeholder house information.",
+    )
+    vargas: Optional[dict[str, VargaChartInfo]] = Field(
+        MISSING,
+        description="Optional supported Varga charts when explicitly requested.",
     )

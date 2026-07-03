@@ -26,6 +26,7 @@ def get_kundali(request: KundaliRequest) -> KundaliResponse:
             latitude=request.latitude,
             longitude=request.longitude,
             ayanamsa_mode=request.ayanamsa,
+            include_vargas=request.include_vargas,
         )
     except (TypeError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
