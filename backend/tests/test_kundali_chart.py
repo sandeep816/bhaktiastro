@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -63,6 +64,7 @@ def test_assemble_kundali_chart_creates_basic_chart(
     assert result["lagna"] == fake_lagna
     assert len(result["planets"]) == 2
     assert len(result["houses"]) == 12
+    assert "strength" not in result
     assert all("house_number" in planet for planet in result["planets"])
     assert all("house_index" in planet for planet in result["planets"])
 
@@ -188,6 +190,86 @@ def test_assemble_kundali_chart_can_include_internal_varga_metadata(
     assert len(result["vargas"]["D9"]["planets"]) == 2
 
 
+def test_assemble_kundali_chart_can_include_internal_strength_summary(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [
+            {"planet": "sun", "sidereal_longitude": 0.0},
+            {"planet": "venus", "sidereal_longitude": 30.0, "speed": 1.0},
+        ],
+        include_strength=True,
+    )
+
+    assert set(result) == {"lagna", "planets", "houses", "strength"}
+    assert len(result["strength"]["planets"]) == 2
+    assert result["strength"]["metadata"]["planet_count"] == 2
+    assert result["strength"]["ranking"]
+
+
+def test_internal_strength_summary_contains_planet_entries(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [
+            {"planet": "sun", "sidereal_longitude": 0.0},
+            {"planet": "moon", "sidereal_longitude": 30.0},
+        ],
+        include_strength=True,
+    )
+
+    planet_entries = result["strength"]["planets"]
+
+    assert [entry["planet"] for entry in planet_entries] == ["sun", "moon"]
+    assert all("shadbala" in entry for entry in planet_entries)
+    assert all("ishta_kashta" in entry for entry in planet_entries)
+
+
+def test_assemble_kundali_chart_default_structure_remains_unchanged(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [{"planet": "sun", "sidereal_longitude": 0.0}],
+    )
+
+    assert set(result) == {"lagna", "planets", "houses"}
+    assert "strength" not in result
+
+
+def test_internal_strength_summary_handles_missing_planet_data_safely(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [],
+        include_strength=True,
+    )
+
+    assert result["planets"] == []
+    assert result["strength"]["planets"] == []
+    assert result["strength"]["ranking"] == []
+    assert result["strength"]["strongest_planet"] is None
+    assert result["strength"]["weakest_planet"] is None
+
+
+def test_internal_strength_summary_output_is_json_safe(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [
+            {"planet": "sun", "sidereal_longitude": 0.0},
+            {"planet": "moon", "sidereal_longitude": 30.0},
+        ],
+        include_strength=True,
+    )
+
+    json.dumps(result)
+
+
 def test_placeholder_houses_have_twelve_houses() -> None:
     houses = chart._build_placeholder_houses()
 
@@ -287,6 +369,35 @@ def _fake_lagna() -> chart.lagna.LagnaResult:
         "rashi_index": 1,
         "rashi_degree": 23.25,
     }
+
+
+def _assemble_fake_chart(
+    monkeypatch: pytest.MonkeyPatch,
+    fake_planets: list[dict[str, object]],
+    include_strength: bool = False,
+) -> chart.KundaliChart:
+    fake_julian = SimpleNamespace(julian_day_ut=2447893.770833)
+    monkeypatch.setattr(chart.julian, "calculate_julian_day", lambda *args: fake_julian)
+    monkeypatch.setattr(chart.ayanamsa, "get_ayanamsa", lambda *args: 24.0)
+    monkeypatch.setattr(
+        chart.planet_positions,
+        "get_planet_positions",
+        lambda *args: fake_planets,
+    )
+    monkeypatch.setattr(chart.lagna, "calculate_lagna", lambda *args: _fake_lagna())
+
+    return chart.assemble_kundali_chart(
+        1990,
+        1,
+        1,
+        12,
+        0,
+        0,
+        5.5,
+        26.9124,
+        75.7873,
+        include_strength=include_strength,
+    )
 
 
 def _fake_chart_for_vargas() -> chart.KundaliChart:
