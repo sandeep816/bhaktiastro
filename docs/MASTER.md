@@ -28,6 +28,7 @@ project rules.
 - Sprint 2: Panchang element foundations and boundary timing.
 - Sprint 3: Panchang API, fixtures, validation, and smoke coverage.
 - Sprint 4: Kundali Engine foundation.
+- Sprint 5: Divisional Charts / Varga Engine.
 
 Sprint 4 completed:
 
@@ -53,18 +54,41 @@ Sprint 4 completed:
 - Kundali JSON Export
 - Sprint 4 documentation and completion checklist
 
+Sprint 5 completed:
+
+- Varga Framework Foundation
+- D2 Hora
+- D3 Drekkana
+- D7 Saptamsa
+- D9 Navamsa
+- D10 Dasamsa
+- D12 Dwadashamsa
+- D16 Shodasamsa
+- D20 Vimshamsa
+- D24 Siddhamsa
+- D27 Bhamsa
+- D30 Trimsamsa
+- D40 Khavedamsa
+- D45 Akshavedamsa
+- D60 Shastiamsa
+- Internal Kundali Varga integration
+- Optional Kundali API Varga exposure with `include_vargas`
+- Sprint 5 documentation and completion checklist
+
 ## Current Sprint
 
-Current sprint: Sprint 5 - Divisional Charts / Varga Engine.
+Sprint 5 is complete.
 
-Primary sprint document: `docs/SPRINT-05.md`.
+Next sprint: Sprint 6 - Dasha Engine.
 
-Sprint 5 goal:
+Primary next sprint document: to be created when Sprint 6 begins.
 
-- Build reusable infrastructure for divisional charts.
-- Keep Varga calculations separate from astronomy and Panchang logic.
-- Reuse existing Rashi and Kundali helpers.
-- Add each Varga incrementally with focused tests.
+Sprint 6 goal:
+
+- Build deterministic Dasha infrastructure.
+- Use Nakshatra-based birth data inputs.
+- Add Vimshottari Dasha foundations.
+- Keep calculations non-interpretive and prediction-free.
 
 ## Next Task Instructions
 

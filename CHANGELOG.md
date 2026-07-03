@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Sprint 5 Varga Engine completion documentation and next-sprint pointer.
 - Optional Kundali API `include_vargas` flag and response schema support for supported Sprint 5 Varga charts.
 - Sprint 4 Kundali Engine documentation and completion checklist.
 - Milestone 1 reference validation plan and skipped placeholder accuracy tests.

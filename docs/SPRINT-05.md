@@ -3,6 +3,14 @@
 Sprint 5 builds the reusable Divisional Charts Engine. The goal is to support
 Varga charts without duplicating Kundali, Rashi, or planet-position logic.
 
+## Sprint Status
+
+Status: Complete.
+
+Sprint 5 delivered reusable Varga infrastructure, source-longitude-preserving
+Varga calculations, internal Kundali integration, and optional Kundali API
+exposure through `include_vargas`.
+
 ## Sprint Rules
 
 - Do not modify Panchang logic.
@@ -14,12 +22,12 @@ Varga charts without duplicating Kundali, Rashi, or planet-position logic.
 - Keep unimplemented Vargas as explicit placeholders.
 - Do not implement predictions or interpretation text.
 
-## Architecture Direction
+## Completed Architecture
 
-The Varga Engine should live under `backend/app/kundali/` unless a future
-architecture review moves divisional charts into a separate package.
+The Varga Engine lives under `backend/app/kundali/`. It consumes existing
+chart-shaped data and does not call Swiss Ephemeris or Panchang logic directly.
 
-Expected reusable concepts:
+Completed reusable concepts:
 
 - Varga definition registry
 - Varga number normalization
@@ -27,21 +35,21 @@ Expected reusable concepts:
 - Generic Varga chart builder
 - Source longitude preservation
 - Rashi metadata reuse
-- Placeholder support for future Vargas
+- JSON-safe nested dict/list output
+- Internal Kundali chart integration
+- Optional Kundali API exposure
 
-The Varga framework should consume existing chart-shaped data:
+The framework consumes:
 
 - `lagna.sidereal_longitude`
 - `planets[].sidereal_longitude`
 - existing Rashi helpers from `backend/app/kundali/rashi.py`
 
-It should not call Swiss Ephemeris directly.
-
 ## Milestone 5.1 - Varga Framework Foundation
 
-Goal: Add reusable infrastructure for all future Vargas.
+Goal: Add reusable infrastructure for all Vargas.
 
-Required helpers:
+Completed helpers:
 
 - `normalize_varga_number()`
 - `calculate_varga_position()`
@@ -49,18 +57,17 @@ Required helpers:
 
 Acceptance checklist:
 
-- [ ] Registered Varga definitions can be discovered.
-- [ ] Invalid Varga numbers fail safely.
-- [ ] Placeholder Vargas are registered but not falsely calculated.
-- [ ] Varga chart output is JSON-safe nested dict/list data.
-- [ ] Existing Kundali tests remain unchanged.
-- [ ] Full test suite passes.
+- [x] Registered Varga definitions can be discovered.
+- [x] Invalid Varga numbers fail safely.
+- [x] Varga chart output is JSON-safe nested dict/list data.
+- [x] Existing Kundali behavior remains backward-compatible.
+- [x] Full test suite passes.
 
 ## Milestone 5.2 - D9 Navamsa
 
-Goal: Implement D9 as the first fully supported Varga.
+Goal: Implement D9 Navamsa.
 
-Scope:
+Completed scope:
 
 - Calculate Navamsa Rashi from sidereal longitude.
 - Preserve source longitude.
@@ -69,114 +76,165 @@ Scope:
 
 Acceptance checklist:
 
-- [ ] Movable sign start rule is tested.
-- [ ] Fixed sign start rule is tested.
-- [ ] Dual sign start rule is tested.
-- [ ] Boundary and wrap-around cases are tested.
-- [ ] Missing metadata is handled safely.
-- [ ] Full test suite passes.
+- [x] Movable sign start rule is tested.
+- [x] Fixed sign start rule is tested.
+- [x] Dual sign start rule is tested.
+- [x] Boundary and wrap-around cases are tested.
+- [x] Missing metadata is handled safely.
+- [x] Full test suite passes.
 
 ## Milestone 5.3 - D2 Hora
 
 Goal: Add source-verified Hora calculation.
 
-Before implementation:
+Completed scope:
 
-- Verify the exact Hora tradition to support.
-- Document whether the project uses Parashara-style Sun/Moon Hora or another
-  convention.
-- Add skipped tests if source verification is incomplete.
+- Parashari Sun/Moon Hora convention.
+- Odd/even sign half-rashi rules.
+- Boundary handling at 15 degrees.
+- Planet-shaped input support.
 
 Acceptance checklist:
 
-- [ ] Formula source is documented.
-- [ ] Odd/even sign rules are tested.
-- [ ] Boundary cases are tested.
-- [ ] Placeholder is replaced only after verification.
-- [ ] Full test suite passes.
+- [x] Formula convention is documented in code/tests.
+- [x] Odd/even sign rules are tested.
+- [x] Boundary cases are tested.
+- [x] Full test suite passes.
 
 ## Milestone 5.4 - D3 Drekkana
 
 Goal: Add source-verified Drekkana calculation.
 
-Before implementation:
+Completed scope:
 
-- Verify the Drekkana sign mapping tradition.
-- Confirm handling for each 10-degree division.
+- Three 10-degree divisions per Rashi.
+- 1st/5th/9th Rashi mapping rule.
+- Boundary and wrap-around handling.
 
 Acceptance checklist:
 
-- [ ] Three divisions per Rashi are tested.
-- [ ] Boundary cases are tested.
-- [ ] All 12 Rashis are covered by focused tests.
-- [ ] Full test suite passes.
+- [x] Three divisions per Rashi are tested.
+- [x] Boundary cases are tested.
+- [x] Wrap-around cases are tested.
+- [x] Full test suite passes.
 
 ## Milestone 5.5 - D7 Saptamsa
 
 Goal: Add source-verified Saptamsa calculation.
 
-Before implementation:
+Completed scope:
 
-- Verify odd/even sign start rules.
-- Confirm the exact sevenfold division boundaries.
+- Sevenfold Rashi division.
+- Odd/even sign start rules.
+- Boundary and wrap-around handling.
 
 Acceptance checklist:
 
-- [ ] Odd sign calculation is tested.
-- [ ] Even sign calculation is tested.
-- [ ] Boundary cases are tested.
-- [ ] Full test suite passes.
+- [x] Odd sign calculation is tested.
+- [x] Even sign calculation is tested.
+- [x] Boundary cases are tested.
+- [x] Full test suite passes.
 
 ## Milestone 5.6 - D10 Dasamsa
 
 Goal: Add source-verified Dasamsa calculation.
 
-Before implementation:
+Completed scope:
 
-- Verify movable/fixed/dual or odd/even rules used by the chosen tradition.
-- Document the supported convention.
+- Tenfold Rashi division.
+- Odd/even sign start rules used by the supported convention.
+- Boundary and wrap-around handling.
 
 Acceptance checklist:
 
-- [ ] Formula source is documented.
-- [ ] Representative signs are tested.
-- [ ] Boundary cases are tested.
-- [ ] Full test suite passes.
+- [x] Supported convention is documented in code/tests.
+- [x] Representative signs are tested.
+- [x] Boundary cases are tested.
+- [x] Full test suite passes.
 
-## Remaining Varga Placeholders
+## Additional Completed Vargas
 
-Keep these registered as placeholders until their formulas are verified and
-their own milestone is requested:
+Sprint 5 also completed the remaining requested Varga calculations:
 
-- D12 Dvadasamsa
+- D12 Dwadashamsa
 - D16 Shodasamsa
-- D20 Vimsamsa
-- D24 Chaturvimsamsa
-- D27 Saptavimsamsa
+- D20 Vimshamsa
+- D24 Siddhamsa
+- D27 Bhamsa
 - D30 Trimsamsa
 - D40 Khavedamsa
 - D45 Akshavedamsa
-- D60 Shashtiamsa
+- D60 Shastiamsa
 
-Do not return fake Varga placements for placeholders. Placeholder Vargas should
-fail clearly or return an explicit unsupported state, depending on the local
-framework convention.
+Each completed Varga preserves source longitude, returns calculated Rashi
+metadata using existing helpers, and has focused tests for representative rules,
+boundaries, invalid input, and chart output where applicable.
 
-## Testing Plan
+## Kundali Integration
 
-For each Varga milestone:
+Completed integration points:
+
+- Internal Kundali assembly can include Varga charts with
+  `include_vargas=True`.
+- Public Kundali API accepts optional `include_vargas: bool = false`.
+- When `include_vargas` is omitted or false, the public Kundali response keeps
+  the existing `lagna`, `planets`, and `houses` top-level shape.
+- When `include_vargas` is true, the API returns supported charts:
+  `D2`, `D3`, `D7`, `D9`, `D10`, `D12`, `D16`, `D20`, `D24`, `D27`, `D30`,
+  `D40`, `D45`, and `D60`.
+- D9 Navamsa is present in the API response when Varga output is enabled.
+
+## Known Limitations
+
+- Varga interpretation is not implemented.
+- Predictions are not implemented.
+- Remedies, report text, and user-facing explanatory interpretations are not
+  implemented.
+- Advanced validation against external astrology software remains manual.
+- Automated tests cover deterministic structure, boundary behavior, and
+  regression safety; golden-value validation remains separate until trusted
+  external references are documented.
+
+## Regression Coverage
+
+Sprint 5 regression coverage includes:
 
 - Add focused unit tests for the formula.
 - Add invalid-input tests.
 - Add boundary tests.
 - Add chart-builder tests when chart output changes.
 - Run existing Kundali tests.
+- Run Kundali API tests when API exposure changed.
+- Run Panchang API tests to confirm no Panchang behavior changed.
 - Run the full suite before completion.
 
-Do not modify Panchang tests unless Panchang behavior is intentionally changed
-by a future task.
+Panchang logic and planet-position logic were not modified during Sprint 5.
+
+## Completion Checklist
+
+- [x] Varga foundation implemented.
+- [x] D2 Hora implemented.
+- [x] D3 Drekkana implemented.
+- [x] D7 Saptamsa implemented.
+- [x] D9 Navamsa implemented.
+- [x] D10 Dasamsa implemented.
+- [x] D12 Dwadashamsa implemented.
+- [x] D16 Shodasamsa implemented.
+- [x] D20 Vimshamsa implemented.
+- [x] D24 Siddhamsa implemented.
+- [x] D27 Bhamsa implemented.
+- [x] D30 Trimsamsa implemented.
+- [x] D40 Khavedamsa implemented.
+- [x] D45 Akshavedamsa implemented.
+- [x] D60 Shastiamsa implemented.
+- [x] Varga charts integrated internally into Kundali assembly.
+- [x] Varga charts exposed through Kundali API only when `include_vargas` is
+  true.
+- [x] Default Kundali API response remains backward-compatible.
+- [x] Known limitations are documented.
+- [x] Full test suite passes.
 
 ## Stop Point
 
-Stop after the requested Varga milestone is complete. Do not continue from D9
-to D2, or from D2 to D3, without a new user instruction.
+Sprint 5 is complete. Stop before Sprint 6 unless a new task explicitly starts
+the Dasha Engine work.

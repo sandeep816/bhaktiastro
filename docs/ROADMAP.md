@@ -61,12 +61,22 @@ Goal: Build the base Kundali chart and safe foundational metadata.
 Goal: Build reusable divisional chart infrastructure.
 
 - Generic Varga framework
-- D9 Navamsa
 - D2 Hora
 - D3 Drekkana
 - D7 Saptamsa
+- D9 Navamsa
 - D10 Dasamsa
-- Remaining Vargas as future incremental tasks
+- D12 Dwadashamsa
+- D16 Shodasamsa
+- D20 Vimshamsa
+- D24 Siddhamsa
+- D27 Bhamsa
+- D30 Trimsamsa
+- D40 Khavedamsa
+- D45 Akshavedamsa
+- D60 Shastiamsa
+- Internal Kundali integration
+- Optional Kundali API exposure with `include_vargas`
 
 ## Sprint 6 - Dasha Engine Foundation
 
