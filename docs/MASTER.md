@@ -77,11 +77,9 @@ Sprint 5 completed:
 
 ## Current Sprint
 
-Sprint 5 is complete.
+Current sprint: Sprint 6 - Dasha Engine.
 
-Next sprint: Sprint 6 - Dasha Engine.
-
-Primary next sprint document: to be created when Sprint 6 begins.
+Primary sprint document: `docs/SPRINT-06.md`.
 
 Sprint 6 goal:
 
