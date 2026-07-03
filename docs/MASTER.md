@@ -29,6 +29,7 @@ project rules.
 - Sprint 3: Panchang API, fixtures, validation, and smoke coverage.
 - Sprint 4: Kundali Engine foundation.
 - Sprint 5: Divisional Charts / Varga Engine.
+- Sprint 6: Dasha Engine.
 
 Sprint 4 completed:
 
@@ -75,18 +76,34 @@ Sprint 5 completed:
 - Optional Kundali API Varga exposure with `include_vargas`
 - Sprint 5 documentation and completion checklist
 
+Sprint 6 completed:
+
+- Vimshottari Dasha constants
+- Nakshatra to Mahadasha mapping
+- Birth Dasha Balance
+- Mahadasha Timeline
+- Antardasha Engine
+- Pratyantardasha Engine
+- Current Dasha Lookup
+- Dasha Timeline Builder
+- Dasha Pydantic Schemas
+- Dasha FastAPI Endpoint
+- Validation Coverage
+- Regression Coverage
+- Sprint 6 documentation and completion checklist
+
 ## Current Sprint
 
-Current sprint: Sprint 6 - Dasha Engine.
+Current sprint: Sprint 7 - Planet Strength Engine.
 
-Primary sprint document: `docs/SPRINT-06.md`.
+Primary sprint document: `docs/SPRINT-07.md` when Sprint 7 planning begins.
 
-Sprint 6 goal:
+Sprint 7 goal:
 
-- Build deterministic Dasha infrastructure.
-- Use Nakshatra-based birth data inputs.
-- Add Vimshottari Dasha foundations.
-- Keep calculations non-interpretive and prediction-free.
+- Build deterministic planet-strength infrastructure.
+- Keep outputs non-interpretive and prediction-free.
+- Reuse existing Kundali, Rashi, house, and planet metadata.
+- Preserve backward compatibility for all existing APIs.
 
 ## Next Task Instructions
 
