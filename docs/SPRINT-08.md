@@ -1,15 +1,28 @@
 # Sprint 8 - Ashtakavarga Engine
 
-Sprint 8 plans the deterministic Ashtakavarga Engine foundation. The goal is
-to add reusable, non-interpretive bindu metadata while preserving all existing
-Panchang, Kundali, Varga, Dasha, and Strength behavior.
+Sprint 8 documents the completed deterministic Ashtakavarga Engine foundation.
+The goal was to add reusable, non-interpretive bindu metadata while preserving
+all existing Panchang, Kundali, Varga, Dasha, and Strength behavior.
 
 ## Sprint Status
 
-Status: Planned.
+Status: Complete.
 
-This sprint is documentation-first until implementation milestones are started
-explicitly. Do not add runtime Ashtakavarga code as part of the planning task.
+Sprint 8 completed the deterministic Ashtakavarga Engine foundation. Runtime
+work is limited to reusable, non-interpretive calculation structures and
+optional Kundali metadata/API exposure.
+
+Completed Sprint 8 features:
+
+- Ashtakavarga foundation constants.
+- Bhinnashtakavarga rule table.
+- Bhinnashtakavarga calculation foundation.
+- Sarvashtakavarga calculation foundation.
+- Ashtakavarga Summary Builder.
+- Internal Kundali Ashtakavarga integration.
+- Optional Kundali API Ashtakavarga exposure with `include_ashtakavarga`.
+- Validation coverage.
+- Regression coverage.
 
 ## Sprint Rules
 
@@ -69,10 +82,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Sprint 8 document exists.
-- [ ] Master document points to Sprint 8.
-- [ ] No runtime source code is changed.
-- [ ] Documentation-only checks are run if the repository defines them.
+- [x] Sprint 8 document exists.
+- [x] Master document points to Sprint 8.
+- [x] No runtime source code is changed.
+- [x] Documentation-only checks are run if the repository defines them.
 
 ## Milestone 8.2 - Ashtakavarga Constants Foundation
 
@@ -87,10 +100,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Supported planets can be discovered.
-- [ ] Unsupported planets fail safely.
-- [ ] Constants and placeholder structures are JSON-safe.
-- [ ] Focused tests cover lookup and invalid input behavior.
+- [x] Supported planets can be discovered.
+- [x] Unsupported planets fail safely.
+- [x] Constants and placeholder structures are JSON-safe.
+- [x] Focused tests cover lookup and invalid input behavior.
 
 ## Milestone 8.3 - Planet-Wise Bindu Rules Foundation
 
@@ -105,10 +118,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Planet-wise rule lookup is tested.
-- [ ] Unsupported planet lookup fails safely.
-- [ ] Source-verification gaps remain explicit.
-- [ ] Full relevant suite passes.
+- [x] Planet-wise rule lookup is tested.
+- [x] Unsupported planet lookup fails safely.
+- [x] Source-verification gaps remain explicit.
+- [x] Full relevant suite passes.
 
 ## Milestone 8.4 - Bhinnashtakavarga Foundation
 
@@ -123,10 +136,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Bhinnashtakavarga output shape is tested.
-- [ ] Missing planet and house data fail safely.
-- [ ] Bindu totals are numeric and bounded by the chosen rule structure.
-- [ ] Full relevant suite passes.
+- [x] Bhinnashtakavarga output shape is tested.
+- [x] Missing planet and house data fail safely.
+- [x] Bindu totals are numeric and bounded by the chosen rule structure.
+- [x] Full relevant suite passes.
 
 ## Milestone 8.5 - Sarvashtakavarga Foundation
 
@@ -141,66 +154,32 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Sarvashtakavarga output shape is tested.
-- [ ] Aggregate totals are calculated from component bindus.
-- [ ] Missing components are represented safely.
-- [ ] Full relevant suite passes.
+- [x] Sarvashtakavarga output shape is tested.
+- [x] Aggregate totals are calculated from component bindus.
+- [x] Missing components are represented safely.
+- [x] Full relevant suite passes.
 
 ## Milestone 8.6 - House-Wise Bindu Summary
 
-Goal: Add reusable house-wise bindu summary helpers.
+Goal: Add reusable Ashtakavarga Summary Builder with house-wise ranking.
 
 Planned scope:
 
-- Summarize bindus by one-based house number.
+- Summarize Sarvashtakavarga bindus by one-based house number.
+- Build strongest/weakest house metadata.
+- Build deterministic house ranking.
 - Reuse existing Bhava and house normalization helpers.
 - Avoid interpretation labels or predictive text.
 - Keep invalid house data safe.
 
 Acceptance checklist:
 
-- [ ] House-wise summary output is tested.
-- [ ] Invalid house numbers are handled safely.
-- [ ] Output remains JSON-safe.
-- [ ] Full relevant suite passes.
+- [x] House-wise summary output is tested.
+- [x] Invalid house numbers are handled safely.
+- [x] Output remains JSON-safe.
+- [x] Full relevant suite passes.
 
-## Milestone 8.7 - Rashi-Wise Bindu Summary
-
-Goal: Add reusable Rashi-wise bindu summary helpers.
-
-Planned scope:
-
-- Summarize bindus by Rashi.
-- Reuse existing Rashi metadata and normalization helpers.
-- Preserve Rashi index and name metadata when available.
-- Keep invalid Rashi data safe.
-
-Acceptance checklist:
-
-- [ ] Rashi-wise summary output is tested.
-- [ ] Invalid Rashi values are handled safely.
-- [ ] Output remains JSON-safe.
-- [ ] Full relevant suite passes.
-
-## Milestone 8.8 - Transit Support Foundation
-
-Goal: Prepare deterministic structures for future Ashtakavarga transit use.
-
-Planned scope:
-
-- Define input contracts for transit planet placement data.
-- Reuse already-calculated planet positions when supplied.
-- Do not call astronomy calculations directly.
-- Return placeholder/support metadata only where rules are not implemented.
-
-Acceptance checklist:
-
-- [ ] Transit support structures are tested.
-- [ ] Missing transit data fails safely.
-- [ ] No new astronomy calculation path is introduced.
-- [ ] Full relevant suite passes.
-
-## Milestone 8.9 - Kundali Internal Integration
+## Milestone 8.7 - Kundali Internal Integration
 
 Goal: Integrate Ashtakavarga summaries into Kundali assembly internally.
 
@@ -213,12 +192,12 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Internal Kundali integration is opt-in or otherwise backward-compatible.
-- [ ] Existing Kundali chart tests continue to pass.
-- [ ] Missing chart data fails safely.
-- [ ] Full relevant suite passes.
+- [x] Internal Kundali integration is opt-in and backward-compatible.
+- [x] Existing Kundali chart tests continue to pass.
+- [x] Missing chart data fails safely.
+- [x] Full relevant suite passes.
 
-## Milestone 8.10 - Optional Kundali/API Exposure
+## Milestone 8.8 - Optional Kundali/API Exposure
 
 Goal: Expose Ashtakavarga output only after internal structures are stable.
 
@@ -231,32 +210,46 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Default API responses remain backward-compatible.
-- [ ] Optional Ashtakavarga output is gated by an explicit flag.
-- [ ] Invalid requests return validation errors.
-- [ ] Existing API tests still pass.
-- [ ] Full suite passes.
+- [x] Default API responses remain backward-compatible.
+- [x] Optional Ashtakavarga output is gated by `include_ashtakavarga`.
+- [x] Invalid requests return validation errors.
+- [x] Existing API tests still pass.
+- [x] Full suite passes.
 
-## Milestone 8.11 - Validation and Regression Coverage
+## Milestone 8.9 - Validation and Regression Coverage
 
 Goal: Add broad validation and regression coverage for Sprint 8 outputs.
 
 Planned scope:
 
 - Validate unsupported planets and invalid chart data.
-- Validate invalid Rashi and house metadata.
+- Validate invalid house metadata.
 - Test JSON serialization for all new Ashtakavarga outputs.
 - Test Kundali/API backward compatibility when optional exposure exists.
 
 Acceptance checklist:
 
-- [ ] Invalid input cases are covered.
-- [ ] JSON-safe outputs are covered.
-- [ ] Regression tests cover default Kundali/API behavior.
-- [ ] Full relevant suite passes.
+- [x] Invalid input cases are covered.
+- [x] JSON-safe outputs are covered.
+- [x] Regression tests cover default Kundali/API behavior.
+- [x] Full relevant suite passes.
+
+## Deferred Sprint 8 Ideas
+
+The following items remain outside the completed Sprint 8 scope and can be
+planned in future milestones if needed:
+
+- Rashi-wise bindu summary.
+- Transit support foundation.
+- Transit-based Ashtakavarga interpretation.
+- Full classical/manual validation fixtures.
 
 ## Known Non-Goals
 
+- Foundation-level Ashtakavarga only.
+- Full classical validation remains manual.
+- Transit-based Ashtakavarga interpretation is not implemented yet.
+- Predictive interpretation is not included in this sprint.
 - Predictions are not implemented in Sprint 8.
 - Interpretive Ashtakavarga text is not implemented in Sprint 8.
 - Remedies are not implemented in Sprint 8.
@@ -268,15 +261,32 @@ Acceptance checklist:
 
 For each Sprint 8 implementation milestone:
 
-- [ ] Existing Panchang tests pass.
-- [ ] Existing Kundali tests pass.
-- [ ] Existing Varga tests pass.
-- [ ] Existing Dasha tests pass.
-- [ ] Existing Strength tests pass.
-- [ ] New Ashtakavarga unit tests cover valid, boundary, and invalid inputs.
-- [ ] JSON serialization safety is tested for new Ashtakavarga outputs.
-- [ ] API tests are added only when API behavior changes.
-- [ ] Full relevant suite passes before the milestone is marked complete.
+- [x] Existing Panchang tests pass.
+- [x] Existing Kundali tests pass.
+- [x] Existing Varga tests pass.
+- [x] Existing Dasha tests pass.
+- [x] Existing Strength tests pass.
+- [x] New Ashtakavarga unit tests cover valid, boundary, and invalid inputs.
+- [x] JSON serialization safety is tested for new Ashtakavarga outputs.
+- [x] API tests are added only when API behavior changes.
+- [x] Full relevant suite passes before the milestone is marked complete.
+
+## Sprint 8 Completion Checklist
+
+- [x] Ashtakavarga foundation constants are implemented.
+- [x] Bhinnashtakavarga rule table is implemented.
+- [x] Bhinnashtakavarga calculation foundation is implemented.
+- [x] Sarvashtakavarga calculation foundation is implemented.
+- [x] Ashtakavarga Summary Builder is implemented.
+- [x] Internal Kundali Ashtakavarga integration is implemented.
+- [x] Optional Kundali API Ashtakavarga exposure is implemented with
+      `include_ashtakavarga`.
+- [x] Validation coverage is added.
+- [x] Regression coverage is added.
+- [x] Existing API behavior remains backward-compatible.
+- [x] Outputs remain JSON-safe.
+- [x] Predictive interpretation remains out of scope.
+- [x] Sprint 8 is ready to close.
 
 ## Stop Point
 

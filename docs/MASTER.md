@@ -31,6 +31,7 @@ project rules.
 - Sprint 5: Divisional Charts / Varga Engine.
 - Sprint 6: Dasha Engine.
 - Sprint 7: Planet Strength Engine.
+- Sprint 8: Ashtakavarga Engine.
 
 Sprint 4 completed:
 
@@ -111,15 +112,28 @@ Sprint 7 completed:
 - Regression Coverage
 - Sprint 7 documentation and completion checklist
 
+Sprint 8 completed:
+
+- Ashtakavarga Foundation Constants
+- Bhinnashtakavarga Rule Table
+- Bhinnashtakavarga Calculation Foundation
+- Sarvashtakavarga Calculation Foundation
+- Ashtakavarga Summary Builder
+- Internal Kundali Ashtakavarga Integration
+- Optional Kundali API Ashtakavarga Exposure with `include_ashtakavarga`
+- Validation Coverage
+- Regression Coverage
+- Sprint 8 documentation and completion checklist
+
 ## Current Sprint
 
-Current sprint: Sprint 8 - Ashtakavarga Engine.
+Current sprint: Sprint 9 - Advanced Lagna and Arudha Engine.
 
-Primary sprint document: `docs/SPRINT-08.md`.
+Primary sprint document: `docs/SPRINT-09.md` when initialized.
 
-Sprint 8 goal:
+Sprint 9 goal:
 
-- Build deterministic Ashtakavarga infrastructure.
+- Build deterministic Advanced Lagna and Arudha infrastructure.
 - Keep outputs non-interpretive and prediction-free.
 - Reuse existing Kundali, Rashi, house, and planet metadata where applicable.
 - Preserve backward compatibility for all existing APIs.
