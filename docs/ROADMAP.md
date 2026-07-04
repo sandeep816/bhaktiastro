@@ -98,13 +98,19 @@ Goal: Add reusable non-interpretive strength metadata.
 - Safe strength placeholder structure
 - No predictions
 
-## Sprint 8 - Expanded Yoga Detector Foundation
+## Sprint 8 - Ashtakavarga Engine
 
-Goal: Extend deterministic yoga detection carefully.
+Goal: Build reusable deterministic Ashtakavarga infrastructure.
 
-- Registry-driven yoga detectors
-- Additional source-verified yoga rules
-- Negative and missing-data safety tests
+- Ashtakavarga constants and foundation utilities
+- Bhinnashtakavarga foundation
+- Sarvashtakavarga foundation
+- Planet-wise bindu rules
+- House-wise bindu summary
+- Rashi-wise bindu summary
+- Transit support foundation
+- Optional Kundali/API exposure
+- Validation and regression coverage
 - No interpretation text
 
 ## Sprint 9 - Dosha Detector Foundation

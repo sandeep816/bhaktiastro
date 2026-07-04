@@ -115,7 +115,7 @@ Sprint 7 completed:
 
 Current sprint: Sprint 8 - Ashtakavarga Engine.
 
-Primary sprint document: to be created for Sprint 8.
+Primary sprint document: `docs/SPRINT-08.md`.
 
 Sprint 8 goal:
 
