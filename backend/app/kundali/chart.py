@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Optional, TypedDict, cast
 
+from backend.app.ashtakavarga.summary import AshtakavargaSummary
+from backend.app.ashtakavarga.summary import build_ashtakavarga_summary
 from backend.app.astronomy import (
     ayanamsa,
     julian,
@@ -79,6 +81,7 @@ class KundaliChart(TypedDict, total=False):
     houses: list[HousePlaceholder]
     vargas: dict[str, varga.VargaChart]
     strength: PlanetStrengthSummary
+    ashtakavarga: AshtakavargaSummary
 
 
 def assemble_kundali_chart(
@@ -94,14 +97,15 @@ def assemble_kundali_chart(
     ayanamsa_mode: Optional[str] = None,
     include_vargas: bool = False,
     include_strength: bool = False,
+    include_ashtakavarga: bool = False,
 ) -> KundaliChart:
     """Assemble a basic internal Kundali chart.
 
     This foundation chart contains Lagna, sidereal planet positions enriched
     with Rashi metadata, and 12 placeholder houses. It deliberately avoids
     predictions, advanced house systems, and public API integration. Varga
-    charts and strength summaries remain optional internal metadata until the
-    public schema supports them.
+    charts, strength summaries, and Ashtakavarga summaries remain optional
+    internal metadata until the public schema supports them.
     """
 
     julian_day = julian.calculate_julian_day(
@@ -157,6 +161,8 @@ def assemble_kundali_chart(
         chart_data["vargas"] = assemble_varga_charts(chart_data)
     if include_strength:
         chart_data["strength"] = build_planet_strength_summary(chart_data)
+    if include_ashtakavarga:
+        chart_data["ashtakavarga"] = build_ashtakavarga_summary(chart_data)
 
     return chart_data
 

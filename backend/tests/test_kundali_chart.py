@@ -270,6 +270,84 @@ def test_internal_strength_summary_output_is_json_safe(
     json.dumps(result)
 
 
+def test_assemble_kundali_chart_can_include_internal_ashtakavarga_summary(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        _fake_ashtakavarga_planets(),
+        include_ashtakavarga=True,
+    )
+
+    assert set(result) == {"lagna", "planets", "houses", "ashtakavarga"}
+    assert "sarvashtakavarga" in result["ashtakavarga"]
+    assert "bhinnashtakavarga" in result["ashtakavarga"]
+    assert len(result["ashtakavarga"]["house_ranking"]) == 12
+
+
+def test_internal_ashtakavarga_summary_contains_sav_and_bav(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        _fake_ashtakavarga_planets(),
+        include_ashtakavarga=True,
+    )
+
+    ashtakavarga = result["ashtakavarga"]
+
+    assert set(ashtakavarga["sarvashtakavarga"]["houses"]) == set(range(1, 13))
+    assert set(ashtakavarga["bhinnashtakavarga"]) == {
+        "sun",
+        "moon",
+        "mars",
+        "mercury",
+        "jupiter",
+        "venus",
+        "saturn",
+    }
+
+
+def test_assemble_kundali_chart_default_structure_excludes_ashtakavarga(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        _fake_ashtakavarga_planets(),
+    )
+
+    assert set(result) == {"lagna", "planets", "houses"}
+    assert "ashtakavarga" not in result
+
+
+def test_internal_ashtakavarga_summary_handles_missing_planet_data_safely(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [],
+        include_ashtakavarga=True,
+    )
+
+    assert result["planets"] == []
+    assert "sarvashtakavarga" in result["ashtakavarga"]
+    assert "bhinnashtakavarga" in result["ashtakavarga"]
+    assert result["ashtakavarga"]["strongest_house"] is not None
+    assert result["ashtakavarga"]["weakest_house"] is not None
+
+
+def test_internal_ashtakavarga_summary_output_is_json_safe(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        _fake_ashtakavarga_planets(),
+        include_ashtakavarga=True,
+    )
+
+    json.dumps(result)
+
+
 def test_placeholder_houses_have_twelve_houses() -> None:
     houses = chart._build_placeholder_houses()
 
@@ -375,6 +453,7 @@ def _assemble_fake_chart(
     monkeypatch: pytest.MonkeyPatch,
     fake_planets: list[dict[str, object]],
     include_strength: bool = False,
+    include_ashtakavarga: bool = False,
 ) -> chart.KundaliChart:
     fake_julian = SimpleNamespace(julian_day_ut=2447893.770833)
     monkeypatch.setattr(chart.julian, "calculate_julian_day", lambda *args: fake_julian)
@@ -397,7 +476,20 @@ def _assemble_fake_chart(
         26.9124,
         75.7873,
         include_strength=include_strength,
+        include_ashtakavarga=include_ashtakavarga,
     )
+
+
+def _fake_ashtakavarga_planets() -> list[dict[str, object]]:
+    return [
+        {"planet": "sun", "sidereal_longitude": 0.0},
+        {"planet": "moon", "sidereal_longitude": 30.0},
+        {"planet": "mars", "sidereal_longitude": 60.0, "speed": 1.0},
+        {"planet": "mercury", "sidereal_longitude": 90.0, "speed": 1.0},
+        {"planet": "jupiter", "sidereal_longitude": 120.0, "speed": 1.0},
+        {"planet": "venus", "sidereal_longitude": 150.0, "speed": 1.0},
+        {"planet": "saturn", "sidereal_longitude": 180.0, "speed": 1.0},
+    ]
 
 
 def _fake_chart_for_vargas() -> chart.KundaliChart:
