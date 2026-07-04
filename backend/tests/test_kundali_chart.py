@@ -348,6 +348,113 @@ def test_internal_ashtakavarga_summary_output_is_json_safe(
     json.dumps(result)
 
 
+def test_assemble_kundali_chart_can_include_internal_special_lagna_summary(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        _fake_special_lagna_planets(),
+        include_special_lagna=True,
+    )
+
+    assert set(result) == {"lagna", "planets", "houses", "special_lagna"}
+    assert "arudha_lagna" in result["special_lagna"]
+    assert "upapada_lagna" in result["special_lagna"]
+    assert "bhava_cusps" in result["special_lagna"]
+
+
+def test_internal_special_lagna_summary_contains_arudha_and_upapada(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        _fake_special_lagna_planets(),
+        include_special_lagna=True,
+    )
+
+    special_lagna = result["special_lagna"]
+
+    assert special_lagna["arudha_lagna"]["metadata"]["component"] == "arudha_lagna"
+    assert (
+        special_lagna["arudha_lagna"]["metadata"]["calculation_status"]
+        == "calculated"
+    )
+    assert special_lagna["upapada_lagna"]["metadata"]["component"] == "upapada_lagna"
+    assert (
+        special_lagna["upapada_lagna"]["metadata"]["calculation_status"]
+        == "calculated"
+    )
+
+
+def test_internal_special_lagna_summary_contains_bhava_cusps(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        _fake_special_lagna_planets(),
+        include_special_lagna=True,
+    )
+
+    bhava_cusps = result["special_lagna"]["bhava_cusps"]
+
+    assert bhava_cusps["house_system"] == "equal_foundation"
+    assert len(bhava_cusps["house_cusps"]) == 12
+    assert bhava_cusps["house_cusps"][0]["cusp_longitude"] == 23.25
+
+
+def test_assemble_kundali_chart_default_structure_excludes_special_lagna(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        _fake_special_lagna_planets(),
+    )
+
+    assert set(result) == {"lagna", "planets", "houses"}
+    assert "special_lagna" not in result
+
+
+def test_internal_special_lagna_summary_handles_missing_context_safely(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        _fake_special_lagna_planets(),
+        include_special_lagna=True,
+    )
+
+    special_lagna = result["special_lagna"]
+
+    assert special_lagna["metadata"]["context_available"] is True
+    assert special_lagna["metadata"]["birth_datetime_available"] is True
+    assert special_lagna["metadata"]["sunrise_datetime_available"] is False
+    assert (
+        special_lagna["hora_lagna"]["metadata"]["calculation_status"]
+        == "missing_data"
+    )
+    assert special_lagna["hora_lagna"]["metadata"]["missing_fields"] == [
+        "sunrise_datetime"
+    ]
+    assert special_lagna["ghati_lagna"]["metadata"]["calculation_status"] == (
+        "missing_data"
+    )
+    assert special_lagna["ghati_lagna"]["metadata"]["missing_fields"] == [
+        "sunrise_datetime"
+    ]
+
+
+def test_internal_special_lagna_summary_output_is_json_safe(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        _fake_special_lagna_planets(),
+        include_special_lagna=True,
+    )
+
+    json.dumps(result)
+
+
 def test_placeholder_houses_have_twelve_houses() -> None:
     houses = chart._build_placeholder_houses()
 
@@ -454,6 +561,7 @@ def _assemble_fake_chart(
     fake_planets: list[dict[str, object]],
     include_strength: bool = False,
     include_ashtakavarga: bool = False,
+    include_special_lagna: bool = False,
 ) -> chart.KundaliChart:
     fake_julian = SimpleNamespace(julian_day_ut=2447893.770833)
     monkeypatch.setattr(chart.julian, "calculate_julian_day", lambda *args: fake_julian)
@@ -477,6 +585,7 @@ def _assemble_fake_chart(
         75.7873,
         include_strength=include_strength,
         include_ashtakavarga=include_ashtakavarga,
+        include_special_lagna=include_special_lagna,
     )
 
 
@@ -489,6 +598,13 @@ def _fake_ashtakavarga_planets() -> list[dict[str, object]]:
         {"planet": "jupiter", "sidereal_longitude": 120.0, "speed": 1.0},
         {"planet": "venus", "sidereal_longitude": 150.0, "speed": 1.0},
         {"planet": "saturn", "sidereal_longitude": 180.0, "speed": 1.0},
+    ]
+
+
+def _fake_special_lagna_planets() -> list[dict[str, object]]:
+    return [
+        {"planet": "mars", "sidereal_longitude": 30.0, "speed": 1.0},
+        {"planet": "jupiter", "sidereal_longitude": 30.0, "speed": 1.0},
     ]
 
 

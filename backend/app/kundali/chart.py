@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from datetime import datetime
 from typing import Optional, TypedDict, cast
 
 from backend.app.ashtakavarga.summary import AshtakavargaSummary
@@ -25,6 +26,8 @@ from backend.app.kundali import (
     rashi as rashi_engine,
     varga,
 )
+from backend.app.kundali.special_lagna_summary import SpecialLagnaSummary
+from backend.app.kundali.special_lagna_summary import build_special_lagna_summary
 from backend.app.strength.summary import PlanetStrengthSummary
 from backend.app.strength.summary import build_planet_strength_summary
 
@@ -82,6 +85,7 @@ class KundaliChart(TypedDict, total=False):
     vargas: dict[str, varga.VargaChart]
     strength: PlanetStrengthSummary
     ashtakavarga: AshtakavargaSummary
+    special_lagna: SpecialLagnaSummary
 
 
 def assemble_kundali_chart(
@@ -98,14 +102,16 @@ def assemble_kundali_chart(
     include_vargas: bool = False,
     include_strength: bool = False,
     include_ashtakavarga: bool = False,
+    include_special_lagna: bool = False,
 ) -> KundaliChart:
     """Assemble a basic internal Kundali chart.
 
     This foundation chart contains Lagna, sidereal planet positions enriched
     with Rashi metadata, and 12 placeholder houses. It deliberately avoids
     predictions, advanced house systems, and public API integration. Varga
-    charts, strength summaries, and Ashtakavarga summaries remain optional
-    internal metadata until the public schema supports them.
+    charts, strength summaries, Ashtakavarga summaries, and special Lagna
+    summaries remain optional internal metadata until the public schema supports
+    them.
     """
 
     julian_day = julian.calculate_julian_day(
@@ -163,6 +169,13 @@ def assemble_kundali_chart(
         chart_data["strength"] = build_planet_strength_summary(chart_data)
     if include_ashtakavarga:
         chart_data["ashtakavarga"] = build_ashtakavarga_summary(chart_data)
+    if include_special_lagna:
+        chart_data["special_lagna"] = build_special_lagna_summary(
+            chart_data,
+            {
+                "birth_datetime": datetime(year, month, day, hour, minute, second),
+            },
+        )
 
     return chart_data
 
