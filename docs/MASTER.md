@@ -142,14 +142,16 @@ Sprint 9 completed:
 
 ## Current Sprint
 
-Current sprint: Sprint 10 - Prediction Engine Foundation.
+Current sprint: Sprint 10A - Prediction Framework Architecture.
 
-Primary sprint document: `docs/SPRINT-10.md`.
+Primary sprint document: `docs/SPRINT-10A.md`.
 
-Sprint 10 goal:
+Sprint 10A goal:
 
-- Define safe prediction engine boundaries over completed deterministic data.
-- Keep predictive output gated behind explicit, reviewed structures.
+- Define deterministic-first prediction framework architecture.
+- Keep prediction rules, conditions, context building, analyzers, adapters, and
+  composition boundaries explicit before runtime work begins.
+- Keep AI-generated summaries outside the core engine.
 - Reuse existing Panchang, Kundali, Varga, Dasha, Strength, Ashtakavarga, and
   special Lagna foundations.
 - Preserve backward compatibility for all existing APIs.
