@@ -65,10 +65,12 @@ class KundaliApiTest(unittest.TestCase):
         self.assertFalse(request.include_vargas)
         self.assertFalse(request.include_strength)
         self.assertFalse(request.include_ashtakavarga)
+        self.assertFalse(request.include_special_lagnas)
         self.assertEqual(set(data.keys()), {"lagna", "planets", "houses"})
         self.assertNotIn("vargas", data)
         self.assertNotIn("strength", data)
         self.assertNotIn("ashtakavarga", data)
+        self.assertNotIn("special_lagna", data)
 
     def test_kundali_route_without_include_strength_remains_unchanged(self) -> None:
         response = get_kundali(_jaipur_request())
@@ -85,6 +87,15 @@ class KundaliApiTest(unittest.TestCase):
 
         self.assertEqual(set(data.keys()), {"lagna", "planets", "houses"})
         self.assertNotIn("ashtakavarga", data)
+
+    def test_kundali_route_without_include_special_lagnas_remains_unchanged(
+        self,
+    ) -> None:
+        response = get_kundali(_jaipur_request())
+        data = response.model_dump(mode="json")
+
+        self.assertEqual(set(data.keys()), {"lagna", "planets", "houses"})
+        self.assertNotIn("special_lagna", data)
 
     def test_kundali_route_can_include_supported_vargas(self) -> None:
         response = get_kundali(_jaipur_request(include_vargas=True))
@@ -189,6 +200,26 @@ class KundaliApiTest(unittest.TestCase):
             },
         )
 
+    def test_kundali_route_can_include_special_lagna_summary(self) -> None:
+        response = get_kundali(_jaipur_request(include_special_lagnas=True))
+        data = response.model_dump(mode="json")
+
+        self.assertIn("special_lagna", data)
+        self.assertIn("arudha_lagna", data["special_lagna"])
+        self.assertIn("upapada_lagna", data["special_lagna"])
+        self.assertIn("hora_lagna", data["special_lagna"])
+        self.assertIn("ghati_lagna", data["special_lagna"])
+        self.assertIn("bhava_cusps", data["special_lagna"])
+
+    def test_special_lagna_summary_contains_bhava_cusps(self) -> None:
+        response = get_kundali(_jaipur_request(include_special_lagnas=True))
+        data = response.model_dump(mode="json")
+
+        bhava_cusps = data["special_lagna"]["bhava_cusps"]
+
+        self.assertEqual(bhava_cusps["house_system"], "equal_foundation")
+        self.assertEqual(len(bhava_cusps["house_cusps"]), 12)
+
     def test_response_contains_planet_rashi_metadata(self) -> None:
         response = get_kundali(_jaipur_request())
         data = response.model_dump(mode="json")
@@ -213,6 +244,7 @@ class KundaliApiTest(unittest.TestCase):
                 longitude=75.7873,
                 include_vargas=True,
                 include_ashtakavarga=True,
+                include_special_lagnas=True,
             )
 
     def test_invalid_timezone_returns_validation_error(self) -> None:
@@ -272,6 +304,7 @@ def _jaipur_request(
     include_vargas: bool = False,
     include_strength: bool = False,
     include_ashtakavarga: bool = False,
+    include_special_lagnas: bool = False,
 ) -> KundaliRequest:
     return KundaliRequest(
         year=1990,
@@ -287,6 +320,7 @@ def _jaipur_request(
         include_vargas=include_vargas,
         include_strength=include_strength,
         include_ashtakavarga=include_ashtakavarga,
+        include_special_lagnas=include_special_lagnas,
     )
 
 

@@ -83,6 +83,10 @@ class KundaliRequest(BaseModel):
         False,
         description="Opt-in flag to include Ashtakavarga Summary.",
     )
+    include_special_lagnas: bool = Field(
+        False,
+        description="Opt-in flag to include Special Lagna Summary.",
+    )
 
 
 class StrictResponseModel(BaseModel):
@@ -475,4 +479,8 @@ class KundaliResponse(StrictResponseModel):
     ashtakavarga: Optional[dict[str, Any]] = Field(
         MISSING,
         description="Optional Ashtakavarga Summary when explicitly requested.",
+    )
+    special_lagna: Optional[dict[str, Any]] = Field(
+        MISSING,
+        description="Optional Special Lagna Summary when explicitly requested.",
     )
