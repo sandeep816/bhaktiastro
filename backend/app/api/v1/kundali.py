@@ -28,6 +28,7 @@ def get_kundali(request: KundaliRequest) -> KundaliResponse:
             ayanamsa_mode=request.ayanamsa,
             include_vargas=request.include_vargas,
             include_strength=request.include_strength,
+            include_ashtakavarga=request.include_ashtakavarga,
         )
     except (TypeError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

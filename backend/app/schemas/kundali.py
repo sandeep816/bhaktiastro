@@ -79,6 +79,10 @@ class KundaliRequest(BaseModel):
         False,
         description="Opt-in flag to include Planet Strength Summary.",
     )
+    include_ashtakavarga: bool = Field(
+        False,
+        description="Opt-in flag to include Ashtakavarga Summary.",
+    )
 
 
 class StrictResponseModel(BaseModel):
@@ -467,4 +471,8 @@ class KundaliResponse(StrictResponseModel):
     strength: Optional[dict[str, Any]] = Field(
         MISSING,
         description="Optional Planet Strength Summary when explicitly requested.",
+    )
+    ashtakavarga: Optional[dict[str, Any]] = Field(
+        MISSING,
+        description="Optional Ashtakavarga Summary when explicitly requested.",
     )
