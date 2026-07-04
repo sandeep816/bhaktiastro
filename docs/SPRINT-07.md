@@ -6,11 +6,28 @@ all existing Panchang, Kundali, Varga, and Dasha behavior.
 
 ## Sprint Status
 
-Status: Planned.
+Status: Completed.
 
-This sprint is documentation-first until implementation milestones are started
-explicitly. Do not add runtime Planet Strength code as part of the planning
-task.
+Sprint 7 implementation is complete. The sprint delivered reusable,
+foundation-level Planet Strength infrastructure, internal Kundali integration,
+optional Kundali API exposure, and validation/regression coverage.
+
+## Completed Features
+
+- Shadbala foundation utilities.
+- Sthana Bala foundation.
+- Dig Bala foundation.
+- Kala Bala foundation.
+- Chesta Bala foundation.
+- Naisargika Bala foundation.
+- Drik Bala foundation.
+- Shadbala aggregator foundation.
+- Ishta/Kashta Bala foundation.
+- Planet Strength Summary Builder.
+- Internal Kundali strength integration.
+- Optional Kundali API strength exposure with `include_strength`.
+- Strength validation coverage.
+- Strength regression coverage.
 
 ## Sprint Rules
 
@@ -274,20 +291,44 @@ Acceptance checklist:
 - External astrology software validation remains manual until trusted reference
   sources and fixtures are documented.
 
+## Known Limitations
+
+- Sprint 7 implements foundation-level scoring only.
+- Full classical Shadbala precision is not implemented yet.
+- Manual and external astrology validation remains separate from automated
+  structural tests.
+- Predictive interpretation is not included in this sprint.
+
 ## Regression Checklist
 
 For each Sprint 7 implementation milestone:
 
-- [ ] Existing Panchang tests pass.
-- [ ] Existing Kundali tests pass.
-- [ ] Existing Varga tests pass.
-- [ ] Existing Dasha tests pass.
-- [ ] New strength unit tests cover valid, boundary, and invalid inputs.
-- [ ] JSON serialization safety is tested for new strength outputs.
-- [ ] API tests are added only when API behavior changes.
-- [ ] Full relevant suite passes before the milestone is marked complete.
+- [x] Existing Panchang tests pass.
+- [x] Existing Kundali tests pass.
+- [x] Existing Varga tests pass.
+- [x] Existing Dasha tests pass.
+- [x] New strength unit tests cover valid, boundary, and invalid inputs.
+- [x] JSON serialization safety is tested for new strength outputs.
+- [x] API tests are added only when API behavior changes.
+- [x] Full relevant suite passes before the milestone is marked complete.
+
+## Sprint 7 Completion Checklist
+
+- [x] Shadbala constants and component registry are implemented.
+- [x] All six foundation Shadbala components are implemented.
+- [x] Shadbala aggregator foundation is implemented.
+- [x] Ishta/Kashta Bala foundation is implemented.
+- [x] Planet Strength Summary Builder is implemented.
+- [x] Kundali chart assembly can include internal strength metadata.
+- [x] Kundali API exposes strength summary only through `include_strength`.
+- [x] Default Kundali API responses remain backward-compatible.
+- [x] Validation and regression coverage is present.
+- [x] JSON-safe strength output is covered by tests.
+- [x] No Panchang, Varga, or Dasha behavior was changed.
+- [x] Sprint 7 documentation is complete.
 
 ## Stop Point
 
-Stop after each requested Sprint 7 milestone is complete. Do not move from
-planning into runtime implementation without a new task.
+Sprint 7 Planet Strength Engine is complete.
+
+Next sprint: Sprint 8 - Ashtakavarga Engine.

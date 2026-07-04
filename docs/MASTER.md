@@ -30,6 +30,7 @@ project rules.
 - Sprint 4: Kundali Engine foundation.
 - Sprint 5: Divisional Charts / Varga Engine.
 - Sprint 6: Dasha Engine.
+- Sprint 7: Planet Strength Engine.
 
 Sprint 4 completed:
 
@@ -92,17 +93,35 @@ Sprint 6 completed:
 - Regression Coverage
 - Sprint 6 documentation and completion checklist
 
+Sprint 7 completed:
+
+- Shadbala Foundation Utilities
+- Sthana Bala Foundation
+- Dig Bala Foundation
+- Kala Bala Foundation
+- Chesta Bala Foundation
+- Naisargika Bala Foundation
+- Drik Bala Foundation
+- Shadbala Aggregator Foundation
+- Ishta/Kashta Bala Foundation
+- Planet Strength Summary Builder
+- Internal Kundali Strength Integration
+- Optional Kundali API Strength Exposure with `include_strength`
+- Validation Coverage
+- Regression Coverage
+- Sprint 7 documentation and completion checklist
+
 ## Current Sprint
 
-Current sprint: Sprint 7 - Planet Strength Engine.
+Current sprint: Sprint 8 - Ashtakavarga Engine.
 
-Primary sprint document: `docs/SPRINT-07.md`.
+Primary sprint document: to be created for Sprint 8.
 
-Sprint 7 goal:
+Sprint 8 goal:
 
-- Build deterministic planet-strength infrastructure.
+- Build deterministic Ashtakavarga infrastructure.
 - Keep outputs non-interpretive and prediction-free.
-- Reuse existing Kundali, Rashi, house, and planet metadata.
+- Reuse existing Kundali, Rashi, house, and planet metadata where applicable.
 - Preserve backward compatibility for all existing APIs.
 
 ## Next Task Instructions
