@@ -129,7 +129,7 @@ Sprint 8 completed:
 
 Current sprint: Sprint 9 - Advanced Lagna and Arudha Engine.
 
-Primary sprint document: `docs/SPRINT-09.md` when initialized.
+Primary sprint document: `docs/SPRINT-09.md`.
 
 Sprint 9 goal:
 

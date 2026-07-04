@@ -113,15 +113,19 @@ Goal: Build reusable deterministic Ashtakavarga infrastructure.
 - Validation and regression coverage
 - No interpretation text
 
-## Sprint 9 - Dosha Detector Foundation
+## Sprint 9 - Advanced Lagna and Arudha Engine
 
-Goal: Add safe, source-verified dosha rule infrastructure.
+Goal: Add safe, source-verified special Lagna infrastructure.
 
-- Generic dosha result structure
-- Manglik foundation if verified
-- Kala Sarpa foundation if verified
-- Missing-data safety handling
-- No remedies or predictions
+- Arudha Lagna foundation
+- Upapada Lagna foundation
+- Hora Lagna foundation
+- Ghati Lagna foundation
+- Bhava Madhya / cusp foundation
+- Special Lagna summary builder
+- Optional Kundali/API exposure
+- Validation and regression coverage
+- No interpretation text
 
 ## Sprint 10 - Muhurat Foundation
 
