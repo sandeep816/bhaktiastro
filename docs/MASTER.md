@@ -32,6 +32,7 @@ project rules.
 - Sprint 6: Dasha Engine.
 - Sprint 7: Planet Strength Engine.
 - Sprint 8: Ashtakavarga Engine.
+- Sprint 9: Advanced Lagna and Arudha Engine.
 
 Sprint 4 completed:
 
@@ -125,17 +126,32 @@ Sprint 8 completed:
 - Regression Coverage
 - Sprint 8 documentation and completion checklist
 
+Sprint 9 completed:
+
+- Arudha Lagna Foundation
+- Upapada Lagna Foundation
+- Hora Lagna Foundation
+- Ghati Lagna Foundation
+- Bhava Madhya / Cusp Foundation
+- Special Lagna Summary Builder
+- Internal Kundali Special Lagna Integration
+- Optional Kundali API Special Lagna Exposure with `include_special_lagnas`
+- Validation Coverage
+- Regression Coverage
+- Sprint 9 documentation and completion checklist
+
 ## Current Sprint
 
-Current sprint: Sprint 9 - Advanced Lagna and Arudha Engine.
+Current sprint: Sprint 10 - Prediction Engine Foundation.
 
-Primary sprint document: `docs/SPRINT-09.md`.
+Primary sprint document: `docs/SPRINT-10.md`.
 
-Sprint 9 goal:
+Sprint 10 goal:
 
-- Build deterministic Advanced Lagna and Arudha infrastructure.
-- Keep outputs non-interpretive and prediction-free.
-- Reuse existing Kundali, Rashi, house, and planet metadata where applicable.
+- Define safe prediction engine boundaries over completed deterministic data.
+- Keep predictive output gated behind explicit, reviewed structures.
+- Reuse existing Panchang, Kundali, Varga, Dasha, Strength, Ashtakavarga, and
+  special Lagna foundations.
 - Preserve backward compatibility for all existing APIs.
 
 ## Next Task Instructions

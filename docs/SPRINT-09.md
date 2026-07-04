@@ -1,17 +1,29 @@
 # Sprint 9 - Advanced Lagna and Arudha Engine
 
-Sprint 9 plans the deterministic Advanced Lagna and Arudha Engine foundation.
-The goal is to add reusable, non-interpretive special Lagna metadata while
-preserving all existing Panchang, Kundali, Varga, Dasha, Strength, and
+Sprint 9 completed the deterministic Advanced Lagna and Arudha Engine
+foundation. The sprint added reusable, non-interpretive special Lagna metadata
+while preserving all existing Panchang, Kundali, Varga, Dasha, Strength, and
 Ashtakavarga behavior.
 
 ## Sprint Status
 
-Status: Planned.
+Status: Complete.
 
-This sprint is documentation-first until implementation milestones are started
-explicitly. Do not add runtime Advanced Lagna or Arudha code as part of the
-planning task.
+Sprint 9 is complete. Future changes should be handled in a new sprint or a
+new explicitly requested maintenance task.
+
+## Completed Features
+
+- Arudha Lagna foundation.
+- Upapada Lagna foundation.
+- Hora Lagna foundation.
+- Ghati Lagna foundation.
+- Bhava Madhya / cusp foundation.
+- Special Lagna Summary Builder.
+- Internal Kundali Special Lagna integration.
+- Optional Kundali API Special Lagna exposure with `include_special_lagnas`.
+- Validation coverage.
+- Regression coverage.
 
 ## Sprint Rules
 
@@ -71,10 +83,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Sprint 9 document exists.
-- [ ] Master document points to Sprint 9.
-- [ ] No runtime source code is changed.
-- [ ] Documentation-only checks are run if the repository defines them.
+- [x] Sprint 9 document exists.
+- [x] Master document points to Sprint 9 during Sprint 9.
+- [x] No runtime source code is changed by the planning milestone.
+- [x] Documentation-only checks are run if the repository defines them.
 
 ## Milestone 9.2 - Arudha Constants and Foundation Utilities
 
@@ -89,10 +101,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Supported special Lagna types can be discovered.
-- [ ] Unsupported Lagna types fail safely.
-- [ ] Constants and placeholder structures are JSON-safe.
-- [ ] Focused tests cover lookup and invalid input behavior.
+- [x] Supported special Lagna structures can be discovered through the summary.
+- [x] Unsupported or incomplete special Lagna inputs fail safely.
+- [x] Placeholder and missing-data structures are JSON-safe.
+- [x] Focused tests cover lookup and invalid input behavior.
 
 ## Milestone 9.3 - Arudha Lagna Foundation
 
@@ -107,10 +119,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Arudha Lagna output shape is tested.
-- [ ] Required Lagna/lordship data is validated.
-- [ ] Missing data fails safely.
-- [ ] Full relevant suite passes.
+- [x] Arudha Lagna output shape is tested.
+- [x] Required Lagna/lordship data is validated.
+- [x] Missing data fails safely.
+- [x] Full relevant suite passes.
 
 ## Milestone 9.4 - Upapada Lagna Foundation
 
@@ -125,10 +137,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Upapada Lagna output shape is tested.
-- [ ] Required house/lordship data is validated.
-- [ ] Missing data fails safely.
-- [ ] Full relevant suite passes.
+- [x] Upapada Lagna output shape is tested.
+- [x] Required house/lordship data is validated.
+- [x] Missing data fails safely.
+- [x] Full relevant suite passes.
 
 ## Milestone 9.5 - Hora Lagna Foundation
 
@@ -143,10 +155,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Hora Lagna output shape is tested.
-- [ ] Time input validation is covered.
-- [ ] Missing data fails safely.
-- [ ] Full relevant suite passes.
+- [x] Hora Lagna output shape is tested.
+- [x] Time input validation is covered.
+- [x] Missing data fails safely.
+- [x] Full relevant suite passes.
 
 ## Milestone 9.6 - Ghati Lagna Foundation
 
@@ -161,10 +173,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Ghati Lagna output shape is tested.
-- [ ] Time input validation is covered.
-- [ ] Missing data fails safely.
-- [ ] Full relevant suite passes.
+- [x] Ghati Lagna output shape is tested.
+- [x] Time input validation is covered.
+- [x] Missing data fails safely.
+- [x] Full relevant suite passes.
 
 ## Milestone 9.7 - Bhava Madhya / Cusp Foundation
 
@@ -179,10 +191,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Bhava Madhya / cusp output shape is tested.
-- [ ] Invalid house data is handled safely.
-- [ ] Existing Kundali house behavior remains unchanged.
-- [ ] Full relevant suite passes.
+- [x] Bhava Madhya / cusp output shape is tested.
+- [x] Invalid house data is handled safely.
+- [x] Existing Kundali house behavior remains unchanged.
+- [x] Full relevant suite passes.
 
 ## Milestone 9.8 - Special Lagna Summary Builder
 
@@ -197,10 +209,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Summary output shape is tested.
-- [ ] Missing components are represented safely.
-- [ ] Output remains JSON-safe.
-- [ ] Full relevant suite passes.
+- [x] Summary output shape is tested.
+- [x] Missing components are represented safely.
+- [x] Output remains JSON-safe.
+- [x] Full relevant suite passes.
 
 ## Milestone 9.9 - Kundali Internal Integration
 
@@ -215,10 +227,10 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Internal Kundali integration is opt-in or otherwise backward-compatible.
-- [ ] Existing Kundali chart tests continue to pass.
-- [ ] Missing chart data fails safely.
-- [ ] Full relevant suite passes.
+- [x] Internal Kundali integration is opt-in and backward-compatible.
+- [x] Existing Kundali chart tests continue to pass.
+- [x] Missing chart data fails safely.
+- [x] Full relevant suite passes.
 
 ## Milestone 9.10 - Optional Kundali/API Exposure
 
@@ -233,11 +245,11 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Default API responses remain backward-compatible.
-- [ ] Optional special Lagna output is gated by an explicit flag.
-- [ ] Invalid requests return validation errors.
-- [ ] Existing API tests still pass.
-- [ ] Full suite passes.
+- [x] Default API responses remain backward-compatible.
+- [x] Optional special Lagna output is gated by an explicit flag.
+- [x] Invalid requests return validation errors.
+- [x] Existing API tests still pass.
+- [x] Full suite passes.
 
 ## Milestone 9.11 - Validation and Regression Coverage
 
@@ -252,17 +264,28 @@ Planned scope:
 
 Acceptance checklist:
 
-- [ ] Invalid input cases are covered.
-- [ ] JSON-safe outputs are covered.
-- [ ] Regression tests cover default Kundali/API behavior.
-- [ ] Full relevant suite passes.
+- [x] Invalid input cases are covered.
+- [x] JSON-safe outputs are covered.
+- [x] Regression tests cover default Kundali/API behavior.
+- [x] Full relevant suite passes.
+
+## Known Limitations
+
+- Foundation-level special Lagna calculations only.
+- Advanced house systems are not implemented yet.
+- Manual/external astrology validation remains separate.
+- Predictive interpretation is not included in this sprint.
 
 ## Known Non-Goals
 
 - Predictions are not implemented in Sprint 9.
+- Predictive interpretation is not implemented in Sprint 9.
 - Interpretive special Lagna text is not implemented in Sprint 9.
 - Remedies are not implemented in Sprint 9.
 - UI display is not implemented in Sprint 9.
+- Advanced house systems are not implemented in Sprint 9.
+- Manual/external astrology validation remains separate from automated
+  structural tests.
 - External astrology software validation remains manual until trusted reference
   sources and fixtures are documented.
 
@@ -270,16 +293,31 @@ Acceptance checklist:
 
 For each Sprint 9 implementation milestone:
 
-- [ ] Existing Panchang tests pass.
-- [ ] Existing Kundali tests pass.
-- [ ] Existing Varga tests pass.
-- [ ] Existing Dasha tests pass.
-- [ ] Existing Strength tests pass.
-- [ ] Existing Ashtakavarga tests pass.
-- [ ] New special Lagna unit tests cover valid, boundary, and invalid inputs.
-- [ ] JSON serialization safety is tested for new outputs.
-- [ ] API tests are added only when API behavior changes.
-- [ ] Full relevant suite passes before the milestone is marked complete.
+- [x] Existing Panchang tests pass.
+- [x] Existing Kundali tests pass.
+- [x] Existing Varga tests pass.
+- [x] Existing Dasha tests pass.
+- [x] Existing Strength tests pass.
+- [x] Existing Ashtakavarga tests pass.
+- [x] New special Lagna unit tests cover valid, boundary, and invalid inputs.
+- [x] JSON serialization safety is tested for new outputs.
+- [x] API tests are added only when API behavior changes.
+- [x] Full relevant suite passes before the milestone is marked complete.
+
+## Sprint 9 Completion Checklist
+
+- [x] Arudha Lagna foundation is implemented and tested.
+- [x] Upapada Lagna foundation is implemented and tested.
+- [x] Hora Lagna foundation is implemented and tested.
+- [x] Ghati Lagna foundation is implemented and tested.
+- [x] Bhava Madhya / cusp foundation is implemented and tested.
+- [x] Special Lagna Summary Builder is implemented and tested.
+- [x] Internal Kundali Special Lagna integration is complete.
+- [x] Optional Kundali API Special Lagna exposure is complete.
+- [x] Validation coverage is added.
+- [x] Regression coverage is added.
+- [x] Existing runtime behavior remains backward-compatible.
+- [x] Full test suite passes.
 
 ## Stop Point
 
