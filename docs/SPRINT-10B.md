@@ -4,7 +4,7 @@ Sprint 10B builds on the deterministic Prediction Framework established in Sprin
 
 ## Sprint Status
 
-Status: **In Progress (Task 10B.5 Complete)**
+Status: **In Progress (Task 10B.6 Complete)**
 
 Sprint 10B focuses on moving prediction logic out of hardcoded Python execution and into structured, data-driven rules.
 
@@ -90,6 +90,20 @@ Goal: Implement Career Rule Library foundation with a small validated starter ru
 - [x] Integrate with registry and generic YAML loader.
 - [x] Ensure rules do not contain definitive promises and remain purely astrological indicators.
 - [x] Add unit tests in `backend/tests/test_career_rules.py` covering matching and non-matching synthetic contexts.
+- [x] Verify all tests pass.
+
+### Task 10B.6 - Marriage Rule Library foundation
+Goal: Implement Marriage Rule Library foundation with a small validated starter rule set of 5 rules.
+
+**Status**: Complete
+
+**Acceptance checklist**:
+- [x] Create marriage rules directory under `backend/app/prediction/prediction_rules/marriage/`.
+- [x] Add 5 starter rules in `marriage_rules.yaml` following universal schema and naming conventions (`marriage.001` through `marriage.005`).
+- [x] Use existing context builder dot-key naming conventions without modification.
+- [x] Integrate with registry and generic YAML loader.
+- [x] Ensure rules do not contain definitive promises and remain purely astrological indicators.
+- [x] Add unit tests in `backend/tests/test_marriage_rules.py` covering matching and non-matching synthetic contexts.
 - [x] Verify all tests pass.
 
 ---

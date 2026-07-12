@@ -177,6 +177,7 @@ Completed tasks:
 - **Task 10B.3**: Implement reusable Prediction Rule Registry (backend/app/prediction/registry.py).
 - **Task 10B.4**: Implement YAML Rule Loader foundation (backend/app/prediction/loader.py).
 - **Task 10B.5**: Implement Career Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/career/career_rules.yaml).
+- **Task 10B.6**: Implement Marriage Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/marriage/marriage_rules.yaml).
 
 ## Next Task Instructions
 
