@@ -1,5 +1,14 @@
 """Prediction framework foundations."""
 
+from backend.app.prediction.adapters import (
+    AshtakavargaAdapter,
+    DashaAdapter,
+    HouseAnalyzerAdapter,
+    LagnaAdapter,
+    PlanetAnalyzerAdapter,
+    StrengthAdapter,
+    YogaAdapter,
+)
 from backend.app.prediction.conditions import (
     CONDITION_OPERATORS,
     ConditionEvaluation,
@@ -31,11 +40,18 @@ from backend.app.prediction.rules import (
 __all__ = [
     "CONDITION_OPERATORS",
     "PREDICTION_STATUSES",
+    "AshtakavargaAdapter",
     "ConditionEvaluation",
+    "DashaAdapter",
+    "HouseAnalyzerAdapter",
+    "LagnaAdapter",
+    "PlanetAnalyzerAdapter",
     "PredictionResult",
     "PredictionStatus",
     "PredictionFrameworkOutput",
     "RuleEvaluationResult",
+    "StrengthAdapter",
+    "YogaAdapter",
     "build_prediction_context",
     "build_prediction_framework_output",
     "compose_predictions",
