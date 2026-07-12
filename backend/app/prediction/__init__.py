@@ -50,6 +50,12 @@ from backend.app.prediction.registry import (
     register_rule,
     register_rules,
 )
+from backend.app.prediction.loader import (
+    RuleLoaderError,
+    load_rule,
+    load_rules,
+    load_rules_from_yaml,
+)
 
 __all__ = [
     "CONDITION_OPERATORS",
@@ -66,6 +72,7 @@ __all__ = [
     "PredictionStatus",
     "PredictionFrameworkOutput",
     "RuleEvaluationResult",
+    "RuleLoaderError",
     "StrengthAdapter",
     "YogaAdapter",
     "build_prediction_context",
@@ -81,6 +88,9 @@ __all__ = [
     "create_empty_prediction_result",
     "create_prediction_result",
     "get_registered_rules",
+    "load_rule",
+    "load_rules",
+    "load_rules_from_yaml",
     "register_rule",
     "register_rules",
     "sort_rules_by_priority",
