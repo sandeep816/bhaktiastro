@@ -1,0 +1,162 @@
+- id: "children.001"
+  version: "1.0.0"
+  category: "children"
+  subcategory: "house_placement"
+  title: "Strong 5th House Placement"
+  description: "An exalted benefic planet occupies the 5th house of progeny, indicating a supportive and protective influence on children-related matters."
+  priority: 150
+  enabled: true
+  conditions:
+    any_of:
+      - all_of:
+          - field: "jupiter.house"
+            operator: "equals"
+            value: 5
+          - field: "jupiter.dignity.is_exalted"
+            operator: "equals"
+            value: true
+      - all_of:
+          - field: "venus.house"
+            operator: "equals"
+            value: 5
+          - field: "venus.dignity.is_exalted"
+            operator: "equals"
+            value: true
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["An exalted benefic occupies the 5th house."]
+    challenging_factors: []
+    involved_planets: ["jupiter", "venus"]
+    involved_houses: [5]
+    reasons: ["exalted_benefic_in_5th"]
+    metadata:
+      not_medical_advice: true
+      no_fertility_diagnosis: true
+      requires_professional_evaluation: true
+      astrological_significance: "Brings strong protective energy to progeny matters."
+
+- id: "children.002"
+  version: "1.0.0"
+  category: "children"
+  subcategory: "planet_placement"
+  title: "Jupiter Supporting the 5th House"
+  description: "Jupiter, the natural significator of children (Putra Karaka), occupies or strongly aspects the 5th house (placed in the 1st or 5th house), indicating benevolent support."
+  priority: 140
+  enabled: true
+  conditions:
+    any_of:
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 5
+      - all_of:
+          - field: "jupiter.house"
+            operator: "equals"
+            value: 1
+          - field: "jupiter.strength.status"
+            operator: "equals"
+            value: "strong"
+  result:
+    status: "present"
+    confidence: 0.85
+    supporting_factors: ["Jupiter occupies or aspects the 5th house of progeny."]
+    challenging_factors: []
+    involved_planets: ["jupiter"]
+    involved_houses: [1, 5]
+    reasons: ["jupiter_supporting_5th_house"]
+    metadata:
+      not_medical_advice: true
+      no_fertility_diagnosis: true
+      requires_professional_evaluation: true
+      putra_karaka_influence: "positive"
+
+- id: "children.003"
+  version: "1.0.0"
+  category: "children"
+  subcategory: "house_placement"
+  title: "Benefic Planet in 5th House"
+  description: "A naturally benefic planet occupies the 5th house, casting a supportive and auspicious influence on children and intellect."
+  priority: 130
+  enabled: true
+  conditions:
+    any_of:
+      - field: "venus.house"
+        operator: "equals"
+        value: 5
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 5
+      - field: "mercury.house"
+        operator: "equals"
+        value: 5
+  result:
+    status: "present"
+    confidence: 0.85
+    supporting_factors: ["A natural benefic planet occupies the 5th house."]
+    challenging_factors: []
+    involved_planets: ["venus", "jupiter", "mercury"]
+    involved_houses: [5]
+    reasons: ["benefic_planet_in_5th"]
+    metadata:
+      not_medical_advice: true
+      no_fertility_diagnosis: true
+      requires_professional_evaluation: true
+
+- id: "children.004"
+  version: "1.0.0"
+  category: "children"
+  subcategory: "lord_strength"
+  title: "Strong 5th House Lord Support"
+  description: "The lord of the 5th house of progeny possesses high Shadbala strength, suggesting positive foundations for progeny-related aspects. Note: Configured for Aries ascendant where the Sun is the 5th lord."
+  priority: 120
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - field: "sun.strength.status"
+        operator: "equals"
+        value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["5th lord Sun has strong planet strength for Aries ascendant."]
+    challenging_factors: []
+    involved_planets: ["sun"]
+    involved_houses: [5]
+    reasons: ["strong_5th_lord"]
+    metadata:
+      not_medical_advice: true
+      no_fertility_diagnosis: true
+      requires_professional_evaluation: true
+      ascendant: "Aries"
+
+- id: "children.005"
+  version: "1.0.0"
+  category: "children"
+  subcategory: "planet_placement"
+  title: "Malefic Pressure on 5th House"
+  description: "A natural malefic planet occupies the 5th house, suggesting potential delays or requirements for patience and discipline in progeny matters."
+  priority: 110
+  enabled: true
+  conditions:
+    any_of:
+      - field: "saturn.house"
+        operator: "equals"
+        value: 5
+      - field: "mars.house"
+        operator: "equals"
+        value: 5
+  result:
+    status: "present"
+    confidence: 0.7
+    supporting_factors: []
+    challenging_factors: ["A natural malefic planet occupies the 5th house."]
+    involved_planets: ["saturn", "mars"]
+    involved_houses: [5]
+    reasons: ["malefic_planet_in_5th"]
+    metadata:
+      not_medical_advice: true
+      no_fertility_diagnosis: true
+      requires_professional_evaluation: true
