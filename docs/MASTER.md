@@ -173,6 +173,7 @@ Sprint 10B goal:
 
 Completed tasks:
 - **Task 10B.1**: Initialize Prediction Rule Library architecture and folders (docs/prediction_rules.md).
+- **Task 10B.2**: Implement reusable General Prediction Rule schema and validation helpers (backend/app/prediction/schema.py).
 
 ## Next Task Instructions
 
