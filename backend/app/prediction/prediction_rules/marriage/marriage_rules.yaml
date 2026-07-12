@@ -1,0 +1,144 @@
+- id: "marriage.001"
+  version: "1.0.0"
+  category: "marriage"
+  subcategory: "house_placement"
+  title: "Benefic Planet in 7th House"
+  description: "A naturally benefic planet occupies the 7th house, indicating a supportive and auspicious influence on partnerships."
+  priority: 150
+  enabled: true
+  conditions:
+    any_of:
+      - field: "venus.house"
+        operator: "equals"
+        value: 7
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 7
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["A natural benefic planet occupies the 7th house of relationships."]
+    challenging_factors: []
+    involved_planets: ["venus", "jupiter"]
+    involved_houses: [7]
+    reasons: ["benefic_planet_in_7th"]
+    metadata:
+      astrological_significance: "Brings harmony and positive partnership experiences."
+
+- id: "marriage.002"
+  version: "1.0.0"
+  category: "marriage"
+  subcategory: "lord_placement"
+  title: "7th Lord in a Kendra"
+  description: "The lord of the 7th house is placed in a cardinal house (Kendra: 1st, 4th, 7th, or 10th), indicating strong relational foundations. Note: Currently configured for Aries ascendant where Venus is the 7th lord."
+  priority: 140
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - any_of:
+          - field: "venus.house"
+            operator: "equals"
+            value: 1
+          - field: "venus.house"
+            operator: "equals"
+            value: 4
+          - field: "venus.house"
+            operator: "equals"
+            value: 7
+          - field: "venus.house"
+            operator: "equals"
+            value: 10
+  result:
+    status: "present"
+    confidence: 0.85
+    supporting_factors: ["7th lord Venus is placed in a Kendra (cardinal house) for Aries ascendant."]
+    challenging_factors: []
+    involved_planets: ["venus"]
+    involved_houses: [1, 4, 7, 10]
+    reasons: ["7th_lord_in_kendra"]
+    metadata:
+      ascendant: "Aries"
+
+- id: "marriage.003"
+  version: "1.0.0"
+  category: "marriage"
+  subcategory: "planet_placement"
+  title: "Venus in the 7th House"
+  description: "Venus, the natural significator (Karaka) of marriage, is placed in the 7th house, highlighting strong relational focus and appreciation of partnerships."
+  priority: 130
+  enabled: true
+  conditions:
+    field: "venus.house"
+    operator: "equals"
+    value: 7
+  result:
+    status: "present"
+    confidence: 0.9
+    supporting_factors: ["Venus occupies the 7th house of marriage."]
+    challenging_factors: []
+    involved_planets: ["venus"]
+    involved_houses: [7]
+    reasons: ["venus_in_7th_house"]
+    metadata:
+      karaka_placement: true
+
+- id: "marriage.004"
+  version: "1.0.0"
+  category: "marriage"
+  subcategory: "planet_placement"
+  title: "Jupiter Supporting the 7th House"
+  description: "Jupiter occupies or aspects the 7th house (placed in the 1st or 7th house), bringing protective, benevolent blessings to relationships."
+  priority: 120
+  enabled: true
+  conditions:
+    any_of:
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 7
+      - all_of:
+          - field: "jupiter.house"
+            operator: "equals"
+            value: 1
+          - field: "jupiter.strength.status"
+            operator: "equals"
+            value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["Jupiter supports the 7th house by occupancy or aspect."]
+    challenging_factors: []
+    involved_planets: ["jupiter"]
+    involved_houses: [1, 7]
+    reasons: ["jupiter_supporting_7th_house"]
+    metadata:
+      blessing: true
+
+- id: "marriage.005"
+  version: "1.0.0"
+  category: "marriage"
+  subcategory: "planet_placement"
+  title: "Malefic Pressure on 7th House"
+  description: "A naturally malefic planet occupies the 7th house, indicating potential relationship challenges or lessons in adaptability."
+  priority: 110
+  enabled: true
+  conditions:
+    any_of:
+      - field: "saturn.house"
+        operator: "equals"
+        value: 7
+      - field: "mars.house"
+        operator: "equals"
+        value: 7
+  result:
+    status: "present"
+    confidence: 0.7
+    supporting_factors: []
+    challenging_factors: ["A natural malefic planet occupies the 7th house."]
+    involved_planets: ["saturn", "mars"]
+    involved_houses: [7]
+    reasons: ["malefic_planet_in_7th"]
+    metadata:
+      lessons: "requires patience and effort"
