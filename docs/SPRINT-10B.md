@@ -4,7 +4,7 @@ Sprint 10B builds on the deterministic Prediction Framework established in Sprin
 
 ## Sprint Status
 
-Status: **In Progress (Task 10B.3 Complete)**
+Status: **In Progress (Task 10B.4 Complete)**
 
 Sprint 10B focuses on moving prediction logic out of hardcoded Python execution and into structured, data-driven rules.
 
@@ -61,6 +61,21 @@ Goal: Create a reusable in-memory registry to collect, validate, and retrieve pr
 - [x] Return deep copies of rules to prevent external mutation of registry state.
 - [x] Ensure registry outputs remain JSON-safe.
 - [x] Add focused tests in `backend/tests/test_prediction_registry.py`.
+- [x] Verify all tests pass.
+
+### Task 10B.4 - YAML Rule Loader foundation
+Goal: Create a reusable YAML loader to parse, validate, and register rules from files and directories.
+
+**Status**: Complete
+
+**Acceptance checklist**:
+- [x] Implement `load_rule`, `load_rules`, and `load_rules_from_yaml` in `loader.py`.
+- [x] Integrate schema validation helpers to validate loaded rules.
+- [x] Register valid rules automatically.
+- [x] Avoid crashing on malformed YAML (collect structured validation errors).
+- [x] Support traversing folders recursively to load multiple files.
+- [x] Ensure loader outputs remain JSON-safe.
+- [x] Add focused tests in `backend/tests/test_prediction_loader.py`.
 - [x] Verify all tests pass.
 
 ---

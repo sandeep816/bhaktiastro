@@ -175,6 +175,7 @@ Completed tasks:
 - **Task 10B.1**: Initialize Prediction Rule Library architecture and folders (docs/prediction_rules.md).
 - **Task 10B.2**: Implement reusable General Prediction Rule schema and validation helpers (backend/app/prediction/schema.py).
 - **Task 10B.3**: Implement reusable Prediction Rule Registry (backend/app/prediction/registry.py).
+- **Task 10B.4**: Implement YAML Rule Loader foundation (backend/app/prediction/loader.py).
 
 ## Next Task Instructions
 
