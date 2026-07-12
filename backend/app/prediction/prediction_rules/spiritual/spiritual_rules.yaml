@@ -1,0 +1,149 @@
+- id: "spirituality.001"
+  version: "1.0.0"
+  category: "spiritual"
+  subcategory: "lord_strength"
+  title: "Strong 9th House Lord Support"
+  description: "The lord of the 9th house of dharma, philosophy, and higher values possesses strong Shadbala status, indicating a supportive baseline for philosophical interest. Note: Configured for Aries ascendant where Jupiter is the 9th lord."
+  priority: 150
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - field: "jupiter.strength.status"
+        operator: "equals"
+        value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["9th lord Jupiter is strong for Aries ascendant."]
+    challenging_factors: []
+    involved_planets: ["jupiter"]
+    involved_houses: [9]
+    reasons: ["strong_9th_lord"]
+    metadata:
+      interpretive_indicator_only: true
+      no_religious_certainty: true
+      no_supernatural_claims: true
+      ascendant: "Aries"
+
+- id: "spirituality.002"
+  version: "1.0.0"
+  category: "spiritual"
+  subcategory: "planet_placement"
+  title: "Strong 12th House Introspection"
+  description: "Jupiter, representing wisdom and guidance, is positioned in the 12th house of introspection and solitude, and possesses strong Shadbala status, suggesting a reflective inclination."
+  priority: 140
+  enabled: true
+  conditions:
+    all_of:
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 12
+      - field: "jupiter.strength.status"
+        operator: "equals"
+        value: "strong"
+  result:
+    status: "present"
+    confidence: 0.85
+    supporting_factors: ["Strong Jupiter occupies the 12th house of introspection."]
+    challenging_factors: []
+    involved_planets: ["jupiter"]
+    involved_houses: [12]
+    reasons: ["strong_jupiter_in_12th"]
+    metadata:
+      interpretive_indicator_only: true
+      no_religious_certainty: true
+      no_supernatural_claims: true
+
+- id: "spirituality.003"
+  version: "1.0.0"
+  category: "spiritual"
+  subcategory: "planet_placement"
+  title: "Jupiter in Introspective House"
+  description: "Jupiter, the planet of wisdom and philosophical guidance, occupies either the 9th house of dharma or the 12th house of introspection, encouraging reflective studies."
+  priority: 130
+  enabled: true
+  conditions:
+    any_of:
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 9
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 12
+  result:
+    status: "present"
+    confidence: 0.85
+    supporting_factors: ["Jupiter occupies a house associated with higher learning or introspection."]
+    challenging_factors: []
+    involved_planets: ["jupiter"]
+    involved_houses: [9, 12]
+    reasons: ["jupiter_in_reflective_house"]
+    metadata:
+      interpretive_indicator_only: true
+      no_religious_certainty: true
+      no_supernatural_claims: true
+
+- id: "spirituality.004"
+  version: "1.0.0"
+  category: "spiritual"
+  subcategory: "planet_placement"
+  title: "Ketu in Moksha Houses"
+  description: "Ketu, representing detachment and introspective search, occupies the 9th house of dharma or the 12th house of liberation, pointing to potential interests in meditative practices."
+  priority: 120
+  enabled: true
+  conditions:
+    any_of:
+      - field: "ketu.house"
+        operator: "equals"
+        value: 9
+      - field: "ketu.house"
+        operator: "equals"
+        value: 12
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["Ketu is positioned in a house of dharma or introspection."]
+    challenging_factors: []
+    involved_planets: ["ketu"]
+    involved_houses: [9, 12]
+    reasons: ["ketu_in_moksha_house"]
+    metadata:
+      interpretive_indicator_only: true
+      no_religious_certainty: true
+      no_supernatural_claims: true
+
+- id: "spirituality.005"
+  version: "1.0.0"
+  category: "spiritual"
+  subcategory: "planet_placement"
+  title: "Reflective Devotional Mind"
+  description: "The Moon, indicating emotional focus and mental alignment, is strong and placed in the 9th or 12th house, supporting emotional resonance with philosophical concepts."
+  priority: 110
+  enabled: true
+  conditions:
+    all_of:
+      - field: "moon.strength.status"
+        operator: "equals"
+        value: "strong"
+      - any_of:
+          - field: "moon.house"
+            operator: "equals"
+            value: 9
+          - field: "moon.house"
+            operator: "equals"
+            value: 12
+  result:
+    status: "present"
+    confidence: 0.75
+    supporting_factors: ["Strong Moon occupies the 9th or 12th house."]
+    challenging_factors: []
+    involved_planets: ["moon"]
+    involved_houses: [9, 12]
+    reasons: ["strong_reflective_moon"]
+    metadata:
+      interpretive_indicator_only: true
+      no_religious_certainty: true
+      no_supernatural_claims: true
