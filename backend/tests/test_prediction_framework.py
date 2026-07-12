@@ -12,13 +12,12 @@ from backend.app.prediction.framework import evaluate_prediction_rules
 def test_prediction_context_is_built_from_chart_data() -> None:
     context = build_prediction_context(_sample_chart())
 
-    assert context["lagna"]["available"] is True
-    assert context["lagna"]["rashi"] == "aries"
-    assert context["metadata"]["planet_count"] == 2
-    assert context["metadata"]["house_count"] == 2
-    assert context["planets"][0]["planet"] == "sun"
-    assert context["planets"][0]["house_number"] == 1
-    assert context["houses"][0]["planet_names"] == ["sun"]
+    assert context["lagna.rashi"] == "Aries"
+    assert context["lagna.rashi_index"] == 1
+    assert context["sun.house"] == 1
+    assert context["moon.rashi"] == "Taurus"
+    assert context["metadata.planet_count"] == 2
+    assert context["metadata.house_count"] == 2
 
 
 def test_empty_rule_list_returns_empty_structured_predictions() -> None:
@@ -33,20 +32,15 @@ def test_empty_rule_list_returns_empty_structured_predictions() -> None:
 
 def test_missing_optional_engine_data_is_handled_safely() -> None:
     result = build_prediction_framework_output(_sample_chart())
-    context_metadata = result["context"]["metadata"]
 
-    assert context_metadata["missing_optional_components"] == [
+    assert result["context"]["metadata.missing_optional_components"] == [
         "vargas",
+        "dasha",
         "strength",
         "ashtakavarga",
-        "special_lagna",
+        "special_lagnas",
+        "yogas",
     ]
-    assert result["context"]["optional_components"] == {
-        "vargas": False,
-        "strength": False,
-        "ashtakavarga": False,
-        "special_lagna": False,
-    }
 
 
 def test_prediction_framework_output_is_json_safe() -> None:
