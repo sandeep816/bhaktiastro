@@ -171,6 +171,9 @@ Sprint 10B goal:
   special Lagna foundations.
 - Preserve backward compatibility for all existing APIs.
 
+Completed tasks:
+- **Task 10B.1**: Initialize Prediction Rule Library architecture and folders (docs/prediction_rules.md).
+
 ## Next Task Instructions
 
 For each new Codex task:
