@@ -1,0 +1,151 @@
+- id: "career.001"
+  version: "1.0.0"
+  category: "career"
+  subcategory: "house_placement"
+  title: "Strong 10th House Placement"
+  description: "An exalted or strong planet placed in the 10th house of career and profession, indicating enhanced vocational focus."
+  priority: 150
+  enabled: true
+  conditions:
+    any_of:
+      - all_of:
+          - field: "mars.house"
+            operator: "equals"
+            value: 10
+          - field: "mars.dignity.is_exalted"
+            operator: "equals"
+            value: true
+      - all_of:
+          - field: "sun.house"
+            operator: "equals"
+            value: 10
+          - field: "sun.dignity.is_exalted"
+            operator: "equals"
+            value: true
+      - all_of:
+          - field: "jupiter.house"
+            operator: "equals"
+            value: 10
+          - field: "jupiter.strength.status"
+            operator: "equals"
+            value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["An exalted or strong planet occupies the 10th house."]
+    challenging_factors: []
+    involved_planets: ["mars", "sun", "jupiter"]
+    involved_houses: [10]
+    reasons: ["exalted_or_strong_planet_in_10th"]
+    metadata:
+      astrological_significance: "Enhances leadership and career progress."
+
+- id: "career.002"
+  version: "1.0.0"
+  category: "career"
+  subcategory: "lord_placement"
+  title: "10th Lord in a Kendra"
+  description: "The lord of the 10th house is placed in a cardinal house (Kendra: 1st, 4th, 7th, or 10th), indicating strong career opportunities. Note: Currently configured for Aries ascendant where Saturn is the 10th lord."
+  priority: 140
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - any_of:
+          - field: "saturn.house"
+            operator: "equals"
+            value: 1
+          - field: "saturn.house"
+            operator: "equals"
+            value: 4
+          - field: "saturn.house"
+            operator: "equals"
+            value: 7
+          - field: "saturn.house"
+            operator: "equals"
+            value: 10
+  result:
+    status: "present"
+    confidence: 0.85
+    supporting_factors: ["10th lord Saturn is in a Kendra (cardinal house) for Aries ascendant."]
+    challenging_factors: []
+    involved_planets: ["saturn"]
+    involved_houses: [1, 4, 7, 10]
+    reasons: ["10th_lord_in_kendra"]
+    metadata:
+      ascendant: "Aries"
+
+- id: "career.003"
+  version: "1.0.0"
+  category: "career"
+  subcategory: "planet_placement"
+  title: "Sun in the 10th House"
+  description: "The Sun is positioned in the 10th house of career, offering natural directional strength (Dig Bala), indicating leadership potential and professional authority."
+  priority: 130
+  enabled: true
+  conditions:
+    field: "sun.house"
+    operator: "equals"
+    value: 10
+  result:
+    status: "present"
+    confidence: 0.9
+    supporting_factors: ["Sun in 10th house provides directional strength (Dig Bala)."]
+    challenging_factors: []
+    involved_planets: ["sun"]
+    involved_houses: [10]
+    reasons: ["sun_in_10th_house"]
+    metadata:
+      dig_bala: true
+
+- id: "career.004"
+  version: "1.0.0"
+  category: "career"
+  subcategory: "planet_placement"
+  title: "Saturn in the 10th House"
+  description: "Saturn is positioned in the 10th house, representing strong discipline, responsibility, and steady progress in professional life."
+  priority: 120
+  enabled: true
+  conditions:
+    field: "saturn.house"
+    operator: "equals"
+    value: 10
+  result:
+    status: "present"
+    confidence: 0.75
+    supporting_factors: ["Saturn occupies the 10th house of karma and responsibility."]
+    challenging_factors: []
+    involved_planets: ["saturn"]
+    involved_houses: [10]
+    reasons: ["saturn_in_10th_house"]
+    metadata:
+      focus: "discipline_and_duty"
+
+- id: "career.005"
+  version: "1.0.0"
+  category: "career"
+  subcategory: "lord_strength"
+  title: "Strong 10th Lord Strength"
+  description: "The lord of the 10th house possesses high Shadbala strength, indicating stability and success in career. Note: Currently configured for Aries ascendant where Saturn is the 10th lord."
+  priority: 110
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - field: "saturn.strength.status"
+        operator: "equals"
+        value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["10th lord Saturn is astrologically strong for Aries ascendant."]
+    challenging_factors: []
+    involved_planets: ["saturn"]
+    involved_houses: []
+    reasons: ["strong_10th_lord"]
+    metadata:
+      ascendant: "Aries"
