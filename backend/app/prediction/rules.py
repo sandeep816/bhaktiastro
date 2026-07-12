@@ -72,6 +72,12 @@ def evaluate_rule(
         },
     )
 
+    rule_meta = {}
+    if isinstance(rule.get("result"), Mapping) and isinstance(rule["result"].get("metadata"), Mapping):
+        rule_meta.update(rule["result"]["metadata"])
+    if isinstance(rule.get("metadata"), Mapping):
+        rule_meta.update(rule["metadata"])
+
     return _with_rule_fields(
         result,
         rule_id=rule_id,
@@ -80,6 +86,7 @@ def evaluate_rule(
             "priority": _normalize_priority(rule.get("priority")),
             "invalid_rule": False,
             "condition_result": condition_result,
+            **rule_meta,
         },
     )
 

@@ -1,0 +1,148 @@
+- id: "health.001"
+  version: "1.0.0"
+  category: "health"
+  subcategory: "lord_strength"
+  title: "Strong Lagna Lord Vitality"
+  description: "The lord of the Lagna (1st house of self and body) possesses high Shadbala strength, suggesting robust general constitution and physical vitality. Note: Configured for Aries ascendant where Mars is the Lagna lord."
+  priority: 150
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - field: "mars.strength.status"
+        operator: "equals"
+        value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["Lagna lord Mars has strong planet strength for Aries ascendant."]
+    challenging_factors: []
+    involved_planets: ["mars"]
+    involved_houses: [1]
+    reasons: ["strong_lagna_lord"]
+    metadata:
+      not_medical_advice: true
+      requires_professional_evaluation: true
+      interpretation: "Indicates strong innate resilience."
+
+- id: "health.002"
+  version: "1.0.0"
+  category: "health"
+  subcategory: "planet_strength"
+  title: "Strong Sun Vitality"
+  description: "The Sun, representing the soul, heart, and general life-force (Prana), is astrologically strong, indicating high energy levels and systemic resilience."
+  priority: 140
+  enabled: true
+  conditions:
+    field: "sun.strength.status"
+    operator: "equals"
+    value: "strong"
+  result:
+    status: "present"
+    confidence: 0.85
+    supporting_factors: ["Sun is astrologically strong, enhancing general vitality."]
+    challenging_factors: []
+    involved_planets: ["sun"]
+    involved_houses: []
+    reasons: ["strong_sun"]
+    metadata:
+      not_medical_advice: true
+      requires_professional_evaluation: true
+      significance: "General physical robustness."
+
+- id: "health.003"
+  version: "1.0.0"
+  category: "health"
+  subcategory: "planet_strength"
+  title: "Strong Moon Resilience"
+  description: "The Moon, representing the mind, emotions, and bodily fluids, possesses strong Shadbala status, suggesting excellent emotional resilience and mental stability."
+  priority: 130
+  enabled: true
+  conditions:
+    field: "moon.strength.status"
+    operator: "equals"
+    value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["Moon is astrologically strong, supporting emotional balance."]
+    challenging_factors: []
+    involved_planets: ["moon"]
+    involved_houses: []
+    reasons: ["strong_moon"]
+    metadata:
+      not_medical_advice: true
+      requires_professional_evaluation: true
+      significance: "Mental and emotional stamina."
+
+- id: "health.004"
+  version: "1.0.0"
+  category: "health"
+  subcategory: "planet_placement"
+  title: "Malefic Pressure on Vitality Houses"
+  description: "A natural malefic planet occupies the Lagna (1st house of body) or the 6th house (obstacles/health challenges), indicating potential periods of stress or required lifestyle discipline."
+  priority: 120
+  enabled: true
+  conditions:
+    any_of:
+      - field: "saturn.house"
+        operator: "equals"
+        value: 1
+      - field: "saturn.house"
+        operator: "equals"
+        value: 6
+      - field: "mars.house"
+        operator: "equals"
+        value: 1
+      - field: "mars.house"
+        operator: "equals"
+        value: 6
+  result:
+    status: "present"
+    confidence: 0.7
+    supporting_factors: []
+    challenging_factors: ["A natural malefic occupies a house related to physical self or challenges."]
+    involved_planets: ["saturn", "mars"]
+    involved_houses: [1, 6]
+    reasons: ["malefic_in_lagna_or_6th"]
+    metadata:
+      not_medical_advice: true
+      requires_professional_evaluation: true
+      lifestyle_advice: "Recommends balanced routine and stress management."
+
+- id: "health.005"
+  version: "1.0.0"
+  category: "health"
+  subcategory: "planet_placement"
+  title: "Benefic Support to Vitality Houses"
+  description: "A natural benefic planet occupies the Lagna or the 6th house, casting a protective and supportive influence on physical well-being."
+  priority: 110
+  enabled: true
+  conditions:
+    any_of:
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 1
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 6
+      - field: "venus.house"
+        operator: "equals"
+        value: 1
+      - field: "venus.house"
+        operator: "equals"
+        value: 6
+  result:
+    status: "present"
+    confidence: 0.85
+    supporting_factors: ["A natural benefic planet occupies a vitality-related house."]
+    challenging_factors: []
+    involved_planets: ["jupiter", "venus"]
+    involved_houses: [1, 6]
+    reasons: ["benefic_in_lagna_or_6th"]
+    metadata:
+      not_medical_advice: true
+      requires_professional_evaluation: true
+      significance: "Protective influence on physical constitution."
