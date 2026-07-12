@@ -4,7 +4,7 @@ Sprint 10B builds on the deterministic Prediction Framework established in Sprin
 
 ## Sprint Status
 
-Status: **In Progress (Task 10B.2 Complete)**
+Status: **In Progress (Task 10B.3 Complete)**
 
 Sprint 10B focuses on moving prediction logic out of hardcoded Python execution and into structured, data-driven rules.
 
@@ -47,6 +47,20 @@ Goal: Define the reusable schema, TypedDict, Pydantic model, and implement valid
 - [x] Enforce: id must be unique string, priority must be integer, category/conditions/result required.
 - [x] Ensure JSON-safe serialization.
 - [x] Add unit tests in `backend/tests/test_prediction_schema.py`.
+- [x] Verify all tests pass.
+
+### Task 10B.3 - Prediction Rule Registry
+Goal: Create a reusable in-memory registry to collect, validate, and retrieve prediction rules.
+
+**Status**: Complete
+
+**Acceptance checklist**:
+- [x] Implement `register_rule`, `register_rules`, `get_registered_rules`, and `clear_rule_registry` in `registry.py`.
+- [x] Prevent duplicate rule IDs across registrations.
+- [x] Support filtering of retrieved rules by category.
+- [x] Return deep copies of rules to prevent external mutation of registry state.
+- [x] Ensure registry outputs remain JSON-safe.
+- [x] Add focused tests in `backend/tests/test_prediction_registry.py`.
 - [x] Verify all tests pass.
 
 ---
