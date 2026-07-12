@@ -28,6 +28,8 @@ from backend.app.kundali import (
 )
 from backend.app.kundali.special_lagna_summary import SpecialLagnaSummary
 from backend.app.kundali.special_lagna_summary import build_special_lagna_summary
+from backend.app.prediction.framework import PredictionFrameworkOutput
+from backend.app.prediction.framework import build_prediction_framework_output
 from backend.app.strength.summary import PlanetStrengthSummary
 from backend.app.strength.summary import build_planet_strength_summary
 
@@ -86,6 +88,7 @@ class KundaliChart(TypedDict, total=False):
     strength: PlanetStrengthSummary
     ashtakavarga: AshtakavargaSummary
     special_lagna: SpecialLagnaSummary
+    prediction_framework: PredictionFrameworkOutput
 
 
 def assemble_kundali_chart(
@@ -103,15 +106,16 @@ def assemble_kundali_chart(
     include_strength: bool = False,
     include_ashtakavarga: bool = False,
     include_special_lagna: bool = False,
+    include_prediction_framework: bool = False,
 ) -> KundaliChart:
     """Assemble a basic internal Kundali chart.
 
     This foundation chart contains Lagna, sidereal planet positions enriched
     with Rashi metadata, and 12 placeholder houses. It deliberately avoids
     predictions, advanced house systems, and public API integration. Varga
-    charts, strength summaries, Ashtakavarga summaries, and special Lagna
-    summaries remain optional internal metadata until the public schema supports
-    them.
+    charts, strength summaries, Ashtakavarga summaries, special Lagna
+    summaries, and Prediction Framework output remain optional internal metadata
+    until the public schema supports them.
     """
 
     julian_day = julian.calculate_julian_day(
@@ -175,6 +179,11 @@ def assemble_kundali_chart(
             {
                 "birth_datetime": datetime(year, month, day, hour, minute, second),
             },
+        )
+    if include_prediction_framework:
+        chart_data["prediction_framework"] = build_prediction_framework_output(
+            chart_data,
+            rules=[],
         )
 
     return chart_data

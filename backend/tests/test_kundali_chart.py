@@ -455,6 +455,83 @@ def test_internal_special_lagna_summary_output_is_json_safe(
     json.dumps(result)
 
 
+def test_assemble_kundali_chart_can_include_internal_prediction_framework(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [{"planet": "sun", "sidereal_longitude": 0.0}],
+        include_prediction_framework=True,
+    )
+
+    assert set(result) == {"lagna", "planets", "houses", "prediction_framework"}
+    assert result["prediction_framework"]["context"]["metadata"]["planet_count"] == 1
+    assert result["prediction_framework"]["context"]["planets"][0]["planet"] == "sun"
+
+
+def test_internal_prediction_framework_empty_rules_produce_empty_output(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [{"planet": "sun", "sidereal_longitude": 0.0}],
+        include_prediction_framework=True,
+    )
+
+    prediction_framework = result["prediction_framework"]
+
+    assert prediction_framework["rule_results"] == []
+    assert prediction_framework["predictions"]["categories"] == {}
+    assert prediction_framework["predictions"]["summary"]["total_rules"] == 0
+    assert prediction_framework["metadata"]["rules_count"] == 0
+    assert prediction_framework["metadata"]["real_prediction_rules_enabled"] is False
+
+
+def test_assemble_kundali_chart_default_structure_excludes_prediction_framework(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [{"planet": "sun", "sidereal_longitude": 0.0}],
+    )
+
+    assert set(result) == {"lagna", "planets", "houses"}
+    assert "prediction_framework" not in result
+
+
+def test_internal_prediction_framework_handles_missing_optional_data_safely(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [],
+        include_prediction_framework=True,
+    )
+
+    prediction_context = result["prediction_framework"]["context"]
+
+    assert prediction_context["metadata"]["planet_count"] == 0
+    assert prediction_context["metadata"]["missing_optional_components"] == [
+        "vargas",
+        "strength",
+        "ashtakavarga",
+        "special_lagna",
+    ]
+    assert result["prediction_framework"]["predictions"]["summary"]["total_rules"] == 0
+
+
+def test_internal_prediction_framework_output_is_json_safe(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _assemble_fake_chart(
+        monkeypatch,
+        [{"planet": "sun", "sidereal_longitude": 0.0}],
+        include_prediction_framework=True,
+    )
+
+    json.dumps(result)
+
+
 def test_placeholder_houses_have_twelve_houses() -> None:
     houses = chart._build_placeholder_houses()
 
@@ -562,6 +639,7 @@ def _assemble_fake_chart(
     include_strength: bool = False,
     include_ashtakavarga: bool = False,
     include_special_lagna: bool = False,
+    include_prediction_framework: bool = False,
 ) -> chart.KundaliChart:
     fake_julian = SimpleNamespace(julian_day_ut=2447893.770833)
     monkeypatch.setattr(chart.julian, "calculate_julian_day", lambda *args: fake_julian)
@@ -586,6 +664,7 @@ def _assemble_fake_chart(
         include_strength=include_strength,
         include_ashtakavarga=include_ashtakavarga,
         include_special_lagna=include_special_lagna,
+        include_prediction_framework=include_prediction_framework,
     )
 
 
