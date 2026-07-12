@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Optional Kundali API `include_predictions` flag for empty structured Prediction Framework output.
 - Sprint 10A Prediction Framework architecture documentation and current-sprint pointer.
 - Sprint 9 Advanced Lagna and Arudha Engine completion documentation and next-sprint pointer.
 - Sprint 5 Varga Engine completion documentation and next-sprint pointer.

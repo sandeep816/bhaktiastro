@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 from fastapi import APIRouter, HTTPException
 
 from backend.app.kundali.chart import assemble_kundali_chart
@@ -30,10 +32,16 @@ def get_kundali(request: KundaliRequest) -> KundaliResponse:
             include_strength=request.include_strength,
             include_ashtakavarga=request.include_ashtakavarga,
             include_special_lagna=request.include_special_lagnas,
+            include_prediction_framework=request.include_predictions,
         )
     except (TypeError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except RuntimeError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+    if request.include_predictions:
+        prediction_framework = result.pop("prediction_framework", None)
+        if isinstance(prediction_framework, Mapping):
+            result["predictions"] = prediction_framework.get("predictions", {})
 
     return KundaliResponse.model_validate(result)

@@ -87,6 +87,10 @@ class KundaliRequest(BaseModel):
         False,
         description="Opt-in flag to include Special Lagna Summary.",
     )
+    include_predictions: bool = Field(
+        False,
+        description="Opt-in flag to include Prediction Framework output.",
+    )
 
 
 class StrictResponseModel(BaseModel):
@@ -483,4 +487,8 @@ class KundaliResponse(StrictResponseModel):
     special_lagna: Optional[dict[str, Any]] = Field(
         MISSING,
         description="Optional Special Lagna Summary when explicitly requested.",
+    )
+    predictions: Optional[dict[str, Any]] = Field(
+        MISSING,
+        description="Optional Prediction Framework output when explicitly requested.",
     )
