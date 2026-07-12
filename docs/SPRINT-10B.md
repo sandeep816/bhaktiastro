@@ -4,7 +4,7 @@ Sprint 10B builds on the deterministic Prediction Framework established in Sprin
 
 ## Sprint Status
 
-Status: **In Progress (Task 10B.10 Complete)**
+Status: **In Progress (Task 10B.11 Complete)**
 
 Sprint 10B focuses on moving prediction logic out of hardcoded Python execution and into structured, data-driven rules.
 
@@ -163,6 +163,21 @@ Goal: Implement Children Rule Library foundation with a small validated starter 
 - [x] Integrate with registry and generic YAML loader.
 - [x] Ensure rules do not contain definitive or sensitive claims (infertility, pregnancy, miscarriage, gender, timing, numbers).
 - [x] Add unit tests in `backend/tests/test_children_rules.py` covering matching, non-matching, and safety disclaimer validations.
+- [x] Verify all tests pass.
+
+### Task 10B.11 - Spirituality Rule Library foundation
+Goal: Implement Spirituality Rule Library foundation with a small validated starter rule set of 5 rules and safety metadata disclaimers.
+
+**Status**: Complete
+
+**Acceptance checklist**:
+- [x] Create spiritual rules directory under `backend/app/prediction/prediction_rules/spiritual/`.
+- [x] Add 5 starter rules in `spiritual_rules.yaml` following universal schema and naming conventions (`spirituality.001` through `spirituality.005`).
+- [x] Integrate standard safety disclaimers into results metadata (`interpretive_indicator_only`, `no_religious_certainty`, and `no_supernatural_claims`).
+- [x] Use existing context builder dot-key naming conventions without modification.
+- [x] Integrate with registry and generic YAML loader.
+- [x] Ensure rules do not contain definitive or religiously sensitive claims (enlightenment, supernatural abilities, past lives, renunciation).
+- [x] Add unit tests in `backend/tests/test_spiritual_rules.py` covering matching, non-matching, and safety/scope disclaimer validations.
 - [x] Verify all tests pass.
 
 ---
