@@ -4,7 +4,7 @@ Sprint 10B builds on the deterministic Prediction Framework established in Sprin
 
 ## Sprint Status
 
-Status: **In Progress (Task 10B.4 Complete)**
+Status: **In Progress (Task 10B.5 Complete)**
 
 Sprint 10B focuses on moving prediction logic out of hardcoded Python execution and into structured, data-driven rules.
 
@@ -76,6 +76,20 @@ Goal: Create a reusable YAML loader to parse, validate, and register rules from 
 - [x] Support traversing folders recursively to load multiple files.
 - [x] Ensure loader outputs remain JSON-safe.
 - [x] Add focused tests in `backend/tests/test_prediction_loader.py`.
+- [x] Verify all tests pass.
+
+### Task 10B.5 - Career Rule Library foundation
+Goal: Implement Career Rule Library foundation with a small validated starter rule set of 5 rules.
+
+**Status**: Complete
+
+**Acceptance checklist**:
+- [x] Create career rules directory under `backend/app/prediction/prediction_rules/career/`.
+- [x] Add 5 starter rules in `career_rules.yaml` following universal schema and naming conventions (`career.001` through `career.005`).
+- [x] Use existing context builder dot-key naming conventions without modification.
+- [x] Integrate with registry and generic YAML loader.
+- [x] Ensure rules do not contain definitive promises and remain purely astrological indicators.
+- [x] Add unit tests in `backend/tests/test_career_rules.py` covering matching and non-matching synthetic contexts.
 - [x] Verify all tests pass.
 
 ---
