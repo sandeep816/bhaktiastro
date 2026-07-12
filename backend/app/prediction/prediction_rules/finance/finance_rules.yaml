@@ -1,0 +1,140 @@
+- id: "finance.001"
+  version: "1.0.0"
+  category: "finance"
+  subcategory: "lord_strength"
+  title: "Strong 2nd House Lord Support"
+  description: "The lord of the 2nd house of accumulated wealth and assets possesses high Shadbala strength, indicating solid financial stability. Note: Configured for Aries ascendant where Venus is the 2nd lord."
+  priority: 150
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - field: "venus.strength.status"
+        operator: "equals"
+        value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["2nd lord Venus has strong planet strength for Aries ascendant."]
+    challenging_factors: []
+    involved_planets: ["venus"]
+    involved_houses: [2]
+    reasons: ["strong_2nd_lord"]
+    metadata:
+      ascendant: "Aries"
+
+- id: "finance.002"
+  version: "1.0.0"
+  category: "finance"
+  subcategory: "lord_strength"
+  title: "Strong 11th House Lord Support"
+  description: "The lord of the 11th house of gains and income is astrologically strong, suggesting potential for regular financial inflows. Note: Configured for Aries ascendant where Saturn is the 11th lord."
+  priority: 140
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - field: "saturn.strength.status"
+        operator: "equals"
+        value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["11th lord Saturn has strong planet strength for Aries ascendant."]
+    challenging_factors: []
+    involved_planets: ["saturn"]
+    involved_houses: [11]
+    reasons: ["strong_11th_lord"]
+    metadata:
+      ascendant: "Aries"
+
+- id: "finance.003"
+  version: "1.0.0"
+  category: "finance"
+  subcategory: "planet_placement"
+  title: "Jupiter in Wealth House"
+  description: "Jupiter, the natural significator (Dhana Karaka) of wealth and prosperity, occupies a wealth-related house (2nd or 11th house), providing benevolent expansion to assets and gains."
+  priority: 130
+  enabled: true
+  conditions:
+    any_of:
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 2
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 11
+  result:
+    status: "present"
+    confidence: 0.9
+    supporting_factors: ["Jupiter occupies a wealth-related house."]
+    challenging_factors: []
+    involved_planets: ["jupiter"]
+    involved_houses: [2, 11]
+    reasons: ["jupiter_in_wealth_house"]
+    metadata:
+      dhana_karaka: true
+
+- id: "finance.004"
+  version: "1.0.0"
+  category: "finance"
+  subcategory: "planet_placement"
+  title: "Venus in Wealth House"
+  description: "Venus, representing luxury, material comforts, and prosperity, occupies a wealth-related house (2nd or 11th house), indicating affinity for comforts and wealth accumulation."
+  priority: 120
+  enabled: true
+  conditions:
+    any_of:
+      - field: "venus.house"
+        operator: "equals"
+        value: 2
+      - field: "venus.house"
+        operator: "equals"
+        value: 11
+  result:
+    status: "present"
+    confidence: 0.85
+    supporting_factors: ["Venus occupies a wealth-related house."]
+    challenging_factors: []
+    involved_planets: ["venus"]
+    involved_houses: [2, 11]
+    reasons: ["venus_in_wealth_house"]
+    metadata:
+      prosperity: true
+
+- id: "finance.005"
+  version: "1.0.0"
+  category: "finance"
+  subcategory: "planet_placement"
+  title: "Malefic Pressure on Wealth Houses"
+  description: "A natural malefic planet occupies a wealth-related house (2nd or 11th house), suggesting potential financial volatility or need for discipline in expenses."
+  priority: 110
+  enabled: true
+  conditions:
+    any_of:
+      - field: "saturn.house"
+        operator: "equals"
+        value: 2
+      - field: "saturn.house"
+        operator: "equals"
+        value: 11
+      - field: "mars.house"
+        operator: "equals"
+        value: 2
+      - field: "mars.house"
+        operator: "equals"
+        value: 11
+  result:
+    status: "present"
+    confidence: 0.7
+    supporting_factors: []
+    challenging_factors: ["A natural malefic planet occupies a wealth-related house."]
+    involved_planets: ["saturn", "mars"]
+    involved_houses: [2, 11]
+    reasons: ["malefic_planet_in_wealth_house"]
+    metadata:
+      volatility_warning: true
