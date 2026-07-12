@@ -4,7 +4,7 @@ Sprint 10B builds on the deterministic Prediction Framework established in Sprin
 
 ## Sprint Status
 
-Status: **In Progress (Task 10B.9 Complete)**
+Status: **In Progress (Task 10B.10 Complete)**
 
 Sprint 10B focuses on moving prediction logic out of hardcoded Python execution and into structured, data-driven rules.
 
@@ -148,6 +148,21 @@ Goal: Implement Education Rule Library foundation with a small validated starter
 - [x] Integrate with registry and generic YAML loader.
 - [x] Ensure rules do not contain definitive promises and remain purely astrological indicators.
 - [x] Add unit tests in `backend/tests/test_education_rules.py` covering matching and non-matching synthetic contexts.
+- [x] Verify all tests pass.
+
+### Task 10B.10 - Children Rule Library foundation
+Goal: Implement Children Rule Library foundation with a small validated starter rule set of 5 rules and safety metadata disclaimers.
+
+**Status**: Complete
+
+**Acceptance checklist**:
+- [x] Create children rules directory under `backend/app/prediction/prediction_rules/children/`.
+- [x] Add 5 starter rules in `children_rules.yaml` following universal schema and naming conventions (`children.001` through `children.005`).
+- [x] Integrate standard safety disclaimers into results metadata (`not_medical_advice`, `no_fertility_diagnosis`, and `requires_professional_evaluation`).
+- [x] Use existing context builder dot-key naming conventions without modification.
+- [x] Integrate with registry and generic YAML loader.
+- [x] Ensure rules do not contain definitive or sensitive claims (infertility, pregnancy, miscarriage, gender, timing, numbers).
+- [x] Add unit tests in `backend/tests/test_children_rules.py` covering matching, non-matching, and safety disclaimer validations.
 - [x] Verify all tests pass.
 
 ---
