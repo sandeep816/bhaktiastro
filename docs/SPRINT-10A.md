@@ -1,8 +1,8 @@
 # Sprint 10A - Prediction Framework Architecture
 
 Sprint 10A defines the architecture for a deterministic-first Prediction
-Framework. This sprint is documentation-first and does not implement prediction
-runtime code.
+Framework. This sprint completed the reusable framework foundations without
+adding real prediction rules or interpretive prose.
 
 The goal is to design a reusable framework that can consume completed
 calculation outputs and return structured, JSON-safe facts, reasons, and
@@ -11,10 +11,25 @@ engine.
 
 ## Sprint Status
 
-Status: Planned.
+Status: Complete.
 
-This sprint is architecture-first until implementation milestones are started
-explicitly. Do not add runtime prediction logic as part of the planning task.
+Sprint 10A is complete as a deterministic, structured Prediction Framework
+foundation. Future changes should be handled in Sprint 10B or a new explicitly
+requested maintenance task.
+
+## Completed Features
+
+- Prediction Result schema foundation.
+- Condition Engine foundation.
+- Rule Engine foundation.
+- Prediction Context Builder.
+- Analyzer Adapter Interfaces.
+- Prediction Composer foundation.
+- Internal Kundali prediction framework integration.
+- Optional Kundali API prediction framework exposure with
+  `include_predictions`.
+- Validation coverage.
+- Regression coverage.
 
 ## Sprint Rules
 
@@ -34,10 +49,9 @@ explicitly. Do not add runtime prediction logic as part of the planning task.
 
 ## Architecture Direction
 
-The Prediction Framework should live under `backend/app/` in a package path
-chosen during the first runtime milestone after inspecting existing boundaries.
-It should be layered so deterministic calculation engines remain independent
-from prediction rules and report text.
+The Prediction Framework lives under `backend/app/prediction/`. It is layered
+so deterministic calculation engines remain independent from prediction rules
+and report text.
 
 Expected architecture components:
 
@@ -168,10 +182,10 @@ conditions, evidence, and metadata.
 
 Acceptance checklist:
 
-- [ ] Result skeletons are reusable.
-- [ ] Missing-data results are JSON-safe.
-- [ ] No prediction text is generated.
-- [ ] Focused tests cover structure and invalid input behavior.
+- [x] Result skeletons are reusable.
+- [x] Missing-data results are JSON-safe.
+- [x] No prediction text is generated.
+- [x] Focused tests cover structure and invalid input behavior.
 
 ### Task 10A.3 - Condition Engine Foundation
 
@@ -179,10 +193,10 @@ Goal: Add reusable deterministic condition evaluation helpers.
 
 Acceptance checklist:
 
-- [ ] Conditions return structured outcomes.
-- [ ] Invalid conditions fail safely.
-- [ ] Existing calculation engines are not modified.
-- [ ] Focused tests cover true, false, unknown, and invalid states.
+- [x] Conditions return structured outcomes.
+- [x] Invalid conditions fail safely.
+- [x] Existing calculation engines are not modified.
+- [x] Focused tests cover true, false, unknown, and invalid states.
 
 ### Task 10A.4 - Rule Engine Foundation
 
@@ -190,10 +204,10 @@ Goal: Add reusable rule registration and evaluation foundations.
 
 Acceptance checklist:
 
-- [ ] Rules can declare identifiers, categories, inputs, and conditions.
-- [ ] Rule evaluation returns JSON-safe result structures.
-- [ ] Missing data produces safe placeholder results.
-- [ ] Focused tests cover valid and invalid rule evaluation.
+- [x] Rules can declare identifiers, categories, inputs, and conditions.
+- [x] Rule evaluation returns JSON-safe result structures.
+- [x] Missing data produces safe placeholder results.
+- [x] Focused tests cover valid and invalid rule evaluation.
 
 ### Task 10A.5 - Prediction Context Builder
 
@@ -201,11 +215,11 @@ Goal: Build a reusable context from existing deterministic chart outputs.
 
 Acceptance checklist:
 
-- [ ] Context includes available Kundali, Varga, Dasha, Strength,
+- [x] Context includes available Kundali, Varga, Dasha, Strength,
   Ashtakavarga, and Special Lagna data.
-- [ ] Missing optional data is represented safely.
-- [ ] Existing calculations are reused without mutation.
-- [ ] Focused tests cover complete and partial contexts.
+- [x] Missing optional data is represented safely.
+- [x] Existing calculations are reused without mutation.
+- [x] Focused tests cover complete and partial contexts.
 
 ### Task 10A.6 - Analyzer Adapter Interfaces
 
@@ -214,10 +228,10 @@ Ashtakavarga analyzers.
 
 Acceptance checklist:
 
-- [ ] Adapter interfaces return structured facts.
-- [ ] Unsupported or missing source data fails safely.
-- [ ] Completed calculation engines are not rewritten.
-- [ ] Focused tests cover adapter output shape.
+- [x] Adapter interfaces return structured facts.
+- [x] Unsupported or missing source data fails safely.
+- [x] Completed calculation engines are not rewritten.
+- [x] Focused tests cover adapter output shape.
 
 ### Task 10A.7 - Prediction Composer Foundation
 
@@ -226,10 +240,10 @@ sections.
 
 Acceptance checklist:
 
-- [ ] Composer output is JSON-safe.
-- [ ] Evidence and reasons are preserved.
-- [ ] No AI-generated prose is emitted.
-- [ ] Focused tests cover ordering, grouping, and missing data.
+- [x] Composer output is JSON-safe.
+- [x] Evidence and reasons are preserved.
+- [x] No AI-generated prose is emitted.
+- [x] Focused tests cover ordering, grouping, and missing data.
 
 ### Task 10A.8 - Internal Kundali Integration
 
@@ -238,10 +252,10 @@ backward-compatible.
 
 Acceptance checklist:
 
-- [ ] Integration is optional and internal.
-- [ ] Existing Kundali chart fields are preserved.
-- [ ] Missing prediction inputs fail safely.
-- [ ] Existing Kundali tests continue to pass.
+- [x] Integration is optional and internal.
+- [x] Existing Kundali chart fields are preserved.
+- [x] Missing prediction inputs fail safely.
+- [x] Existing Kundali tests continue to pass.
 
 ### Task 10A.9 - Optional API Exposure
 
@@ -250,10 +264,10 @@ after internal structures are stable.
 
 Acceptance checklist:
 
-- [ ] Default API responses remain backward-compatible.
-- [ ] Prediction output is gated by an explicit flag.
-- [ ] Response output remains JSON-safe.
-- [ ] API tests cover enabled and disabled behavior.
+- [x] Default API responses remain backward-compatible.
+- [x] Prediction output is gated by an explicit flag.
+- [x] Response output remains JSON-safe.
+- [x] API tests cover enabled and disabled behavior.
 
 ### Task 10A.10 - Validation and Regression
 
@@ -261,10 +275,10 @@ Goal: Add broad validation and regression coverage for framework outputs.
 
 Acceptance checklist:
 
-- [ ] Invalid contexts, rules, conditions, and adapter inputs are covered.
-- [ ] JSON serialization safety is covered.
-- [ ] Backward compatibility for default Kundali/API behavior is covered.
-- [ ] Full relevant suite passes.
+- [x] Invalid contexts, rules, conditions, and adapter inputs are covered.
+- [x] JSON serialization safety is covered.
+- [x] Backward compatibility for default Kundali/API behavior is covered.
+- [x] Full relevant suite passes.
 
 ### Task 10A.11 - Documentation Completion
 
@@ -272,36 +286,62 @@ Goal: Complete Sprint 10A documentation after implementation milestones finish.
 
 Acceptance checklist:
 
-- [ ] Completed features are listed.
-- [ ] Known limitations are documented.
-- [ ] Sprint completion checklist is added.
-- [ ] Master document points to the next sprint.
+- [x] Completed features are listed.
+- [x] Known limitations are documented.
+- [x] Sprint completion checklist is added.
+- [x] Master document points to the next sprint.
+
+## Known Limitations
+
+- No real prediction rules are implemented yet.
+- No interpretation text is generated yet.
+- AI summary layer is placeholder only.
+- Framework output is structured and deterministic only.
 
 ## Known Non-Goals
 
-- Predictive interpretation text is not implemented in Task 10A.1.
+- Predictive interpretation text is not implemented in Sprint 10A.
 - AI-generated summaries are not implemented in the core engine.
-- Runtime prediction modules are not implemented in Task 10A.1.
-- Public API changes are not implemented in Task 10A.1.
+- Real predictive rule libraries are not implemented in Sprint 10A.
+- Report rendering is not implemented in Sprint 10A.
+- Public API prediction output remains optional and explicitly gated.
 - Existing calculation engines are not rewritten.
 
 ## Validation Checklist
 
 For each Sprint 10A implementation milestone:
 
-- [ ] Existing Panchang tests pass.
-- [ ] Existing Kundali tests pass.
-- [ ] Existing Varga tests pass.
-- [ ] Existing Dasha tests pass.
-- [ ] Existing Strength tests pass.
-- [ ] Existing Ashtakavarga tests pass.
-- [ ] Existing Lagna tests pass.
-- [ ] New prediction framework tests cover valid, boundary, and invalid inputs.
-- [ ] JSON serialization safety is tested for new outputs.
-- [ ] API tests are added only when API behavior changes.
-- [ ] Full relevant suite passes before the milestone is marked complete.
+- [x] Existing Panchang tests pass.
+- [x] Existing Kundali tests pass.
+- [x] Existing Varga tests pass.
+- [x] Existing Dasha tests pass.
+- [x] Existing Strength tests pass.
+- [x] Existing Ashtakavarga tests pass.
+- [x] Existing Lagna tests pass.
+- [x] New prediction framework tests cover valid, boundary, and invalid inputs.
+- [x] JSON serialization safety is tested for new outputs.
+- [x] API tests are added only when API behavior changes.
+- [x] Full relevant suite passes before the milestone is marked complete.
+
+## Sprint 10A Completion Checklist
+
+- [x] Prediction Result schema foundation is implemented and tested.
+- [x] Condition Engine foundation is implemented and tested.
+- [x] Rule Engine foundation is implemented and tested.
+- [x] Prediction Context Builder is implemented and tested.
+- [x] Analyzer Adapter Interfaces are implemented and tested.
+- [x] Prediction Composer foundation is implemented and tested.
+- [x] Internal Kundali prediction framework integration is complete.
+- [x] Optional Kundali API prediction framework exposure is complete with
+      `include_predictions`.
+- [x] Validation coverage is added.
+- [x] Regression coverage is added.
+- [x] Existing runtime behavior remains backward-compatible.
+- [x] Framework output remains JSON-safe.
+- [x] Real prediction rules and interpretation text remain out of scope.
+- [x] Sprint 10A is ready to close.
 
 ## Stop Point
 
 Stop after each requested Sprint 10A milestone is complete. Do not move from
-architecture into runtime implementation without a new task.
+framework architecture into prediction rule implementation without a new task.

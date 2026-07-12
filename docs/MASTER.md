@@ -33,6 +33,7 @@ project rules.
 - Sprint 7: Planet Strength Engine.
 - Sprint 8: Ashtakavarga Engine.
 - Sprint 9: Advanced Lagna and Arudha Engine.
+- Sprint 10A: Prediction Framework Architecture.
 
 Sprint 4 completed:
 
@@ -140,18 +141,32 @@ Sprint 9 completed:
 - Regression Coverage
 - Sprint 9 documentation and completion checklist
 
+Sprint 10A completed:
+
+- Prediction Result Schema Foundation
+- Condition Engine Foundation
+- Rule Engine Foundation
+- Prediction Context Builder
+- Analyzer Adapter Interfaces
+- Prediction Composer Foundation
+- Internal Kundali Prediction Framework Integration
+- Optional Kundali API Prediction Framework Exposure with `include_predictions`
+- Validation Coverage
+- Regression Coverage
+- Sprint 10A documentation and completion checklist
+
 ## Current Sprint
 
-Current sprint: Sprint 10A - Prediction Framework Architecture.
+Current sprint: Sprint 10B - Prediction Rules Foundation.
 
-Primary sprint document: `docs/SPRINT-10A.md`.
+Primary sprint document: `docs/SPRINT-10B.md`.
 
-Sprint 10A goal:
+Sprint 10B goal:
 
-- Define deterministic-first prediction framework architecture.
-- Keep prediction rules, conditions, context building, analyzers, adapters, and
-  composition boundaries explicit before runtime work begins.
-- Keep AI-generated summaries outside the core engine.
+- Add deterministic, data-driven prediction rule foundations on top of the
+  completed Sprint 10A framework.
+- Keep rules structured, testable, and free of generated interpretation text.
+- Keep AI-generated summaries outside the core prediction engine.
 - Reuse existing Panchang, Kundali, Varga, Dasha, Strength, Ashtakavarga, and
   special Lagna foundations.
 - Preserve backward compatibility for all existing APIs.
