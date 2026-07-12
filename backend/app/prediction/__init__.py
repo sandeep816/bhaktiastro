@@ -36,6 +36,14 @@ from backend.app.prediction.rules import (
     evaluate_rules,
     sort_rules_by_priority,
 )
+from backend.app.prediction.schema import (
+    PredictionRule,
+    PredictionRuleModel,
+    validate_category,
+    validate_priority,
+    validate_rule,
+    validate_rule_id,
+)
 
 __all__ = [
     "CONDITION_OPERATORS",
@@ -47,6 +55,8 @@ __all__ = [
     "LagnaAdapter",
     "PlanetAnalyzerAdapter",
     "PredictionResult",
+    "PredictionRule",
+    "PredictionRuleModel",
     "PredictionStatus",
     "PredictionFrameworkOutput",
     "RuleEvaluationResult",
@@ -64,4 +74,8 @@ __all__ = [
     "create_empty_prediction_result",
     "create_prediction_result",
     "sort_rules_by_priority",
+    "validate_category",
+    "validate_priority",
+    "validate_rule",
+    "validate_rule_id",
 ]
