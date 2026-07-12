@@ -1,0 +1,150 @@
+- id: "education.001"
+  version: "1.0.0"
+  category: "education"
+  subcategory: "lord_strength"
+  title: "Strong 4th House Lord Support"
+  description: "The lord of the 4th house of basic education and academic foundations possesses high Shadbala strength, indicating a strong baseline for formal learning. Note: Configured for Aries ascendant where the Moon is the 4th lord."
+  priority: 150
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - field: "moon.strength.status"
+        operator: "equals"
+        value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["4th lord Moon has strong planet strength for Aries ascendant."]
+    challenging_factors: []
+    involved_planets: ["moon"]
+    involved_houses: [4]
+    reasons: ["strong_4th_lord"]
+    metadata:
+      ascendant: "Aries"
+
+- id: "education.002"
+  version: "1.0.0"
+  category: "education"
+  subcategory: "lord_strength"
+  title: "Strong 5th House Lord Support"
+  description: "The lord of the 5th house of intellect and higher education is astrologically strong, suggesting potential for analytical clarity and successful higher studies. Note: Configured for Aries ascendant where the Sun is the 5th lord."
+  priority: 140
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - field: "sun.strength.status"
+        operator: "equals"
+        value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["5th lord Sun has strong planet strength for Aries ascendant."]
+    challenging_factors: []
+    involved_planets: ["sun"]
+    involved_houses: [5]
+    reasons: ["strong_5th_lord"]
+    metadata:
+      ascendant: "Aries"
+
+- id: "education.003"
+  version: "1.0.0"
+  category: "education"
+  subcategory: "planet_strength"
+  title: "Mercury Intellect Indicator"
+  description: "Mercury (Budha), the planet of intellect, learning speed, and comprehension, is strong or positioned in a Kendra house, favoring academic aptitude and cognitive agility."
+  priority: 130
+  enabled: true
+  conditions:
+    any_of:
+      - field: "mercury.strength.status"
+        operator: "equals"
+        value: "strong"
+      - any_of:
+          - field: "mercury.house"
+            operator: "equals"
+            value: 1
+          - field: "mercury.house"
+            operator: "equals"
+            value: 4
+          - field: "mercury.house"
+            operator: "equals"
+            value: 7
+          - field: "mercury.house"
+            operator: "equals"
+            value: 10
+  result:
+    status: "present"
+    confidence: 0.85
+    supporting_factors: ["Mercury is strong or placed in a cardinal house (Kendra)."]
+    challenging_factors: []
+    involved_planets: ["mercury"]
+    involved_houses: [1, 4, 7, 10]
+    reasons: ["mercury_well_placed"]
+    metadata:
+      cognitive_capacity: "high"
+
+- id: "education.004"
+  version: "1.0.0"
+  category: "education"
+  subcategory: "planet_placement"
+  title: "Jupiter in Knowledge House"
+  description: "Jupiter, representing wisdom, guru support, and higher knowledge (Guru), occupies an academic house (4th or 5th house), indicating affinity for deep comprehension and academic guidance."
+  priority: 120
+  enabled: true
+  conditions:
+    any_of:
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 4
+      - field: "jupiter.house"
+        operator: "equals"
+        value: 5
+  result:
+    status: "present"
+    confidence: 0.9
+    supporting_factors: ["Jupiter occupies a knowledge-related house."]
+    challenging_factors: []
+    involved_planets: ["jupiter"]
+    involved_houses: [4, 5]
+    reasons: ["jupiter_in_knowledge_house"]
+    metadata:
+      wisdom_influence: "positive"
+
+- id: "education.005"
+  version: "1.0.0"
+  category: "education"
+  subcategory: "planet_placement"
+  title: "Malefic Pressure on Academic Houses"
+  description: "A natural malefic planet occupies the 4th or 5th house, indicating potential academic distractions or requirements for intense focus."
+  priority: 110
+  enabled: true
+  conditions:
+    any_of:
+      - field: "saturn.house"
+        operator: "equals"
+        value: 4
+      - field: "saturn.house"
+        operator: "equals"
+        value: 5
+      - field: "mars.house"
+        operator: "equals"
+        value: 4
+      - field: "mars.house"
+        operator: "equals"
+        value: 5
+  result:
+    status: "present"
+    confidence: 0.7
+    supporting_factors: []
+    challenging_factors: ["A natural malefic planet occupies an academic house."]
+    involved_planets: ["saturn", "mars"]
+    involved_houses: [4, 5]
+    reasons: ["malefic_in_knowledge_house"]
+    metadata:
+      obstacles_indicated: true
