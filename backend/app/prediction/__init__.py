@@ -21,6 +21,12 @@ from backend.app.prediction.result import (
     create_empty_prediction_result,
     create_prediction_result,
 )
+from backend.app.prediction.rules import (
+    RuleEvaluationResult,
+    evaluate_rule,
+    evaluate_rules,
+    sort_rules_by_priority,
+)
 
 __all__ = [
     "CONDITION_OPERATORS",
@@ -29,6 +35,7 @@ __all__ = [
     "PredictionResult",
     "PredictionStatus",
     "PredictionFrameworkOutput",
+    "RuleEvaluationResult",
     "build_prediction_context",
     "build_prediction_framework_output",
     "compose_predictions",
@@ -36,6 +43,9 @@ __all__ = [
     "evaluate_any",
     "evaluate_condition",
     "evaluate_prediction_rules",
+    "evaluate_rule",
+    "evaluate_rules",
     "create_empty_prediction_result",
     "create_prediction_result",
+    "sort_rules_by_priority",
 ]
