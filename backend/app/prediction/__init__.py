@@ -1,5 +1,12 @@
 """Prediction framework foundations."""
 
+from backend.app.prediction.conditions import (
+    CONDITION_OPERATORS,
+    ConditionEvaluation,
+    evaluate_all,
+    evaluate_any,
+    evaluate_condition,
+)
 from backend.app.prediction.composer import compose_predictions
 from backend.app.prediction.framework import (
     PredictionFrameworkOutput,
@@ -16,13 +23,18 @@ from backend.app.prediction.result import (
 )
 
 __all__ = [
+    "CONDITION_OPERATORS",
     "PREDICTION_STATUSES",
+    "ConditionEvaluation",
     "PredictionResult",
     "PredictionStatus",
     "PredictionFrameworkOutput",
     "build_prediction_context",
     "build_prediction_framework_output",
     "compose_predictions",
+    "evaluate_all",
+    "evaluate_any",
+    "evaluate_condition",
     "evaluate_prediction_rules",
     "create_empty_prediction_result",
     "create_prediction_result",
