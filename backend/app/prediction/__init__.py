@@ -44,6 +44,12 @@ from backend.app.prediction.schema import (
     validate_rule,
     validate_rule_id,
 )
+from backend.app.prediction.registry import (
+    clear_rule_registry,
+    get_registered_rules,
+    register_rule,
+    register_rules,
+)
 
 __all__ = [
     "CONDITION_OPERATORS",
@@ -64,6 +70,7 @@ __all__ = [
     "YogaAdapter",
     "build_prediction_context",
     "build_prediction_framework_output",
+    "clear_rule_registry",
     "compose_predictions",
     "evaluate_all",
     "evaluate_any",
@@ -73,6 +80,9 @@ __all__ = [
     "evaluate_rules",
     "create_empty_prediction_result",
     "create_prediction_result",
+    "get_registered_rules",
+    "register_rule",
+    "register_rules",
     "sort_rules_by_priority",
     "validate_category",
     "validate_priority",
