@@ -4,7 +4,7 @@ Sprint 10B builds on the deterministic Prediction Framework established in Sprin
 
 ## Sprint Status
 
-Status: **In Progress (Task 10B.8 Complete)**
+Status: **In Progress (Task 10B.9 Complete)**
 
 Sprint 10B focuses on moving prediction logic out of hardcoded Python execution and into structured, data-driven rules.
 
@@ -134,6 +134,20 @@ Goal: Implement Health Rule Library foundation with a small validated starter ru
 - [x] Integrate with registry and generic YAML loader.
 - [x] Ensure rules do not contain definitive medical diagnoses or predictions.
 - [x] Add unit tests in `backend/tests/test_health_rules.py` covering matching, non-matching, and disclaimer metadata validations.
+- [x] Verify all tests pass.
+
+### Task 10B.9 - Education Rule Library foundation
+Goal: Implement Education Rule Library foundation with a small validated starter rule set of 5 rules.
+
+**Status**: Complete
+
+**Acceptance checklist**:
+- [x] Create education rules directory under `backend/app/prediction/prediction_rules/education/`.
+- [x] Add 5 starter rules in `education_rules.yaml` following universal schema and naming conventions (`education.001` through `education.005`).
+- [x] Use existing context builder dot-key naming conventions without modification.
+- [x] Integrate with registry and generic YAML loader.
+- [x] Ensure rules do not contain definitive promises and remain purely astrological indicators.
+- [x] Add unit tests in `backend/tests/test_education_rules.py` covering matching and non-matching synthetic contexts.
 - [x] Verify all tests pass.
 
 ---
