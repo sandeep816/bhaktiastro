@@ -4,7 +4,7 @@ Sprint 10B builds on the deterministic Prediction Framework established in Sprin
 
 ## Sprint Status
 
-Status: **In Progress (Task 10B.13 Complete)**
+Status: **In Progress (Task 10B.14 Complete)**
 
 Sprint 10B focuses on moving prediction logic out of hardcoded Python execution and into structured, data-driven rules.
 
@@ -209,6 +209,20 @@ Goal: Add one reusable category service that discovers, loads, evaluates, and co
 - [x] Preserve strict category filtering without category-specific Python implementations.
 - [x] Add focused integration tests in `backend/tests/test_prediction_categories.py`.
 - [x] Verify all tests pass.
+
+### Task 10B.14 - Prediction Explanation Layer
+Goal: Add a reusable explanation layer that converts existing prediction results into structured explanation objects without changing prediction logic.
+
+**Status**: Complete
+
+**Acceptance checklist**:
+- [x] Add reusable explanation helpers under `backend/app/prediction/explanations.py`.
+- [x] Accept existing prediction result objects without changing calculation or rule evaluation behavior.
+- [x] Return structured explanation fields for title, summary, reasoning, confidence, references, and notes.
+- [x] Keep explanation generation deterministic and independent from UI/API formatting.
+- [x] Preserve JSON-safe output and backward compatibility with existing prediction models.
+- [x] Add focused unit tests in `backend/tests/test_prediction_explanations.py`.
+- [x] Verify prediction tests pass.
 
 ---
 

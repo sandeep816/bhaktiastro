@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Reusable Prediction Explanation layer for structured result explanations.
 - Reusable prediction category discovery, loading, and evaluation service for rule libraries.
 - General Personality Prediction Rule Library starter set with validation and composer coverage.
 - Sprint 10A Prediction Framework completion documentation and next-sprint pointer.

@@ -22,6 +22,13 @@ from backend.app.prediction.categories import (
     evaluate_prediction_categories,
     load_prediction_categories,
 )
+from backend.app.prediction.explanations import (
+    PredictionExplanation,
+    PredictionExplanationCollection,
+    create_prediction_explanation,
+    create_prediction_explanations,
+    explain_composed_predictions,
+)
 from backend.app.prediction.framework import (
     PredictionFrameworkOutput,
     build_prediction_context,
@@ -76,6 +83,8 @@ __all__ = [
     "PredictionRuleModel",
     "PredictionStatus",
     "PredictionFrameworkOutput",
+    "PredictionExplanation",
+    "PredictionExplanationCollection",
     "RuleEvaluationResult",
     "RuleLoaderError",
     "StrengthAdapter",
@@ -84,10 +93,13 @@ __all__ = [
     "build_prediction_framework_output",
     "clear_rule_registry",
     "compose_predictions",
+    "create_prediction_explanation",
+    "create_prediction_explanations",
     "discover_rule_categories",
     "evaluate_all",
     "evaluate_any",
     "evaluate_condition",
+    "explain_composed_predictions",
     "evaluate_prediction_categories",
     "evaluate_prediction_rules",
     "evaluate_rule",

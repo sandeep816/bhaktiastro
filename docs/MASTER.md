@@ -185,6 +185,7 @@ Completed tasks:
 - **Task 10B.11**: Implement Spirituality Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/spiritual/spiritual_rules.yaml).
 - **Task 10B.12**: Implement General Personality Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/personality/personality_rules.yaml).
 - **Task 10B.13**: Implement prediction category loader and evaluator integration (backend/app/prediction/categories.py).
+- **Task 10B.14**: Implement reusable Prediction Explanation layer (backend/app/prediction/explanations.py).
 
 ## Next Task Instructions
 
