@@ -34,6 +34,7 @@ project rules.
 - Sprint 8: Ashtakavarga Engine.
 - Sprint 9: Advanced Lagna and Arudha Engine.
 - Sprint 10A: Prediction Framework Architecture.
+- Sprint 10B: Prediction Rules Foundation.
 
 Sprint 4 completed:
 
@@ -155,37 +156,36 @@ Sprint 10A completed:
 - Regression Coverage
 - Sprint 10A documentation and completion checklist
 
+Sprint 10B completed:
+
+- Prediction Rule Library architecture and documentation
+- General Prediction Rule schema and validation helpers
+- Prediction Rule Registry
+- YAML Rule Loader foundation
+- Career, Marriage, Finance, Health, Education, Children, Spirituality, and
+  Personality rule library foundations
+- Prediction category loader and evaluator integration
+- Reusable structured Prediction Explanation layer
+- Validation and regression coverage
+- Sprint 10B documentation through Task 10B.14
+
 ## Current Sprint
 
-Current sprint: Sprint 10B - Prediction Rules Foundation.
+Current sprint: Sprint 11 - Matchmaking Foundation.
 
-Primary sprint document: `docs/SPRINT-10B.md`.
+Primary sprint document: `docs/SPRINT-11.md`.
 
-Sprint 10B goal:
+Sprint 11 goal:
 
-- Add deterministic, data-driven prediction rule foundations on top of the
-  completed Sprint 10A framework.
-- Keep rules structured, testable, and free of generated interpretation text.
-- Keep AI-generated summaries outside the core prediction engine.
-- Reuse existing Panchang, Kundali, Varga, Dasha, Strength, Ashtakavarga, and
-  special Lagna foundations.
-- Preserve backward compatibility for all existing APIs.
+- Add reusable input and result schemas for future deterministic matchmaking.
+- Consume existing birth and Kundali data without recalculating or mutating it.
+- Keep compatibility calculations separate from prediction, API, report, and
+  UI layers.
+- Preserve backward compatibility for completed modules and existing APIs.
 
 Completed tasks:
-- **Task 10B.1**: Initialize Prediction Rule Library architecture and folders (docs/prediction_rules.md).
-- **Task 10B.2**: Implement reusable General Prediction Rule schema and validation helpers (backend/app/prediction/schema.py).
-- **Task 10B.3**: Implement reusable Prediction Rule Registry (backend/app/prediction/registry.py).
-- **Task 10B.4**: Implement YAML Rule Loader foundation (backend/app/prediction/loader.py).
-- **Task 10B.5**: Implement Career Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/career/career_rules.yaml).
-- **Task 10B.6**: Implement Marriage Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/marriage/marriage_rules.yaml).
-- **Task 10B.7**: Implement Finance Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/finance/finance_rules.yaml).
-- **Task 10B.8**: Implement Health Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/health/health_rules.yaml).
-- **Task 10B.9**: Implement Education Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/education/education_rules.yaml).
-- **Task 10B.10**: Implement Children Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/children/children_rules.yaml).
-- **Task 10B.11**: Implement Spirituality Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/spiritual/spiritual_rules.yaml).
-- **Task 10B.12**: Implement General Personality Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/personality/personality_rules.yaml).
-- **Task 10B.13**: Implement prediction category loader and evaluator integration (backend/app/prediction/categories.py).
-- **Task 10B.14**: Implement reusable Prediction Explanation layer (backend/app/prediction/explanations.py).
+- **Task 11.1**: Initialize Matchmaking Foundation Architecture with JSON-safe
+  person, pair, result, and metadata schemas and factories.
 
 ## Next Task Instructions
 
