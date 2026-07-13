@@ -1,0 +1,129 @@
+- id: "personality.001"
+  version: "1.0.0"
+  category: "personality"
+  subcategory: "lagna_lord_strength"
+  title: "Strong Lagna Lord Self-Presentation Indicator"
+  description: "For Aries ascendant foundation contexts, a strong Mars as Lagna lord is treated as a broad indicator for confident self-presentation. This is a tendency marker only, not a fixed personality type."
+  priority: 150
+  enabled: true
+  conditions:
+    all_of:
+      - field: "lagna.rashi_index"
+        operator: "equals"
+        value: 1
+      - field: "mars.strength.status"
+        operator: "equals"
+        value: "strong"
+  result:
+    status: "present"
+    confidence: 0.8
+    supporting_factors: ["Aries Lagna foundation context with strong Mars as Lagna lord."]
+    challenging_factors: []
+    involved_planets: ["mars"]
+    involved_houses: [1]
+    reasons: ["strong_aries_lagna_lord"]
+    metadata:
+      tendency_only: true
+      not_psychological_diagnosis: true
+      context_dependent: true
+      ascendant: "Aries"
+
+- id: "personality.002"
+  version: "1.0.0"
+  category: "personality"
+  subcategory: "planet_strength"
+  title: "Strong Sun Visibility Indicator"
+  description: "A strong Sun is treated as a broad indicator for visibility, initiative, or leadership-oriented presentation. This does not guarantee leadership outcomes or fixed traits."
+  priority: 140
+  enabled: true
+  conditions:
+    field: "sun.strength.status"
+    operator: "equals"
+    value: "strong"
+  result:
+    status: "present"
+    confidence: 0.75
+    supporting_factors: ["Sun has strong Shadbala status in the prediction context."]
+    challenging_factors: []
+    involved_planets: ["sun"]
+    involved_houses: []
+    reasons: ["strong_sun_visibility_indicator"]
+    metadata:
+      tendency_only: true
+      not_psychological_diagnosis: true
+      context_dependent: true
+
+- id: "personality.003"
+  version: "1.0.0"
+  category: "personality"
+  subcategory: "planet_strength"
+  title: "Strong Moon Receptivity Indicator"
+  description: "A strong Moon is treated as a broad indicator for emotional receptivity, responsiveness, or sensitivity to surroundings. This is not a mental-health claim."
+  priority: 130
+  enabled: true
+  conditions:
+    field: "moon.strength.status"
+    operator: "equals"
+    value: "strong"
+  result:
+    status: "present"
+    confidence: 0.75
+    supporting_factors: ["Moon has strong Shadbala status in the prediction context."]
+    challenging_factors: []
+    involved_planets: ["moon"]
+    involved_houses: []
+    reasons: ["strong_moon_receptivity_indicator"]
+    metadata:
+      tendency_only: true
+      not_psychological_diagnosis: true
+      context_dependent: true
+
+- id: "personality.004"
+  version: "1.0.0"
+  category: "personality"
+  subcategory: "planet_strength"
+  title: "Strong Mercury Communication Indicator"
+  description: "A strong Mercury is treated as a broad indicator for communication, analysis, or flexible thinking tendencies. This does not assert intelligence or ability certainty."
+  priority: 120
+  enabled: true
+  conditions:
+    field: "mercury.strength.status"
+    operator: "equals"
+    value: "strong"
+  result:
+    status: "present"
+    confidence: 0.75
+    supporting_factors: ["Mercury has strong Shadbala status in the prediction context."]
+    challenging_factors: []
+    involved_planets: ["mercury"]
+    involved_houses: []
+    reasons: ["strong_mercury_communication_indicator"]
+    metadata:
+      tendency_only: true
+      not_psychological_diagnosis: true
+      context_dependent: true
+
+- id: "personality.005"
+  version: "1.0.0"
+  category: "personality"
+  subcategory: "planet_strength"
+  title: "Strong Saturn Discipline Indicator"
+  description: "A strong Saturn is treated as a broad indicator for discipline, patience, reserve, or steady effort. This is context-dependent and not a fixed character judgment."
+  priority: 110
+  enabled: true
+  conditions:
+    field: "saturn.strength.status"
+    operator: "equals"
+    value: "strong"
+  result:
+    status: "present"
+    confidence: 0.75
+    supporting_factors: ["Saturn has strong Shadbala status in the prediction context."]
+    challenging_factors: []
+    involved_planets: ["saturn"]
+    involved_houses: []
+    reasons: ["strong_saturn_discipline_indicator"]
+    metadata:
+      tendency_only: true
+      not_psychological_diagnosis: true
+      context_dependent: true

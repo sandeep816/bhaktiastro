@@ -5,6 +5,7 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- General Personality Prediction Rule Library starter set with validation and composer coverage.
 - Sprint 10A Prediction Framework completion documentation and next-sprint pointer.
 - Optional Kundali API `include_predictions` flag for empty structured Prediction Framework output.
 - Sprint 10A Prediction Framework architecture documentation and current-sprint pointer.

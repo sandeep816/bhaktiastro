@@ -4,7 +4,7 @@ Sprint 10B builds on the deterministic Prediction Framework established in Sprin
 
 ## Sprint Status
 
-Status: **In Progress (Task 10B.11 Complete)**
+Status: **In Progress (Task 10B.12 Complete)**
 
 Sprint 10B focuses on moving prediction logic out of hardcoded Python execution and into structured, data-driven rules.
 
@@ -178,6 +178,21 @@ Goal: Implement Spirituality Rule Library foundation with a small validated star
 - [x] Integrate with registry and generic YAML loader.
 - [x] Ensure rules do not contain definitive or religiously sensitive claims (enlightenment, supernatural abilities, past lives, renunciation).
 - [x] Add unit tests in `backend/tests/test_spiritual_rules.py` covering matching, non-matching, and safety/scope disclaimer validations.
+- [x] Verify all tests pass.
+
+### Task 10B.12 - General Personality Rule Library foundation
+Goal: Implement General Personality Rule Library foundation with a small validated starter rule set of 5 rules and scope metadata.
+
+**Status**: Complete
+
+**Acceptance checklist**:
+- [x] Create personality rules directory under `backend/app/prediction/prediction_rules/personality/`.
+- [x] Add 5 starter rules in `personality_rules.yaml` following universal schema and naming conventions (`personality.001` through `personality.005`).
+- [x] Integrate standard scope metadata into results metadata (`tendency_only`, `not_psychological_diagnosis`, and `context_dependent`).
+- [x] Use existing context builder dot-key naming conventions without modification.
+- [x] Integrate with registry and generic YAML loader.
+- [x] Ensure rules avoid fixed personality types, diagnoses, harmful claims, or definitive outcomes.
+- [x] Add unit tests in `backend/tests/test_personality_rules.py` covering loading, validation, matching, non-matching, composer output, and scope metadata.
 - [x] Verify all tests pass.
 
 ---

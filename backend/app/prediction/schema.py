@@ -15,6 +15,7 @@ VALID_CATEGORIES: set[str] = {
     "health",
     "education",
     "children",
+    "personality",
     "spiritual",
     "raj_yoga",
     "dhana_yoga",

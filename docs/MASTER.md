@@ -183,6 +183,7 @@ Completed tasks:
 - **Task 10B.9**: Implement Education Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/education/education_rules.yaml).
 - **Task 10B.10**: Implement Children Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/children/children_rules.yaml).
 - **Task 10B.11**: Implement Spirituality Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/spiritual/spiritual_rules.yaml).
+- **Task 10B.12**: Implement General Personality Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/personality/personality_rules.yaml).
 
 ## Next Task Instructions
 

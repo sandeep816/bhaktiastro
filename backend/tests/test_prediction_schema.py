@@ -107,6 +107,7 @@ def test_invalid_category() -> None:
 
     # Valid categories are case-folded and pass
     assert validate_category("  Career  ") == "career"
+    assert validate_category("Personality") == "personality"
     assert validate_category("RAJ_YOGA") == "raj_yoga"
 
 

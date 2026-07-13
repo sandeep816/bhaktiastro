@@ -29,10 +29,11 @@ prediction_rules/
 ├── health/        # Physical strength, disease indications, recovery
 ├── education/     # Academic fields, success in studies, exams
 ├── children/      # Offspring, family growth
+├── personality/   # Broad, non-diagnostic personality tendencies
 ├── spiritual/     # Spiritual inclination, meditation, renunciation
 ├── raj_yoga/      # Power, authority, and status-defining yogas
 ├── dhana_yoga/    # Wealth-creating yogas and combinations
-└── general/       # Basic personality traits, generic chart features
+└── general/       # Generic chart features and uncategorized foundations
 ```
 
 ### Naming Conventions
