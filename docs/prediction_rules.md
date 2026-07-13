@@ -36,6 +36,12 @@ prediction_rules/
 └── general/       # Generic chart features and uncategorized foundations
 ```
 
+Category discovery and selected-category evaluation are handled by the reusable
+`backend.app.prediction.categories` service. That service discovers rule
+directories with YAML files, loads requested categories through the generic
+YAML loader and registry, evaluates through the generic Rule Engine, and
+composes results through the Prediction Composer.
+
 ### Naming Conventions
 - **Filename Pattern**: `<category>_<subcategory>_<rule_identifier>.json` (e.g., `career_profession_government_job.json` or `marriage_timing_delay_saturn.json`).
 - **File Format**: Lowercase snake_case exclusively.

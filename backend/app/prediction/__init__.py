@@ -17,6 +17,11 @@ from backend.app.prediction.conditions import (
     evaluate_condition,
 )
 from backend.app.prediction.composer import compose_predictions
+from backend.app.prediction.categories import (
+    discover_rule_categories,
+    evaluate_prediction_categories,
+    load_prediction_categories,
+)
 from backend.app.prediction.framework import (
     PredictionFrameworkOutput,
     build_prediction_context,
@@ -79,15 +84,18 @@ __all__ = [
     "build_prediction_framework_output",
     "clear_rule_registry",
     "compose_predictions",
+    "discover_rule_categories",
     "evaluate_all",
     "evaluate_any",
     "evaluate_condition",
+    "evaluate_prediction_categories",
     "evaluate_prediction_rules",
     "evaluate_rule",
     "evaluate_rules",
     "create_empty_prediction_result",
     "create_prediction_result",
     "get_registered_rules",
+    "load_prediction_categories",
     "load_rule",
     "load_rules",
     "load_rules_from_yaml",

@@ -4,7 +4,7 @@ Sprint 10B builds on the deterministic Prediction Framework established in Sprin
 
 ## Sprint Status
 
-Status: **In Progress (Task 10B.12 Complete)**
+Status: **In Progress (Task 10B.13 Complete)**
 
 Sprint 10B focuses on moving prediction logic out of hardcoded Python execution and into structured, data-driven rules.
 
@@ -193,6 +193,21 @@ Goal: Implement General Personality Rule Library foundation with a small validat
 - [x] Integrate with registry and generic YAML loader.
 - [x] Ensure rules avoid fixed personality types, diagnoses, harmful claims, or definitive outcomes.
 - [x] Add unit tests in `backend/tests/test_personality_rules.py` covering loading, validation, matching, non-matching, composer output, and scope metadata.
+- [x] Verify all tests pass.
+
+### Task 10B.13 - Prediction Category Loader and Evaluator Integration
+Goal: Add one reusable category service that discovers, loads, evaluates, and composes selected rule categories through the existing framework.
+
+**Status**: Complete
+
+**Acceptance checklist**:
+- [x] Add reusable category discovery from rule-library directories.
+- [x] Add selected-category loading through the generic YAML loader and registry.
+- [x] Evaluate selected categories through the generic Rule Engine.
+- [x] Compose selected category results through the existing Prediction Composer.
+- [x] Handle unknown categories, duplicate rule IDs, disabled rules, and invalid context safely.
+- [x] Preserve strict category filtering without category-specific Python implementations.
+- [x] Add focused integration tests in `backend/tests/test_prediction_categories.py`.
 - [x] Verify all tests pass.
 
 ---
