@@ -188,6 +188,9 @@ Completed tasks:
   person, pair, result, and metadata schemas and factories.
 - **Task 11.2**: Add deterministic person and pair input validation with stable
   issue codes, normalized outputs, boundary checks, and duplicate ID detection.
+- **Task 11.3**: Add Nakshatra identity and ordered pair-context foundations
+  with zero-based indexes, circular distances, stable issue codes, and no Koota
+  scoring or compatibility judgement.
 
 ## Next Task Instructions
 

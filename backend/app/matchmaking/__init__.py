@@ -16,6 +16,18 @@ from backend.app.matchmaking.foundation import (
     create_matchmaking_person,
     create_matchmaking_result,
 )
+from backend.app.matchmaking.nakshatra import (
+    MATCHMAKING_NAKSHATRA_CALCULATION_SCOPE,
+    MATCHMAKING_NAKSHATRA_INDEX_BASE,
+    MATCHMAKING_NAKSHATRA_ISSUE_CODES,
+    MatchmakingNakshatraIdentity,
+    MatchmakingNakshatraIssue,
+    MatchmakingNakshatraMetadata,
+    MatchmakingNakshatraPairContext,
+    build_nakshatra_pair_context,
+    calculate_nakshatra_distance,
+    normalize_matchmaking_nakshatra,
+)
 from backend.app.matchmaking.validation import (
     MATCHMAKING_VALIDATION_CODES,
     MatchmakingPairValidationResult,
@@ -29,9 +41,16 @@ from backend.app.matchmaking.validation import (
 __all__ = [
     "MATCHMAKING_SCHEMA_VERSION",
     "MATCHMAKING_STATUSES",
+    "MATCHMAKING_NAKSHATRA_CALCULATION_SCOPE",
+    "MATCHMAKING_NAKSHATRA_INDEX_BASE",
+    "MATCHMAKING_NAKSHATRA_ISSUE_CODES",
     "MATCHMAKING_VALIDATION_CODES",
     "MatchmakingJsonValue",
     "MatchmakingMetadata",
+    "MatchmakingNakshatraIdentity",
+    "MatchmakingNakshatraIssue",
+    "MatchmakingNakshatraMetadata",
+    "MatchmakingNakshatraPairContext",
     "MatchmakingPair",
     "MatchmakingPairValidationResult",
     "MatchmakingPerson",
@@ -46,6 +65,9 @@ __all__ = [
     "create_matchmaking_pair",
     "create_matchmaking_person",
     "create_matchmaking_result",
+    "build_nakshatra_pair_context",
+    "calculate_nakshatra_distance",
+    "normalize_matchmaking_nakshatra",
     "validate_matchmaking_pair",
     "validate_matchmaking_person",
 ]

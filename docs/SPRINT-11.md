@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.2 Complete)**
+Status: **In Progress (Task 11.3 Complete)**
 
 ## Architecture Boundary
 
@@ -68,11 +68,50 @@ Verification for Task 11.2:
 - Rashi, Nakshatra, and Kundali regression tests: 51 passed.
 - Full suite: 1028 passed, 13 skipped, and 20 subtests passed.
 
+## Task 11.3 - Nakshatra Compatibility Foundation
+
+Status: **Complete**
+
+Task 11.3 adds a reusable Nakshatra pair-context foundation for future
+matchmaking calculators. It provides:
+
+- Canonical Nakshatra identity normalization from supplied names, indexes, or
+  matchmaking person structures.
+- Reuse of `backend.app.constants.nakshatra.NAKSHATRA_LIST` without a second
+  Nakshatra list.
+- Zero-based Nakshatra indexes matching the core project convention:
+  Ashwini is index `0` and Revati is index `26`.
+- Optional Pada preservation and validation for values `1..4`.
+- Deterministic circular distances for ordered pairs:
+  `forward_distance = (index_b - index_a) mod 27` and
+  `reverse_distance = (index_a - index_b) mod 27`.
+- Same-Nakshatra distance behavior where the forward and reverse distances are
+  both `0`.
+- Stable, localization-ready issue codes for missing or invalid Nakshatra data.
+- JSON-safe output that preserves `person_a` and `person_b` ordering without
+  mutating inputs.
+
+Task 11.3 does not calculate Moon longitude, derive Nakshatra from birth data,
+assign Koota points, calculate Tara/Yoni/Gana/Nadi/Bhakoot/Graha Maitri, produce
+compatibility labels, or generate interpretation text.
+
+Compatibility is preserved by adding Nakshatra context helpers as an opt-in
+matchmaking module and leaving Task 11.1 and Task 11.2 public contracts
+unchanged.
+
+Verification for Task 11.3:
+
+- Matchmaking foundation, validation, and Nakshatra tests: 86 passed.
+- Core Nakshatra regression tests: 15 passed.
+- Full suite: 1054 passed, 13 skipped, and 20 subtests passed.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
 - Person order is preserved without gender-based assumptions.
 - Derived astrology fields remain optional and are never calculated here.
+- Nakshatra pair context uses zero-based indexes and circular distance only;
+  it does not assign compatibility meaning.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -82,7 +121,7 @@ Verification for Task 11.2:
 
 - 11.1 Matchmaking foundation architecture. **Complete.**
 - 11.2 Matchmaking input validation. **Complete.**
-- 11.3 Nakshatra compatibility foundations.
+- 11.3 Nakshatra compatibility foundations. **Complete.**
 - 11.4 Varna Koota.
 - 11.5 Vashya Koota.
 - 11.6 Tara Koota.
