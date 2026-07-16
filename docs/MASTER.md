@@ -186,6 +186,8 @@ Sprint 11 goal:
 Completed tasks:
 - **Task 11.1**: Initialize Matchmaking Foundation Architecture with JSON-safe
   person, pair, result, and metadata schemas and factories.
+- **Task 11.2**: Add deterministic person and pair input validation with stable
+  issue codes, normalized outputs, boundary checks, and duplicate ID detection.
 
 ## Next Task Instructions
 

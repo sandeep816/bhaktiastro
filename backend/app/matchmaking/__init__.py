@@ -16,20 +16,36 @@ from backend.app.matchmaking.foundation import (
     create_matchmaking_person,
     create_matchmaking_result,
 )
+from backend.app.matchmaking.validation import (
+    MATCHMAKING_VALIDATION_CODES,
+    MatchmakingPairValidationResult,
+    MatchmakingPersonValidationResult,
+    MatchmakingValidationIssue,
+    MatchmakingValidationMetadata,
+    validate_matchmaking_pair,
+    validate_matchmaking_person,
+)
 
 __all__ = [
     "MATCHMAKING_SCHEMA_VERSION",
     "MATCHMAKING_STATUSES",
+    "MATCHMAKING_VALIDATION_CODES",
     "MatchmakingJsonValue",
     "MatchmakingMetadata",
     "MatchmakingPair",
+    "MatchmakingPairValidationResult",
     "MatchmakingPerson",
+    "MatchmakingPersonValidationResult",
     "MatchmakingResult",
     "MatchmakingStatus",
+    "MatchmakingValidationIssue",
+    "MatchmakingValidationMetadata",
     "create_empty_matchmaking_pair",
     "create_empty_matchmaking_person",
     "create_empty_matchmaking_result",
     "create_matchmaking_pair",
     "create_matchmaking_person",
     "create_matchmaking_result",
+    "validate_matchmaking_pair",
+    "validate_matchmaking_person",
 ]

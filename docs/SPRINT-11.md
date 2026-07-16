@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.1 Complete)**
+Status: **In Progress (Task 11.2 Complete)**
 
 ## Architecture Boundary
 
@@ -39,6 +39,35 @@ Task 11.1 provides only:
 No compatibility score, Koota rule, Manglik rule, judgment, interpretation,
 remedy, API route, report, or UI behavior is implemented.
 
+## Task 11.2 - Matchmaking Input Validation
+
+Status: **Complete**
+
+Task 11.2 adds deterministic validation over the Task 11.1 person and pair
+factories. It provides:
+
+- JSON-safe validation results and localization-ready issue keys.
+- Stable issue codes and deterministic issue ordering.
+- Optional ISO date, ISO time, and IANA timezone validation.
+- Latitude (`-90..90`), longitude (`-180..180`), and Nakshatra Pada (`1..4`)
+  boundary validation when those values are supplied.
+- Strict unknown-field handling consistent with existing project schemas.
+- Ordered nested pair validation and duplicate non-empty person ID detection.
+- Normalized Task 11.1 person and pair values without input mutation.
+
+All person fields remain optional. Validation does not calculate missing Rashi,
+Nakshatra, Lagna, compatibility factors, or scores. It produces no API errors,
+UI messages, interpretations, or judgments.
+
+Compatibility is preserved by leaving Task 11.1 models and factories unchanged
+and exposing validation as a separate opt-in layer.
+
+Verification for Task 11.2:
+
+- Matchmaking foundation and validation tests: 60 passed.
+- Rashi, Nakshatra, and Kundali regression tests: 51 passed.
+- Full suite: 1028 passed, 13 skipped, and 20 subtests passed.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -52,7 +81,7 @@ remedy, API route, report, or UI behavior is implemented.
 ## Provisional Task Sequence
 
 - 11.1 Matchmaking foundation architecture. **Complete.**
-- 11.2 Matchmaking input validation.
+- 11.2 Matchmaking input validation. **Complete.**
 - 11.3 Nakshatra compatibility foundations.
 - 11.4 Varna Koota.
 - 11.5 Vashya Koota.
