@@ -5,6 +5,10 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Source-of-truth Ashtakoota aggregation orchestration, canonical eight-Koota
+  order, exact `36.0` maximum, raw and strict precomputed-result APIs,
+  validation, failure propagation, immutable result-contract, and exhaustive
+  test specifications for Sprint 11.12.
 - Deterministic Nadi Koota classification and symmetric scoring from supplied
   sidereal Moon Nakshatras, with complete 27-star mapping, exhaustive `27 x
   27` pair coverage, and no cancellation exceptions.

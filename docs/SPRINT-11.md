@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Tasks 11.1-11.11 Complete)**
+Status: **In Progress (Task 11.12 Specification Complete; Runtime Pending)**
 
 ## Architecture Boundary
 
@@ -2337,6 +2337,473 @@ The skips remain the repository's pre-existing manual-reference validation
 placeholders. Task 11.11 does not enable or alter them. Work stops here before
 Task 11.12.
 
+## Task 11.12 - Ashtakoota Aggregation
+
+Status: **Specification Complete; Runtime Not Implemented**
+
+### Purpose and Scope
+
+Task 11.12 adds deterministic orchestration over the eight completed
+Ashtakoota calculators. It collects each authoritative Koota result exactly
+once, preserves the canonical order, and derives one arithmetic total with a
+maximum of `36.0` points.
+
+The aggregator is an orchestration layer only. It must not classify a Varna,
+Vashya, Tara, Yoni, Graha Maitri relationship, Gana, Bhakoot pair, or Nadi;
+copy a mapping, matrix, category, distance, boundary, or scoring rule from an
+individual Koota; independently recalculate a component score; or change a
+component result. Each completed Koota calculator remains the only authority
+for its own identity, directionality, relationship, score, validation issues,
+and maximum score.
+
+Task 11.12 produces no compatibility judgement. It does not implement a
+pass/fail threshold, label, grade, recommendation, remedy, Dosha cancellation,
+Manglik calculation, Dasha analysis, horoscope interpretation, marriage
+prediction, report prose, API route, or UI behavior. Interpretation and
+compatibility reporting belong to later tasks.
+
+### Canonical Koota Manifest and Maximum
+
+The stable canonical order and expected public maximums are:
+
+| Position | Koota identifier | Public calculator | Maximum score |
+|---:|---|---|---:|
+| 1 | `varna` | `calculate_varna_koota` | 1.0 |
+| 2 | `vashya` | `calculate_vashya_koota` | 2.0 |
+| 3 | `tara` | `calculate_tara_koota` | 3.0 |
+| 4 | `yoni` | `calculate_yoni_koota` | 4.0 |
+| 5 | `graha_maitri` | `calculate_graha_maitri_koota` | 5.0 |
+| 6 | `gana` | `calculate_gana_koota` | 6.0 |
+| 7 | `bhakoot` | `calculate_bhakoot_koota` | 7.0 |
+| 8 | `nadi` | `calculate_nadi_koota` | 8.0 |
+
+The total maximum is exactly:
+
+```text
+1.0 + 2.0 + 3.0 + 4.0 + 5.0 + 6.0 + 7.0 + 8.0 = 36.0
+```
+
+Runtime code must define one ordered manifest that refers to the eight
+existing public Koota identifiers, maximum-score constants, and calculators.
+It must assert at import time that the identifiers are unique, the order is
+exactly the table above, and the maximum constants sum to `36.0`. It must not
+repeat these values in independent execution, validation, result-order, and
+serialization tables that could disagree.
+
+The canonical order is part of the public contract. Input order, dictionary
+order, import order, discovery order, and caller-provided precomputed-result
+order must never change the emitted order.
+
+### Two Explicitly Separated Public APIs
+
+BhaktiAstro supports both raw orchestration and aggregation of precomputed
+results, but only through two separately named APIs with different contracts:
+
+1. `calculate_ashtakoota` accepts keyword-only
+   `bride_moon_longitude` and `groom_moon_longitude`, derives only the shared
+   adapter identities needed by the heterogeneous existing calculators, calls
+   all eight real calculators, and returns the aggregate result.
+2. `aggregate_ashtakoota_results` accepts a sequence of exactly eight
+   caller-supplied precomputed Koota result mappings plus keyword-only
+   `bride_moon_longitude` and `groom_moon_longitude`, strictly revalidates the
+   aggregation contract, reorders copies into canonical order, and totals the
+   supplied component scores without invoking a Koota calculator.
+
+The raw API must not accept precomputed results. The precomputed API must not
+invoke, replace, or silently repair a component calculator. No overloaded
+argument, mode flag, type guessing, or mixed raw/precomputed input is allowed.
+Both APIs require the two Moon longitudes so every successful aggregate result
+has the same stable bride/groom audit fields.
+
+The public signatures are exactly:
+
+```python
+def calculate_ashtakoota(
+    *,
+    bride_moon_longitude: object = None,
+    groom_moon_longitude: object = None,
+) -> MatchmakingAshtakootaResult: ...
+
+def aggregate_ashtakoota_results(
+    results: object,
+    *,
+    bride_moon_longitude: object = None,
+    groom_moon_longitude: object = None,
+) -> MatchmakingAshtakootaResult: ...
+```
+
+The two keyword names define the marriage roles. No separate role parameter
+is accepted by the raw API, and it must never infer roles from names,
+identifiers, call order, `person_a`, or `person_b`. An unexpected or
+caller-supplied role argument is rejected by the Python signature rather than
+guessed.
+
+### Raw Moon-Longitude Orchestration
+
+The raw API accepts finite real sidereal Moon longitudes in degrees. A
+geographic birth longitude, including `MatchmakingPerson.longitude`, is not a
+Moon longitude and must never be substituted. The API must reuse the existing
+Rashi and Nakshatra core helpers to prepare adapters; it must not calculate a
+Moon position from birth details.
+
+For valid input, runtime orchestration must:
+
+1. normalize both longitudes through
+   `backend.app.kundali.rashi.normalize_longitude` into `[0, 360)`;
+2. derive each Moon Rashi through `backend.app.kundali.rashi.get_rashi` and
+   each Moon Nakshatra through
+   `backend.app.astrology.nakshatra.get_nakshatra`;
+3. create one internal ordered adapter pair where `person_a` is the bride and
+   `person_b` is the groom, preserving canonical Rashi and Nakshatra data and
+   using no unrelated birth or chart field; and
+4. call the eight calculators exactly once in canonical manifest order.
+
+The adapter derivation exists only because the completed calculators have two
+established input shapes: Varna and the Nakshatra-based Kootas consume an
+ordered pair, while Vashya, Graha Maitri, and Bhakoot consume explicitly named
+Moon longitudes. It must not derive a component score or duplicate a Koota
+rule.
+
+The exact calls are:
+
+- Varna: the adapter pair with `subject_role="person_a"` and
+  `comparison_role="person_b"`, so the bride is the documented subject and
+  the groom is the documented comparison;
+- Vashya: the two named raw Moon-longitude inputs;
+- Tara: the adapter pair with bride `person_a` and groom `person_b`;
+- Yoni: the same pair and role assignment;
+- Graha Maitri: the two named raw Moon-longitude inputs;
+- Gana: the adapter pair with bride `person_a` and groom `person_b`;
+- Bhakoot: the two named raw Moon-longitude inputs; and
+- Nadi: the adapter pair with bride `person_a` and groom `person_b`.
+
+For precomputed validation, the exact emitted `direction` mapping required
+from each existing calculator is:
+
+| Koota | Required direction mapping |
+|---|---|
+| `varna` | `subject_role: person_a`, `comparison_role: person_b` |
+| `vashya` | `row_role: bride`, `column_role: groom` |
+| `tara` | `bride_role: person_a`, `groom_role: person_b` |
+| `yoni` | `bride_role: person_a`, `groom_role: person_b` |
+| `graha_maitri` | `row_role: bride`, `column_role: groom` |
+| `gana` | `bride_role: person_a`, `groom_role: person_b` |
+| `bhakoot` | `row_role: bride`, `column_role: groom` |
+| `nadi` | `bride_role: person_a`, `groom_role: person_b` |
+
+The mapping must have these exact key/value pairs. Missing keys, extra keys,
+non-string values, reversed roles, identical roles, and alternative aliases
+are invalid. This check validates aggregation direction only; it does not
+recalculate a component's directional score.
+
+The aggregator must pass the caller's finite values to raw-longitude Kootas;
+it must not substitute rounded values. The aggregate audit fields expose the
+canonical normalized longitudes. Existing core helpers own all `[0, 360)`,
+six-decimal boundary, negative-value, greater-than-`360°`, and exact cusp
+behavior.
+
+### Precomputed-Result Aggregation and Revalidation
+
+`aggregate_ashtakoota_results` accepts a non-string sequence, not a mapping keyed
+by Koota, because duplicate identifiers must remain detectable. The sequence
+may arrive in any order, but it must contain exactly one result for every
+canonical Koota and no other result. Runtime must copy and emit the results in
+canonical order.
+
+Every supplied component must be revalidated without reimplementing its
+astrological rules. The strict structural checks are:
+
+- the outer input is a non-string sequence containing exactly eight items;
+- every item is a mapping;
+- `koota` is a string and is one exact canonical identifier;
+- no Koota identifier is duplicated, missing, or unexpected;
+- `status` is exactly `complete`;
+- `score` is a finite real number, is not a boolean, and lies inclusively
+  between `0.0` and that Koota's expected maximum;
+- `maximum_score` is a finite real number, is not a boolean, and exactly
+  equals the imported expected maximum for that identifier;
+- the result's role/direction metadata matches the canonical bride/groom call
+  described above; and
+- `errors` and `warnings`, where required by the existing Koota result
+  convention, are JSON-safe collections and a complete result has no errors;
+  and
+- the complete component mapping and every nested value pass strict JSON-safe
+  validation with no `NaN`, infinity, non-string key, or unsupported object.
+
+Validation must not reconstruct a score from category, matrix, relationship,
+Rashi, Nakshatra, distance, or factor fields. It therefore validates type,
+identity, status, direction, finiteness, range, and maximum, but does not claim
+to prove the astrological provenance of a caller-supplied result. The caller
+is responsible for supplying results calculated for the accompanying Moon
+longitudes. This limitation must be explicit and must not be hidden by a
+false cross-Koota consistency claim.
+
+Non-mapping component values and wrong field types raise `TypeError`.
+Duplicate, missing, unexpected, invalid-status, out-of-range, non-finite,
+direction-mismatched, error-bearing, or incorrect-maximum component results
+raise `ValueError`. Error messages must identify the offending canonical
+Koota or identifier set in deterministic canonical order. No malformed result
+is coerced, skipped, defaulted, repaired, or replaced by a calculator call.
+
+### Deterministic Execution and Failure Behavior
+
+For valid raw inputs, all calculators execute once and only once in canonical
+order. A structurally valid calculator mapping with status other than
+`complete`, a `None` score, or errors makes the aggregate status `invalid` and
+the aggregate `total_score` `None`. All eight calculators still execute so the
+safe component validation issues remain available in canonical order.
+
+The raw result may retain all eight copied component results and their
+component errors for audit, but it must never publish a partial numeric total,
+percentage, compatibility label, or success status. `score_by_koota` then
+contains all eight canonical keys with `None` for any invalid component and
+the validated finite score for each valid component. This diagnostic retention
+is not partial aggregation: no aggregate score exists unless every Koota is
+complete and valid.
+
+A raw calculator returning a non-mapping, incorrect Koota identifier,
+incorrect maximum, invalid score type, non-finite score, out-of-range score,
+malformed direction mapping, or non-JSON-safe structure violates a completed
+public calculator invariant. The aggregator must raise `TypeError` for a
+wrong type and `ValueError` for a wrong value immediately; it must not retain
+or serialize the malformed component, continue execution, or downgrade the
+programming contract violation to an ordinary invalid astrology input.
+
+Missing Koota results are never allowed in a successful aggregation. The
+strict precomputed API raises for a missing item. A raw-input validation
+failure occurs before Koota execution and returns a safe aggregate result with
+status `invalid`, `total_score=None`, empty component and score collections,
+and deterministic bride-before-groom issues. It must not fabricate eight
+component results from invalid Moon data.
+
+Expected invalid raw input is represented safely as described above.
+Unexpected exceptions raised by `normalize_longitude`, `get_rashi`,
+`get_nakshatra`, an individual Koota calculator, manifest validation, copying,
+or programming invariants must propagate immediately unchanged. The
+aggregator must not catch `Exception`, suppress a failure, substitute an
+invalid component, continue after the raising calculator, or return a partial
+result. Tests must inject a unique exception into each manifest position and
+prove propagation and fail-fast call order.
+
+Aggregate issues reuse `moon_longitude_missing` and
+`moon_longitude_invalid` for raw bride/groom input fields. A returned
+component that fails aggregation validation adds `koota_result_invalid` at
+field `koota_results.<canonical_identifier>` with JSON-safe metadata naming
+the failed validation aspect. Input issues are ordered bride then groom;
+component issues are ordered by the canonical manifest. These aggregate
+issues use the existing `matchmaking.validation.<code>` message-key pattern.
+Strict precomputed-input failures raise the documented exceptions and do not
+also return issue mappings.
+
+### Exact Score Calculation and Floating-Point Policy
+
+For eight complete validated results:
+
+```text
+total_score = math.fsum(component["score"] for component in canonical_order)
+total_maximum_score = math.fsum(expected_maximum for canonical_order) = 36.0
+```
+
+The total is derived only from the eight returned or supplied component
+scores. It is never independently recalculated from Moon longitudes,
+classifications, factors, matrices, or relationships. Each component appears
+exactly once.
+
+Runtime must use `math.fsum` in canonical order, emit a finite JSON number,
+and perform no decimal rounding, integer rounding, display formatting,
+clamping, tolerance comparison, or score normalization. Current Koota scores
+are integer or half-point values and are exactly representable as binary
+floats. Fractional totals such as `16.5` must be preserved exactly as floats.
+A successful total must satisfy `0.0 <= total_score <= 36.0`; violation is a
+programming error and must raise rather than clamp.
+
+Task 11.12 does not include a `percentage_score` field. A future reporting or
+summary task may derive a percentage from the authoritative total, but this
+task must not add percentage rounding or presentation policy.
+
+### Zero, Full, Fractional, and Swapped-Input Behavior
+
+- Eight structurally valid precomputed zero scores aggregate to exactly
+  `0.0`; zero is a complete result, not a missing or false value.
+- Eight structurally valid precomputed maximum scores aggregate to exactly
+  `36.0`.
+- Any valid mix containing half-point component scores retains the exact
+  fractional sum without rounding.
+- The raw API returns whatever eight real calculators award. Tests must not
+  force a real Moon-longitude pair to produce an astrologically impossible
+  synthetic zero or full score; the strict precomputed path provides the
+  arithmetic boundary fixtures.
+- Swapping the bride and groom Moon-longitude arguments performs a new
+  canonical orchestration with roles swapped. The aggregator must not
+  transpose, average, cache, or assume equality. Directional Varna, Vashya,
+  Tara audit directions, and Gana outputs may change according to their own
+  calculators; symmetric Kootas retain only the behavior their calculators
+  define. The swapped total is independently summed from the swapped
+  component results and may differ.
+
+### Raw Input Validation and Normalization
+
+Both APIs require keyword-only bride and groom Moon longitudes. Validation
+follows the existing Rashi utility contract:
+
+- booleans and non-real values are invalid and produce deterministic
+  bride-before-groom issues from the raw orchestration API;
+- `NaN`, positive infinity, and negative infinity are invalid;
+- missing bride or groom values are invalid;
+- finite `0°`, `360°`, `-360°`, negative values, and values greater than
+  `360°` are accepted and normalized through existing utilities; and
+- equivalent normalized inputs must produce identical normalized audit
+  longitudes and component scores.
+
+The precomputed API validates its required Moon-longitude audit inputs with
+the same type, finiteness, and normalization rules before validating the
+component sequence. Invalid audit inputs raise `TypeError` or `ValueError`
+because the precomputed helper is a strict low-level aggregation API. It must
+not guess which component belonged to which role.
+
+### Public Immutable Result Contract
+
+Task 11.12 follows the existing matchmaking project convention: a typed,
+JSON-safe mapping result with newly allocated nested mappings and lists. It
+does not introduce a dataclass, tuple result, enum object, Pydantic API model,
+or a second serialization architecture. The mapping and all nested values are
+immutable after construction by public contract, even though independent
+mutable Python containers are used for backward compatibility with existing
+Koota results.
+
+The runtime task must export `ASHTAKOOTA_KOOTA_ORDER`,
+`ASHTAKOOTA_TOTAL_MAXIMUM_SCORE`, the single ordered internal/public manifest
+`ASHTAKOOTA_KOOTA_MANIFEST`, the aggregate issue/result/metadata typed mappings,
+`calculate_ashtakoota`, and `aggregate_ashtakoota_results` from
+`backend.app.matchmaking`. Existing exports must remain present and unchanged.
+
+The aggregate result exposes exactly these top-level fields:
+
+- `calculation`: stable identifier `ashtakoota_aggregation`;
+- `status`: `complete` or `invalid` under the rules above;
+- `bride_moon_longitude`: normalized finite longitude, or `None` for invalid
+  raw input;
+- `groom_moon_longitude`: normalized finite longitude, or `None` for invalid
+  raw input;
+- `koota_results`: copied full component mappings in canonical order;
+- `score_by_koota`: a mapping in canonical order from each Koota identifier to
+  its finite score, or to `None` for an invalid retained component;
+- `maximum_score_by_koota`: a canonical-order mapping containing exactly
+  `1.0` through `8.0` under their documented identifiers;
+- `total_score`: the exact `math.fsum` result for eight valid components, or
+  `None` when aggregation is invalid;
+- `total_maximum_score`: always `36.0`;
+- `errors`: stable localization-ready aggregate issues;
+- `warnings`: copied component warnings in canonical Koota order, prefixed by
+  Koota identifier, with no invented interpretive note;
+- `references`: a newly allocated empty list because aggregation adds no new
+  astrological rule or source; and
+- `metadata`: a newly allocated deterministic mapping.
+
+Metadata exposes at least component name, existing matchmaking schema version,
+`deterministic=true`, execution mode `raw_calculators` or
+`precomputed_results`, canonical Koota order, expected Koota count `8`,
+validated Koota count, total maximum `36.0`, aggregation method `math_fsum`,
+`percentage_included=false`, and interpretation/cancellation flags set to
+false where the existing metadata convention includes scope flags.
+
+There is no generic compatibility-domain field for the total because the
+eight Kootas represent different domains. The complete component results
+retain their own domains. The aggregate must not concatenate references,
+factors, prose, or domain labels into a new interpretation.
+
+Every result call must deep-copy caller-supplied precomputed results and
+allocate independent component lists, score mappings, maximum mappings,
+issues, warnings, references, and metadata. It must not mutate caller input or
+share a nested collection with the caller, a manifest constant, an individual
+calculator result retained elsewhere, an earlier call, or a later call.
+Repeated equivalent calls compare equal before caller mutation. Mutating a
+returned collection cannot affect another result or any source component.
+
+All output must pass `json.dumps(..., allow_nan=False)`. Keys and identifiers
+are strings; scores and longitudes are finite numbers or `None`; no tuple,
+set, enum instance, dataclass instance, exception object, callable, `NaN`, or
+infinity may escape. Ordering of components, score mappings, maximum mappings,
+issues, warnings, references, and metadata is deterministic.
+
+### Excluded Behavior
+
+Task 11.12 explicitly excludes:
+
+- any copied or alternative Koota classification, mapping, matrix, formula,
+  boundary, normalization, relationship, cancellation, or scoring rule;
+- partial numeric totals, weighted Kootas, dropped low scores, bonus points,
+  penalties, overrides, and score caps other than validation against `36.0`;
+- compatibility labels, thresholds, grades, pass/fail decisions, prose,
+  recommendations, remedies, or marriage predictions;
+- Manglik/Kuja Dosha, Dasha compatibility, Gotra, planetary strength,
+  Navamsha, transits, horoscope interpretation, or chart synthesis;
+- Bhakoot, Nadi, Tara, or other Dosha cancellation and exception rules;
+- API, database, report, UI, localization text, analytics, or external-service
+  integration; and
+- Task 11.13 Manglik compatibility, Task 11.14 summary composition, or Task
+  11.15 serialization hardening.
+
+### Required Runtime Tests
+
+Task 11.12 runtime implementation is not complete until focused tests cover:
+
+- raw aggregation through all eight real public calculators without replacing
+  or duplicating any calculator;
+- exact canonical order `varna`, `vashya`, `tara`, `yoni`, `graha_maitri`,
+  `gana`, `bhakoot`, `nadi` in execution, results, score mapping, maximum
+  mapping, warnings, and metadata;
+- exactly one invocation and one included score for every calculator;
+- imported component maximums `1.0` through `8.0` and exact total maximum
+  `36.0`;
+- independent verification that each successful `total_score` equals
+  `math.fsum` of the eight emitted component scores;
+- a precomputed all-zero fixture producing complete total `0.0`;
+- a precomputed all-maximum fixture producing complete total `36.0`;
+- a precomputed fractional fixture and at least one real-calculator fractional
+  result, proving no rounding;
+- representative normalized equivalents including `0°`, `360°`, `-360°`,
+  finite negative, and greater-than-`360°` inputs;
+- raw rejection of missing values, booleans, non-real values, `NaN`, and both
+  infinities with deterministic bride-before-groom issues;
+- strict precomputed-input type validation and longitude validation;
+- every duplicate Koota identifier, every single missing canonical identifier,
+  every unexpected identifier, and combined missing/unexpected sets;
+- incorrect individual result types, non-string identifiers, invalid status,
+  `None`, boolean, non-real, non-finite, negative, and above-maximum scores;
+- every incorrect individual maximum, including boolean and non-finite values;
+- missing, malformed, error-bearing, and mismatched role/direction metadata;
+- one injected calculator exception at each of the eight manifest positions,
+  proving the same exception propagates, later calculators do not run, and no
+  partial result is returned;
+- one returned invalid result at each manifest position, proving all eight
+  audit results remain ordered but `total_score` is `None`;
+- swapped bride/groom raw inputs, proving directional components and total are
+  taken from the newly executed calculators without forced symmetry;
+- deterministic equality across repeated calls, caller-input non-mutation,
+  deep-copy isolation, independent mutable collections, and immutable-after-
+  construction public-contract expectations;
+- strict deterministic JSON serialization with `allow_nan=False` and absence
+  of percentage, interpretation, threshold, recommendation, remedy,
+  cancellation, Manglik, Dasha, and prediction fields;
+- stable public exports for the manifest, total maximum, result types, raw
+  orchestrator, and strict precomputed aggregator;
+- backward compatibility with every existing Koota public import and direct
+  calculator call; and
+- focused regressions proving all eight individual calculator suites remain
+  unchanged, followed by the complete matchmaking, Rashi, Nakshatra, Kundali,
+  and full project suites.
+
+### Documentation Progress
+
+This documentation task defines the complete Task 11.12 source of truth only.
+No runtime module, test, constant, result type, or public export is added.
+Task 11.12 must remain absent from the completed-task list in
+`docs/MASTER.md`. The next Task 11.12 runtime task must implement only this
+specification, add focused tests and exports, run all eight Koota regressions
+plus the complete matchmaking and project suites, record verification totals,
+mark only Task 11.12 runtime-complete, and stop before Task 11.13.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -2369,6 +2836,9 @@ Task 11.12.
   context, preserves explicit bride/groom roles, and uses only the symmetric
   base `0.0`/`8.0` matrix without cancellation exceptions specified in Task
   11.11.
+- Ashtakoota aggregation orchestrates the eight completed Kootas in canonical
+  order, derives its total only from validated component results, and adds no
+  interpretation, threshold, cancellation, or replacement scoring rule.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -2387,7 +2857,7 @@ Task 11.12.
 - 11.9 Gana Koota. **Complete.**
 - 11.10 Bhakoot Koota. **Complete.**
 - 11.11 Nadi Koota. **Complete.**
-- 11.12 Ashtakoota aggregation.
+- 11.12 Ashtakoota aggregation. **Specification complete; runtime pending.**
 - 11.13 Manglik compatibility foundation.
 - 11.14 Matchmaking summary composer.
 - 11.15 Serialization and compatibility hardening.
