@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.7 Specification Complete; Runtime Pending)**
+Status: **In Progress (Task 11.7 Complete)**
 
 ## Architecture Boundary
 
@@ -626,7 +626,7 @@ Verification for Task 11.6:
 
 ## Task 11.7 - Yoni Koota
 
-Status: **Specification Complete; Runtime Not Implemented**
+Status: **Complete**
 
 ### Purpose, Domain, and Scope
 
@@ -916,14 +916,22 @@ Where those sources discuss a 28-star form or other traditions use different
 sex assignments or scoring modifiers, the explicit BhaktiAstro decisions and
 complete tables in this section are authoritative.
 
-### Documentation Progress
+### Completion and Verification
 
-This documentation task defines the Task 11.7 source of truth only. No runtime
-module, tests, public exports, or completion verification are added, and Task
-11.7 must remain runtime-incomplete in `docs/MASTER.md`. The next Task 11.7
-implementation must implement this specification without silently changing
-its convention, mappings, or scores, then add focused tests, exports, required
-progress updates, and full regression verification.
+Task 11.7 implements the specified 27-Nakshatra classification, Yoni-sex
+metadata, strict category relationship lookup, complete symmetric scoring
+matrix, and structured Koota result as an opt-in matchmaking module. It reuses
+the Task 11.3 Nakshatra normalization and pair context, leaves Tasks 11.1
+through 11.6 unchanged, and does not calculate later Kootas or aggregate an
+Ashtakoota score.
+
+Verification for Task 11.7:
+
+- Focused Yoni Koota tests: 288 passed.
+- Matchmaking foundation, validation, Nakshatra, Varna, Vashya, Tara, and Yoni
+  tests: 550 passed.
+- Core and matchmaking Nakshatra regression tests: 41 passed.
+- Full suite: 1518 passed, 13 skipped, and 20 subtests passed.
 
 ## Deterministic and Compatibility Principles
 
@@ -940,7 +948,7 @@ progress updates, and full regression verification.
 - Tara Koota reuses zero-based Nakshatra pair context, inclusive circular
   counts, the modulo-9 cycle, and explicit bride/groom roles specified in Task
   11.6; it does not infer roles or derive missing Nakshatras.
-- Yoni Koota will reuse zero-based Nakshatra identities, the canonical 27-star
+- Yoni Koota reuses zero-based Nakshatra identities, the canonical 27-star
   mapping, explicit bride/groom roles, and the symmetric matrix specified in
   Task 11.7; Yoni sex is metadata and does not alter the score.
 - Non-finite values are converted to JSON-safe values.
@@ -956,7 +964,7 @@ progress updates, and full regression verification.
 - 11.4 Varna Koota. **Complete.**
 - 11.5 Vashya Koota. **Complete.**
 - 11.6 Tara Koota. **Complete.**
-- 11.7 Yoni Koota. **Specification complete; runtime pending.**
+- 11.7 Yoni Koota. **Complete.**
 - 11.8 Graha Maitri Koota.
 - 11.9 Gana Koota.
 - 11.10 Bhakoot Koota.

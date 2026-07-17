@@ -5,6 +5,9 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic Yoni Koota classification and symmetric scoring from supplied
+  sidereal Moon Nakshatras, with complete 27-star mapping and `14 x 14` matrix
+  coverage.
 - Source-of-truth Yoni Koota 27-Nakshatra classification, Yoni-sex metadata,
   symmetric scoring matrix, validation, result-contract, and test
   specifications for Sprint 11.7.

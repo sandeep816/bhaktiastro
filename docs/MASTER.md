@@ -200,6 +200,9 @@ Completed tasks:
 - **Task 11.6**: Implement deterministic Tara Koota with reused zero-based
   Nakshatra pair context, inclusive circular counting, modulo-9
   classification, explicit bidirectional roles, and `0.0`/`1.5`/`3.0` scoring.
+- **Task 11.7**: Implement deterministic Yoni Koota with reused Nakshatra
+  normalization, the canonical 27-star animal and Yoni-sex mapping, strict
+  category validation, and the complete symmetric `14 x 14` scoring matrix.
 
 ## Next Task Instructions
 
