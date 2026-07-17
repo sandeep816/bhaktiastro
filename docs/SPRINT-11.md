@@ -342,6 +342,287 @@ Verification for Task 11.5:
 - Rashi and relevant Kundali regression tests: 64 passed.
 - Full suite: 1151 passed, 13 skipped, and 20 subtests passed.
 
+## Task 11.6 - Tara Koota
+
+Status: **Specification Complete; Runtime Not Implemented**
+
+### Purpose and Scope
+
+Tara Koota, also called Dina Koota, represents destiny, wellbeing, fortune,
+and birth-star harmony in the standard North Indian Ashtakoota convention. Its
+maximum score is `3.0` points and its stable machine-readable compatibility
+domain is `destiny`.
+
+Task 11.6 runtime implementation must provide:
+
+- deterministic Tara classification from two supplied sidereal Moon
+  Nakshatras;
+- inclusive circular Nakshatra counting in both directions;
+- the canonical modulo-9 Tara classification defined below;
+- independent bride-to-groom and groom-to-bride directional scores; and
+- a structured, JSON-safe Tara Koota result consistent with the existing
+  matchmaking Koota architecture.
+
+The caller must explicitly identify which ordered person is the bride and
+which is the groom. The calculator must not infer gender or marriage role from
+`person_a`, `person_b`, names, identifiers, or input order. It must not derive
+a missing Moon longitude or Nakshatra from birth details.
+
+### Primary Inputs and Reused Nakshatra Logic
+
+The astrological input for each person is the already supplied sidereal Moon
+Nakshatra. Nakshatra Pada is not used by Tara Koota and must not change the
+score.
+
+Runtime implementation must reuse:
+
+- `backend.app.constants.nakshatra.NAKSHATRA_LIST` and `NAKSHATRA_COUNT`;
+- `normalize_matchmaking_nakshatra` for canonical names, zero-based indexes,
+  person identifiers, and validation issues;
+- `build_nakshatra_pair_context` for ordered identities, circular distances,
+  same-Nakshatra state, and deterministic issue ordering; and
+- `calculate_nakshatra_distance` for zero-based circular distance.
+
+It must not duplicate the canonical Nakshatra list, name normalization, index
+validation, pair extraction, circular-distance calculation, or issue mapping.
+Ashwini remains index `0` and Revati remains index `26`.
+
+### Inclusive Circular Counting
+
+Tara counting includes both the starting Nakshatra and the destination
+Nakshatra. For valid zero-based indexes:
+
+```text
+inclusive_count(from, to)
+    = calculate_nakshatra_distance(from, to) + 1
+```
+
+The inclusive count is always an integer from `1` through `27`:
+
+- the same Nakshatra has distance `0` and inclusive count `1`;
+- adjacent Nakshatras have inclusive count `2`;
+- wrap-around from Revati (`26`) to Ashwini (`0`) has inclusive count `2`;
+- Ashwini (`0`) to Revati (`26`) has inclusive count `27`; and
+- no valid calculation may produce count `0` or a count above `27`.
+
+### Modulo-9 Tara Calculation
+
+Each inclusive count maps to one Tara number from `1` through `9`:
+
+```text
+tara_number = ((inclusive_count - 1) mod 9) + 1
+```
+
+This is equivalent to dividing the inclusive count by `9`, using remainders
+`1..8` directly, and treating remainder `0` as Tara number `9`. Runtime code
+must use one centralized calculation and must not maintain a 27-pair lookup
+table.
+
+### Nine Canonical Tara Classifications
+
+The stable machine-readable identifiers, cycle positions, and scoring natures
+are:
+
+| Tara number | Inclusive counts | Identifier | Display name | Nature |
+|---:|---|---|---|---|
+| 1 | 1, 10, 19 | `janma` | Janma | unfavorable |
+| 2 | 2, 11, 20 | `sampat` | Sampat | favorable |
+| 3 | 3, 12, 21 | `vipat` | Vipat | unfavorable |
+| 4 | 4, 13, 22 | `kshema` | Kshema | favorable |
+| 5 | 5, 14, 23 | `pratyari` | Pratyari | unfavorable |
+| 6 | 6, 15, 24 | `sadhaka` | Sadhaka | favorable |
+| 7 | 7, 16, 25 | `vadha` | Vadha | unfavorable |
+| 8 | 8, 17, 26 | `mitra` | Mitra | favorable |
+| 9 | 9, 18, 27 | `ati_mitra` | Ati Mitra / Parama Mitra | favorable |
+
+The favorable Tara numbers are exactly `{2, 4, 6, 8, 9}`. The unfavorable
+Tara numbers are exactly `{1, 3, 5, 7}`. These sets are the BhaktiAstro
+canonical Task 11.6 scoring convention and must not be inferred from odd/even
+parity, because Tara number `9` is favorable.
+
+### Directional Calculation
+
+Tara Koota requires both directions and preserves explicit role assignment:
+
+1. **Bride to groom:** count inclusively forward from the bride's Nakshatra to
+   the groom's Nakshatra.
+2. **Groom to bride:** count inclusively forward from the groom's Nakshatra to
+   the bride's Nakshatra.
+
+Each directional result must expose:
+
+- source role and destination role;
+- source and destination canonical Nakshatra identities and zero-based
+  indexes;
+- zero-based circular distance;
+- inclusive count;
+- Tara number;
+- canonical Tara identifier and display name;
+- favorable boolean; and
+- awarded directional score.
+
+The existing `person_a` and `person_b` order must remain unchanged even when
+the caller assigns `person_b` as bride and `person_a` as groom. Reversing the
+explicit roles swaps the directional calculations; no role is inferred.
+
+### Directional and Final Score
+
+Each direction contributes independently:
+
+```text
+directional_score = 1.5 if tara_number in {2, 4, 6, 8, 9} else 0.0
+final_score = bride_to_groom_score + groom_to_bride_score
+```
+
+Therefore the only valid final scores are:
+
+- `3.0` when both directions are favorable;
+- `1.5` when exactly one direction is favorable; and
+- `0.0` when neither direction is favorable.
+
+The final score must not be averaged, rounded to an integer, weighted by Pada,
+or changed by another Koota. Task 11.6 does not implement Tara Dosha
+cancellation, remedies, exceptions based on Rashi/Nadi/Bhakoot, or final
+compatibility judgement.
+
+### Same-Nakshatra Handling
+
+For the BhaktiAstro base North Indian convention, equal Nakshatra indexes do
+not receive a special scoring override:
+
+- each circular distance is `0`;
+- each inclusive count is `1`;
+- each direction is Tara number `1`, identifier `janma`;
+- each direction is unfavorable and awards `0.0`; and
+- the final Tara Koota score is `0.0` out of `3.0`.
+
+Same or different Pada does not change this result. Alternative traditions
+that treat same-Nakshatra Janma Tara as favorable or apply cancellation rules
+are explicitly outside Task 11.6 and must not be added silently.
+
+### Boundary Examples
+
+These examples use zero-based Nakshatra indexes and explicit bride-to-groom
+direction:
+
+| Bride index | Groom index | Distance | Inclusive count | Tara | Directional score |
+|---:|---:|---:|---:|---|---:|
+| 0 | 0 | 0 | 1 | `janma` | 0.0 |
+| 0 | 1 | 1 | 2 | `sampat` | 1.5 |
+| 26 | 0 | 1 | 2 | `sampat` | 1.5 |
+| 0 | 8 | 8 | 9 | `ati_mitra` | 1.5 |
+| 0 | 9 | 9 | 10 | `janma` | 0.0 |
+| 0 | 26 | 26 | 27 | `ati_mitra` | 1.5 |
+
+The `9`, `18`, and `27` inclusive-count boundaries must all map to Tara number
+`9`, never `0`. Counts `10` and `19` restart the cycle at `janma`.
+
+### Validation Rules
+
+Runtime validation must follow the existing Nakshatra and matchmaking
+conventions:
+
+- accept canonical Nakshatra names, zero-based indexes `0..26`, and supported
+  person or pair structures already handled by the shared Nakshatra helpers;
+- reject booleans as numeric indexes;
+- report missing Nakshatra, unknown name, invalid type, and indexes outside
+  `0..26` with the existing stable localization-ready issue codes;
+- ignore Pada for scoring while preserving valid supplied identity metadata;
+- reject missing, unknown, duplicate, or identical bride/groom role
+  assignments with stable direction/role issue codes;
+- preserve deterministic bride-before-groom issue ordering;
+- return status `invalid` and score `None` whenever either Nakshatra or the
+  explicit role assignment is invalid; and
+- perform no partial score when the input is invalid.
+
+Low-level helpers must not silently clamp, wrap, case-guess unsupported enum
+identifiers, or convert one-based Nakshatra indexes. Unexpected programming
+errors must not be swallowed.
+
+### Public Result Contract
+
+The runtime task must expose stable helpers from
+`backend.app.matchmaking.__init__` for:
+
+1. converting a valid circular distance or inclusive count into the canonical
+   Tara classification;
+2. calculating one directional Tara result from valid canonical Nakshatra
+   identities or indexes; and
+3. calculating a complete Tara Koota result from an ordered matchmaking pair
+   plus explicit `bride_role` and `groom_role`.
+
+The structured Koota result must expose at least:
+
+- Koota identifier `tara`;
+- compatibility domain `destiny`;
+- status;
+- awarded score and maximum score `3.0`;
+- unchanged `person_a` and `person_b` Nakshatra identities;
+- explicit bride and groom role mapping;
+- bride-to-groom and groom-to-bride directional results;
+- same-Nakshatra and same-Pada flags from the reused pair context;
+- deterministic factors sufficient to audit both counts and their sum;
+- stable errors and warnings;
+- references and deterministic schema metadata consistent with existing
+  matchmaking results.
+
+Each returned object and nested collection must be newly allocated, must not
+share mutable defaults, and must be treated as immutable after construction.
+The calculator must not mutate caller inputs. Output ordering and identifiers
+must be stable and strictly JSON-safe. No prediction, interpretation, advice,
+remedy, API response, report, UI formatting, other Koota score, or Ashtakoota
+aggregation belongs in Task 11.6.
+
+### Required Runtime Tests
+
+Task 11.6 implementation is not complete until focused tests cover:
+
+- all 27 inclusive counts and their repeating modulo-9 classifications;
+- all nine canonical Tara identifiers, names, numbers, and favorable flags;
+- favorable set `{2, 4, 6, 8, 9}` and unfavorable set `{1, 3, 5, 7}`;
+- same, adjacent, first, last, and circular wrap-around Nakshatra indexes;
+- modulo boundaries at counts `9`, `10`, `18`, `19`, and `27`;
+- bride-to-groom and groom-to-bride direction independently;
+- final scores `0.0`, `1.5`, and `3.0` with known index pairs;
+- explicit role reversal while preserving `person_a` and `person_b` order;
+- same Nakshatra with same Pada, different Pada, and no Pada, all scoring
+  `0.0` under the documented base convention;
+- canonical names and zero-based indexes producing equivalent results;
+- missing, unknown, wrong-type, boolean, negative, and index `27` inputs;
+- missing, unknown, duplicate, and identical bride/groom roles;
+- deterministic issue ordering, output equality, input non-mutation,
+  independent nested collections, and strict JSON serialization;
+- stable public exports from `backend.app.matchmaking`; and
+- regression compatibility with Task 11.3 Nakshatra context and all completed
+  matchmaking modules.
+
+### Convention Verification
+
+The inclusive count, modulo-9 cycle, favorable positions, bidirectional
+scoring, and `3.0`/`1.5`/`0.0` totals follow the North Indian Ashtakoota
+convention documented by:
+
+- [Comparison of Panchangas](https://www.ghvisweswara.com/wp-content/uploads/2021/11/Comparison_of_Panchangas.pdf)
+- [Tara Koota: Health and Fortune by Nakshatra](https://astromedha.in/insights/vedic/tara-koota)
+
+Where sources or regional traditions differ on Janma Tara or same-Nakshatra
+exceptions, the explicit BhaktiAstro rule in this section is authoritative.
+
+### Documentation Completion Rules
+
+This documentation milestone defines the Task 11.6 source of truth only. It
+does not add runtime code or tests and does not mark Task 11.6 implementation
+complete.
+
+When the runtime task is completed, update only the relevant sections of:
+
+- `docs/SPRINT-11.md` to mark Task 11.6 complete and record focused,
+  matchmaking regression, Nakshatra regression, and full-suite results;
+- `docs/MASTER.md` to add Task 11.6 to completed Sprint 11 tasks; and
+- `CHANGELOG.md` to record the runtime capability.
+
+Do not mark Task 11.7 or Sprint 11 complete during Task 11.6.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -354,6 +635,9 @@ Verification for Task 11.5:
 - Vashya Koota uses supplied sidereal Moon longitudes, explicit bride and groom
   roles, split-sign boundaries, and the directional matrix specified in Task
   11.5; it does not infer roles or calculate Moon positions.
+- Tara Koota will reuse zero-based Nakshatra pair context, inclusive circular
+  counts, the modulo-9 cycle, and explicit bride/groom roles specified in Task
+  11.6; its runtime implementation remains pending.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -366,7 +650,7 @@ Verification for Task 11.5:
 - 11.3 Nakshatra compatibility foundations. **Complete.**
 - 11.4 Varna Koota. **Complete.**
 - 11.5 Vashya Koota. **Complete.**
-- 11.6 Tara Koota.
+- 11.6 Tara Koota. **Specification complete; runtime pending.**
 - 11.7 Yoni Koota.
 - 11.8 Graha Maitri Koota.
 - 11.9 Gana Koota.

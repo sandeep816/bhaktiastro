@@ -5,6 +5,9 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Source-of-truth Tara Koota input, inclusive counting, modulo-9
+  classification, bidirectional scoring, validation, result-contract, and test
+  specifications for Sprint 11.6.
 - Deterministic Vashya Koota classification and directional scoring from
   supplied sidereal Moon longitudes, with split-sign boundary coverage.
 - Source-of-truth Vashya Koota classification, boundary, directional scoring,
