@@ -5,6 +5,8 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Source-of-truth Vashya Koota classification, boundary, directional scoring,
+  validation, result-contract, and test specifications for Sprint 11.5.
 - Reusable Prediction Explanation layer for structured result explanations.
 - Reusable prediction category discovery, loading, and evaluation service for rule libraries.
 - General Personality Prediction Rule Library starter set with validation and composer coverage.
