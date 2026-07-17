@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.11 Specification Complete; Runtime Pending)**
+Status: **In Progress (Tasks 11.1-11.11 Complete)**
 
 ## Architecture Boundary
 
@@ -1963,7 +1963,7 @@ Task 11.11.
 
 ## Task 11.11 - Nadi Koota
 
-Status: **Specification Complete; Runtime Not Implemented**
+Status: **Complete**
 
 ### Purpose, Domain, and Scope
 
@@ -2319,15 +2319,23 @@ Rashis, particular Nakshatras, or Rashi-lord conditions. BhaktiAstro selects
 only the common base mapping and symmetric `0.0`/`8.0` matrix above and does
 not merge any cancellation or exception into Task 11.11.
 
-### Documentation Progress
+### Completion and Verification
 
-This documentation task defines the complete Task 11.11 source of truth only.
-No runtime module, test, constant, or public export is added. Task 11.11 must
-remain absent from the completed-task list in `docs/MASTER.md`. The next Task
-11.11 runtime task must implement this specification, add focused tests and
-exports, run the required Nakshatra and matchmaking regressions plus the full
-suite, record verification totals, mark only Task 11.11 runtime-complete, and
-stop before Task 11.12.
+Task 11.11 is runtime-complete. The implementation adds the reusable Nadi
+classification, strict relationship lookup, symmetric Koota calculator,
+public exports, and exhaustive focused coverage without adding cancellation,
+exception, aggregate, interpretation, API, report, or UI behavior.
+
+Verification totals recorded for the implementation task:
+
+- focused Nadi Koota suite: `949 passed`;
+- complete matchmaking suite: `2052 passed`;
+- Nakshatra and Kundali regression suite: `86 passed`; and
+- complete project suite: `3020 passed, 13 skipped, 20 subtests passed`.
+
+The skips remain the repository's pre-existing manual-reference validation
+placeholders. Task 11.11 does not enable or alter them. Work stops here before
+Task 11.12.
 
 ## Deterministic and Compatibility Principles
 
@@ -2357,8 +2365,8 @@ stop before Task 11.12.
   one-based distance, preserves directional counts, and uses only the symmetric
   base `7.0`/`0.0` rule without cancellation exceptions specified in Task
   11.10.
-- Nadi Koota will reuse canonical Nakshatra normalization and ordered pair
-  context, preserve explicit bride/groom roles, and use only the symmetric
+- Nadi Koota reuses canonical Nakshatra normalization and ordered pair
+  context, preserves explicit bride/groom roles, and uses only the symmetric
   base `0.0`/`8.0` matrix without cancellation exceptions specified in Task
   11.11.
 - Non-finite values are converted to JSON-safe values.
@@ -2378,7 +2386,7 @@ stop before Task 11.12.
 - 11.8 Graha Maitri Koota. **Complete.**
 - 11.9 Gana Koota. **Complete.**
 - 11.10 Bhakoot Koota. **Complete.**
-- 11.11 Nadi Koota. **Specification complete; runtime pending.**
+- 11.11 Nadi Koota. **Complete.**
 - 11.12 Ashtakoota aggregation.
 - 11.13 Manglik compatibility foundation.
 - 11.14 Matchmaking summary composer.

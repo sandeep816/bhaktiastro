@@ -213,6 +213,10 @@ Completed tasks:
   Moon-Rashi derivation, inclusive circular directional distances, the
   complete symmetric `12 x 12` base scoring convention, and no cancellation
   exceptions.
+- **Task 11.11**: Implement deterministic Nadi Koota with reused Nakshatra
+  normalization and pair context, complete 27-star classification, strict
+  category validation, symmetric `0.0`/`8.0` scoring, and no cancellation
+  exceptions.
 
 ## Next Task Instructions
 
