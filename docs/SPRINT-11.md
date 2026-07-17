@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.4 Complete)**
+Status: **In Progress (Task 11.5 Complete)**
 
 ## Architecture Boundary
 
@@ -146,7 +146,7 @@ Verification for Task 11.4:
 
 ## Task 11.5 - Vashya Koota
 
-Status: **Specification Complete; Runtime Not Implemented**
+Status: **Complete**
 
 ### Purpose and Scope
 
@@ -329,8 +329,18 @@ Task 11.5 implementation is not complete until focused tests cover:
 - compatibility with the Task 11.1 foundation plus regression coverage for
   existing matchmaking, Rashi, and Kundali behavior.
 
-This documentation milestone defines the source of truth only. It does not add
-runtime code or tests and does not mark Task 11.5 implementation complete.
+Task 11.5 implements the specified classification, strict category lookup, and
+directional Koota result as an opt-in matchmaking module. It leaves Tasks 11.1
+through 11.4 unchanged and does not calculate later Kootas or aggregate an
+Ashtakoota score.
+
+Verification for Task 11.5:
+
+- Focused Vashya Koota tests: 74 passed.
+- Matchmaking foundation, validation, Nakshatra, Varna, and Vashya tests:
+  183 passed.
+- Rashi and relevant Kundali regression tests: 64 passed.
+- Full suite: 1151 passed, 13 skipped, and 20 subtests passed.
 
 ## Deterministic and Compatibility Principles
 
@@ -341,9 +351,9 @@ runtime code or tests and does not mark Task 11.5 implementation complete.
   it does not assign compatibility meaning.
 - Varna Koota uses one-based Rashi indexes and requires explicit scoring
   direction; it does not infer gender or final compatibility.
-- Vashya Koota will use supplied sidereal Moon longitudes, explicit bride and
-  groom roles, split-sign boundaries, and the directional matrix specified in
-  Task 11.5; its runtime implementation remains pending.
+- Vashya Koota uses supplied sidereal Moon longitudes, explicit bride and groom
+  roles, split-sign boundaries, and the directional matrix specified in Task
+  11.5; it does not infer roles or calculate Moon positions.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -355,7 +365,7 @@ runtime code or tests and does not mark Task 11.5 implementation complete.
 - 11.2 Matchmaking input validation. **Complete.**
 - 11.3 Nakshatra compatibility foundations. **Complete.**
 - 11.4 Varna Koota. **Complete.**
-- 11.5 Vashya Koota. **Specification complete; runtime pending.**
+- 11.5 Vashya Koota. **Complete.**
 - 11.6 Tara Koota.
 - 11.7 Yoni Koota.
 - 11.8 Graha Maitri Koota.

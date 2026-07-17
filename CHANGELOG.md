@@ -5,6 +5,8 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic Vashya Koota classification and directional scoring from
+  supplied sidereal Moon longitudes, with split-sign boundary coverage.
 - Source-of-truth Vashya Koota classification, boundary, directional scoring,
   validation, result-contract, and test specifications for Sprint 11.5.
 - Reusable Prediction Explanation layer for structured result explanations.

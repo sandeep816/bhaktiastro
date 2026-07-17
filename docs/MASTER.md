@@ -194,6 +194,9 @@ Completed tasks:
 - **Task 11.4**: Implement deterministic Varna Koota with one-based Rashi
   indexes, centralized Varna mapping/ranks, explicit scoring direction, and no
   final compatibility judgement.
+- **Task 11.5**: Implement deterministic Vashya Koota from supplied sidereal
+  Moon longitudes with reused Rashi normalization, split-sign classification,
+  strict category validation, and explicit bride-row/groom-column scoring.
 
 ## Next Task Instructions
 
