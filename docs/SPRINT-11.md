@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Tasks 11.1-11.9 Complete)**
+Status: **In Progress (Task 11.10 Specification Complete; Runtime Pending)**
 
 ## Architecture Boundary
 
@@ -1619,6 +1619,330 @@ The skips are the repository's pre-existing manual-reference validation
 placeholders. Task 11.9 does not enable or alter them. Work stops here before
 Task 11.10.
 
+## Task 11.10 - Bhakoot Koota
+
+Status: **Specification Complete; Runtime Not Implemented**
+
+### Purpose, Domain, and Scope
+
+Bhakoot Koota, also called Rashi Koota, represents compatibility of shared
+family welfare, domestic continuity, and prosperity through the circular
+relationship between the two sidereal Moon Rashis. Its maximum score is `7.0`
+points and its stable machine-readable compatibility domain is
+`family_welfare`.
+
+Task 11.10 runtime implementation must provide:
+
+- reusable full-Rashi classification from each supplied sidereal Moon
+  longitude;
+- inclusive circular Rashi distances from bride to groom and from groom to
+  bride;
+- deterministic identification of the `2/12`, `5/9`, and `6/8` Bhakoot Dosha
+  pairs under the single North Indian convention in this section; and
+- a structured, immutable-after-construction, JSON-safe result consistent
+  with the completed matchmaking Koota architecture.
+
+The calculator must not infer a Moon position from birth details, infer or
+swap bride and groom roles, mutate caller data, calculate another Koota,
+aggregate Ashtakoota, or produce a compatibility judgement, prediction,
+advice, remedy, or cancellation analysis.
+
+### BhaktiAstro Convention Decisions
+
+Task 11.10 uses the North Indian Ashtakoota Bhakoot convention documented by
+the Saravali/Maitreya Rashi Koota rule:
+
+- only the full sidereal Moon Rashi of each person is used;
+- circular positions are counted inclusively, with the source Rashi as count
+  `1`;
+- `2/12`, `5/9`, and `6/8` are the only dosha position pairs and score `0.0`;
+- `1/1`, `3/11`, `4/10`, and `7/7` are all compatible and score `7.0`;
+- the two directional counts are retained for audit, but dosha classification
+  and scoring are symmetric under role reversal; and
+- no intermediate, partial, averaged, severity-weighted, or direction-specific
+  score is permitted.
+
+BhaktiAstro explicitly excludes Rashi-lord friendship, same-lord and
+friendly-lord exceptions, odd/even-sign exceptions, auspicious or inauspicious
+Shadashtaka subtypes, Nakshatra or Pada exceptions, Navamsha, Graha aspects,
+house strength, aggregate-score thresholds, and every other Bhakoot Dosha
+cancellation or Parihara rule from Task 11.10. A base dosha pair always scores
+`0.0`, even where another tradition would cancel it. A compatible pair always
+scores `7.0`. These exclusions are explicit project decisions so the base
+North Indian scoring rule is not mixed with optional traditions.
+
+There are no split signs in Bhakoot Koota. Unlike Vashya classification,
+degree within a Rashi never changes the Bhakoot identity or score. Rashi lord,
+element, modality, Nakshatra, and Pada may be present in reused upstream data
+but must not modify the calculation.
+
+### Required Inputs and Reused Rashi Architecture
+
+The public high-level calculator must use explicit keyword-only
+`bride_moon_longitude` and `groom_moon_longitude` inputs. Each is the person's
+sidereal Moon longitude in degrees. Bride and groom roles are fixed by those
+keyword names; the calculator must never infer roles from names, identifiers,
+Rashi, argument order outside the keyword contract, or another field.
+
+Runtime implementation must reuse:
+
+- `backend.app.constants.rashi.RASHI_LIST`, `RASHI_COUNT`,
+  `RASHI_SPAN_DEGREES`, and `FULL_CIRCLE_DEGREES`;
+- `backend.app.kundali.rashi.normalize_longitude`; and
+- `backend.app.kundali.rashi.get_rashi` and its canonical one-based Rashi
+  indexes and identity fields.
+
+It must not duplicate longitude validation, normalization, Rashi boundaries,
+name data, index derivation, or degree-within-Rashi arithmetic. Mesha remains
+one-based Rashi index `1` and Meena remains index `12`. Any reusable low-level
+distance or relationship helper must consume exact one-based indexes `1..12`;
+it must never accept zero-based indexes or wrap an invalid index modulo `12`.
+
+### Moon-Rashi Derivation, Normalization, and Boundaries
+
+For each person, runtime code must first call the canonical longitude
+normalizer and then reuse the canonical Rashi lookup. The inherited behavior
+is normative:
+
+- finite longitudes are normalized into `[0, 360)` at the existing
+  six-decimal `DEGREE_PRECISION`;
+- `0°`, `360°`, `-360°`, and other normalized equivalents map consistently to
+  Mesha/index `1`;
+- finite negative and greater-than-`360°` values map to the same Rashi as
+  their normalized equivalents;
+- all twelve `30°` Rashi intervals are lower-inclusive and upper-exclusive
+  after canonical rounding: exact cusps `0°`, `30°`, ..., `330°` start their
+  respective Rashis, while the representable six-decimal value immediately
+  below the next cusp remains in the preceding Rashi; and
+- booleans and non-real values raise `TypeError`, while `NaN` and either
+  infinity raise `ValueError` under the core helper contract.
+
+No Bhakoot-specific epsilon, rounding, cusp correction, alternate ayanamsa,
+or sign calculation is allowed. The normalized longitude and complete reused
+Rashi identity must be retained in the result for audit. Only the one-based
+Rashi index participates in distance and scoring.
+
+### Inclusive Circular Distance Calculation
+
+Both directional counts include the starting Rashi. For exact one-based
+indexes `from_index` and `to_index`, the sole normative formula is:
+
+```text
+inclusive_distance(from_index, to_index) =
+    ((to_index - from_index) mod 12) + 1
+```
+
+Therefore each distance is an integer in `1..12`. Runtime must calculate:
+
+```text
+bride_to_groom_distance = inclusive_distance(bride_index, groom_index)
+groom_to_bride_distance = inclusive_distance(groom_index, bride_index)
+```
+
+The counting is not exclusive: adjacent Rashis produce `2` in the forward
+direction, not `1`. The possible ordered and canonical unordered position
+pairs are exhaustive:
+
+| Groom offset from bride | Bride to groom | Groom to bride | Canonical pair | Classification | Score |
+|---:|---:|---:|---|---|---:|
+| 0 | 1 | 1 | `1/1` | compatible | 7.0 |
+| 1 | 2 | 12 | `2/12` | dosha | 0.0 |
+| 2 | 3 | 11 | `3/11` | compatible | 7.0 |
+| 3 | 4 | 10 | `4/10` | compatible | 7.0 |
+| 4 | 5 | 9 | `5/9` | dosha | 0.0 |
+| 5 | 6 | 8 | `6/8` | dosha | 0.0 |
+| 6 | 7 | 7 | `7/7` | compatible | 7.0 |
+| 7 | 8 | 6 | `6/8` | dosha | 0.0 |
+| 8 | 9 | 5 | `5/9` | dosha | 0.0 |
+| 9 | 10 | 4 | `4/10` | compatible | 7.0 |
+| 10 | 11 | 3 | `3/11` | compatible | 7.0 |
+| 11 | 12 | 2 | `2/12` | dosha | 0.0 |
+
+For different Rashis the two directional distances sum to `14`. Same Rashi is
+the sole exception and produces `1/1`, not `1/13`, `12/12`, or `0/0`.
+
+### Complete Symmetric Rashi Scoring Table
+
+Rows represent the bride's Moon Rashi and columns represent the groom's Moon
+Rashi for audit consistency. The table is symmetric; transposing bride and
+groom swaps the two directional counts but never changes the canonical pair,
+dosha status, or score.
+
+| Bride \\ Groom | Mesha | Vrishabha | Mithuna | Karka | Simha | Kanya | Tula | Vrishchika | Dhanu | Makara | Kumbha | Meena |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Mesha | 7.0 | 0.0 | 7.0 | 7.0 | 0.0 | 0.0 | 7.0 | 0.0 | 0.0 | 7.0 | 7.0 | 0.0 |
+| Vrishabha | 0.0 | 7.0 | 0.0 | 7.0 | 7.0 | 0.0 | 0.0 | 7.0 | 0.0 | 0.0 | 7.0 | 7.0 |
+| Mithuna | 7.0 | 0.0 | 7.0 | 0.0 | 7.0 | 7.0 | 0.0 | 0.0 | 7.0 | 0.0 | 0.0 | 7.0 |
+| Karka | 7.0 | 7.0 | 0.0 | 7.0 | 0.0 | 7.0 | 7.0 | 0.0 | 0.0 | 7.0 | 0.0 | 0.0 |
+| Simha | 0.0 | 7.0 | 7.0 | 0.0 | 7.0 | 0.0 | 7.0 | 7.0 | 0.0 | 0.0 | 7.0 | 0.0 |
+| Kanya | 0.0 | 0.0 | 7.0 | 7.0 | 0.0 | 7.0 | 0.0 | 7.0 | 7.0 | 0.0 | 0.0 | 7.0 |
+| Tula | 7.0 | 0.0 | 0.0 | 7.0 | 7.0 | 0.0 | 7.0 | 0.0 | 7.0 | 7.0 | 0.0 | 0.0 |
+| Vrishchika | 0.0 | 7.0 | 0.0 | 0.0 | 7.0 | 7.0 | 0.0 | 7.0 | 0.0 | 7.0 | 7.0 | 0.0 |
+| Dhanu | 0.0 | 0.0 | 7.0 | 0.0 | 0.0 | 7.0 | 7.0 | 0.0 | 7.0 | 0.0 | 7.0 | 7.0 |
+| Makara | 7.0 | 0.0 | 0.0 | 7.0 | 0.0 | 0.0 | 7.0 | 7.0 | 0.0 | 7.0 | 0.0 | 7.0 |
+| Kumbha | 7.0 | 7.0 | 0.0 | 0.0 | 7.0 | 0.0 | 0.0 | 7.0 | 7.0 | 0.0 | 7.0 | 0.0 |
+| Meena | 0.0 | 7.0 | 7.0 | 0.0 | 0.0 | 7.0 | 0.0 | 0.0 | 7.0 | 7.0 | 0.0 | 7.0 |
+
+The table, inclusive-distance formula, and canonical-pair table must always
+agree. Runtime should derive or verify the full matrix from one centralized
+rule rather than maintain competing sources of truth.
+
+### Same-Rashi, Dosha, and Compatible Behavior
+
+- Every same-Rashi pair has directional distances `1` and `1`, canonical pair
+  `1/1`, relationship `compatible`, `bhakoot_dosha = false`, and score `7.0`.
+- Every `2/12` pair has canonical pair identifier `2_12`, relationship
+  `dosha`, `bhakoot_dosha = true`, and score `0.0`.
+- Every `5/9` pair has canonical pair identifier `5_9`, relationship `dosha`,
+  `bhakoot_dosha = true`, and score `0.0`.
+- Every `6/8` pair has canonical pair identifier `6_8`, relationship `dosha`,
+  `bhakoot_dosha = true`, and score `0.0`.
+- Every `3/11`, `4/10`, and `7/7` pair is compatible, has no dosha, and scores
+  `7.0`; their identifiers are `3_11`, `4_10`, and `7_7` respectively.
+- The same-Rashi compatible identifier is `1_1`.
+
+No other distance pair exists. Runtime must perform one exact lookup or rule
+evaluation and must not guess, coerce, interpolate, or default an unknown
+pair.
+
+### Validation and Invalid Input Behavior
+
+Runtime validation must follow existing Rashi and matchmaking conventions:
+
+- the low-level classifier accepts a finite real longitude and delegates all
+  validation and normalization to the reused Rashi utilities;
+- a boolean or non-real longitude raises `TypeError`; `NaN` and either
+  infinity raise `ValueError`;
+- a reusable low-level distance or relationship helper accepts only real
+  integer one-based Rashi indexes `1..12`, rejects booleans and non-integral
+  values with `TypeError`, and rejects values outside `1..12` with
+  `ValueError`;
+- it must not accept names, aliases, case variants, zero-based indexes, numeric
+  strings, or malformed canonical-pair identifiers in place of exact indexes;
+- the high-level calculator treats `None` or an empty value as missing and any
+  other invalid longitude as invalid, returning stable localization-ready
+  issue codes consistent with the direct-longitude Kootas;
+- high-level errors are ordered bride before groom, status is `invalid`, score
+  is `None`, and dosha/relationship fields that require two valid identities
+  are unset whenever either input is invalid; and
+- no partial distance, pair classification, fallback score, warning-only
+  downgrade, or swallowed unexpected programming error is permitted.
+
+Expected input failures are safe structured high-level results, while the
+strict reusable low-level helpers expose the documented `TypeError` and
+`ValueError` exceptions to callers.
+
+### Public Immutable Result Contract
+
+The runtime task must expose stable helpers from
+`backend.app.matchmaking.__init__` for:
+
+1. classifying one supplied sidereal Moon longitude into its normalized full
+   Moon-Rashi identity;
+2. calculating inclusive circular distance between two exact one-based Rashi
+   indexes;
+3. resolving the complete symmetric Bhakoot relationship for exact bride and
+   groom Rashi indexes; and
+4. calculating the full Bhakoot Koota result from keyword-only
+   `bride_moon_longitude` and `groom_moon_longitude` inputs.
+
+The structured result must expose at least:
+
+- Koota identifier `bhakoot`;
+- compatibility domain `family_welfare`;
+- status, awarded score, and maximum score `7.0`;
+- bride and groom Moon-Rashi identities, each containing input-derived
+  normalized sidereal longitude, canonical English/Hindi/Sanskrit names,
+  one-based Rashi index, and degree within Rashi;
+- explicit bride-row/groom-column direction metadata;
+- bride-to-groom and groom-to-bride inclusive distances;
+- canonical pair identifier and display position pair;
+- relationship identifier `compatible` or `dosha`;
+- same-Rashi and Bhakoot-Dosha flags;
+- deterministic scoring audit factors;
+- stable errors and warnings; and
+- references and schema metadata consistent with existing matchmaking Koota
+  results, including `directional = false`, `symmetric = true`, Rashi count
+  `12`, and index base `1`.
+
+Every returned result, identity, relationship, issue, metadata mapping,
+direction mapping, factor list, reference list, error list, and warning list
+must be newly allocated. Returned objects must share no mutable defaults or
+nested collections and must be treated as immutable after construction. The
+calculator must not mutate caller inputs. Repeated equivalent calls must
+compare equal before caller mutation, and mutating one returned result must not
+affect an earlier or later result.
+
+All output must be strictly JSON-safe: dictionary keys and machine identifiers
+are strings; valid scores are finite `0.0` or `7.0`; invalid score is `None`;
+no `NaN`, infinity, tuple-only encoding, set, enum instance, dataclass
+instance, or other non-JSON value may escape. Output ordering, issue ordering,
+factor ordering, and identifiers must be deterministic. No compatibility
+label, interpretive paragraph, cancellation claim, advice, remedy, API
+response, report formatting, other Koota, or Ashtakoota total belongs in Task
+11.10.
+
+### Required Runtime Tests
+
+Task 11.10 runtime implementation is not complete until focused tests cover:
+
+- representative Moon longitudes for all twelve Rashis and every canonical
+  one-based index and Rashi identity;
+- all twelve exact Rashi lower cusps and values immediately below the next
+  cusp at existing six-decimal precision;
+- `0°`, `360°`, `-360°`, finite negative, and greater-than-`360°`
+  normalization;
+- every one of the `12 x 12` bride/groom Rashi pairs, asserting all `144`
+  directional count pairs, canonical pair identifiers, dosha flags, and
+  scores against the complete table;
+- all twelve unordered Rashi pairings in each of the `2/12`, `5/9`, and `6/8`
+  classes, each in both role orders (`24` ordered matrix cells per class),
+  including wraparound pairs;
+- all twelve same-Rashi `1/1` cases, each scoring `7.0`;
+- every non-dosha distance class: `1/1`, `3/11`, `4/10`, and `7/7`, in every
+  applicable Rashi pair and both role orders where distinct;
+- symmetry under role reversal: directional counts swap while canonical pair,
+  relationship, dosha flag, and score remain unchanged;
+- proof that degree within a Rashi and Rashi lord, element, modality,
+  Nakshatra, Pada, and every other Koota do not alter the score;
+- booleans, non-real values, missing values, empty values, `NaN`, and both
+  infinities for each longitude field;
+- strict low-level Rashi-index validation for `1`, `12`, invalid `0`, `13`,
+  negatives, booleans, floats, strings, names, aliases, and malformed values;
+- deterministic bride-before-groom issue ordering and no partial scoring;
+- proof that same/friendly Rashi lords and all documented cancellation
+  candidates do not override a base dosha score;
+- deterministic output equality, input non-mutation, independent nested
+  collections, and strict `json.dumps(..., allow_nan=False)` serialization;
+- stable public exports from `backend.app.matchmaking`; and
+- regression compatibility with canonical Rashi normalization and lookup,
+  Rashi constants, Graha lordship, Kundali calculations, and every completed
+  matchmaking module.
+
+### Convention Verification
+
+The selected full-Rashi method, inclusive mutual positions, exact dosha pairs,
+and binary `7.0`/`0.0` scoring are documented by:
+
+- [Rasi Koota - Saravali/Maitreya rule](https://saravali.github.io/astrology/koota_rasi.html)
+- [Horoscope Matching - Bhakoota Milaan table and rules](https://www.futuresamachar.com/download/horoscope-matching-325.pdf)
+- [Ashtakoot System of Matching Horoscopes - Bhakoot position pairs](https://www.astrosaxena.com/asmh2)
+- [Comparison of Panchangas - Rashi Koota convention differences](https://www.ghvisweswara.com/wp-content/uploads/2021/11/Comparison_of_Panchangas.pdf)
+
+Some sources add directional exceptions, Rashi-lord friendship, same-lord
+cancellation, or other Parihara rules. The explicit base scoring rule and
+exclusions in this section are authoritative for BhaktiAstro Task 11.10.
+
+### Documentation Progress
+
+This documentation task defines the complete Task 11.10 source of truth only.
+No runtime module, test, constant, or public export is added. Task 11.10 must
+remain absent from the completed-task list in `docs/MASTER.md`. The next Task
+11.10 runtime task must implement this specification, add focused tests and
+exports, run the required Rashi, Kundali, and matchmaking regressions plus the
+full suite, record verification totals, mark only Task 11.10 runtime-complete,
+and stop before Task 11.11.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -1643,6 +1967,10 @@ Task 11.10.
 - Gana Koota reuses the canonical 27-Nakshatra identity and ordered pair
   context, requires explicit bride/groom roles, and uses only the directional
   matrix specified in Task 11.9.
+- Bhakoot Koota will reuse full Moon-Rashi derivation and inclusive circular
+  one-based distance, preserve directional counts, and use only the symmetric
+  base `7.0`/`0.0` rule without cancellation exceptions specified in Task
+  11.10.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -1659,7 +1987,7 @@ Task 11.10.
 - 11.7 Yoni Koota. **Complete.**
 - 11.8 Graha Maitri Koota. **Complete.**
 - 11.9 Gana Koota. **Complete.**
-- 11.10 Bhakoot Koota.
+- 11.10 Bhakoot Koota. **Specification complete; runtime pending.**
 - 11.11 Nadi Koota.
 - 11.12 Ashtakoota aggregation.
 - 11.13 Manglik compatibility foundation.

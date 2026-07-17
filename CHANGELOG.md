@@ -5,6 +5,10 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Source-of-truth Bhakoot Koota full Moon-Rashi derivation, inclusive circular
+  distance, symmetric dosha scoring, validation, immutable result-contract,
+  cancellation-exclusion, boundary, and exhaustive test specifications for
+  Sprint 11.10.
 - Deterministic Gana Koota classification and directional scoring from
   supplied sidereal Moon Nakshatras, with complete 27-star mapping and exact
   bride-row/groom-column `3 x 3` matrix coverage.
