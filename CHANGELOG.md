@@ -5,6 +5,10 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic Ashtakoota aggregation over all eight completed Kootas, with
+  canonical execution order, raw Moon-longitude orchestration, strict
+  precomputed-result validation, exact `math.fsum` totals, and a fixed `36.0`
+  maximum.
 - Source-of-truth Ashtakoota aggregation orchestration, canonical eight-Koota
   order, exact `36.0` maximum, raw and strict precomputed-result APIs,
   validation, failure propagation, immutable result-contract, and exhaustive

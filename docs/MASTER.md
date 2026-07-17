@@ -217,6 +217,10 @@ Completed tasks:
   normalization and pair context, complete 27-star classification, strict
   category validation, symmetric `0.0`/`8.0` scoring, and no cancellation
   exceptions.
+- **Task 11.12**: Implement deterministic Ashtakoota aggregation over all eight
+  completed Kootas with canonical ordering, raw and strict precomputed-result
+  APIs, exact `math.fsum` totals, a fixed `36.0` maximum, and no partial score
+  or interpretation behavior.
 
 ## Next Task Instructions
 

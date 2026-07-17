@@ -1,5 +1,17 @@
 """Public foundations for deterministic matchmaking."""
 
+from backend.app.matchmaking.ashtakoota import (
+    ASHTAKOOTA_KOOTA_MANIFEST,
+    ASHTAKOOTA_KOOTA_ORDER,
+    ASHTAKOOTA_TOTAL_MAXIMUM_SCORE,
+    MATCHMAKING_ASHTAKOOTA_ISSUE_CODES,
+    AshtakootaKootaDefinition,
+    MatchmakingAshtakootaIssue,
+    MatchmakingAshtakootaMetadata,
+    MatchmakingAshtakootaResult,
+    aggregate_ashtakoota_results,
+    calculate_ashtakoota,
+)
 from backend.app.matchmaking.bhakoot import (
     BHAKOOT_COMPATIBILITY_DOMAIN,
     BHAKOOT_DOSHA_POSITION_PAIRS,
@@ -176,6 +188,10 @@ from backend.app.matchmaking.yoni import (
 )
 
 __all__ = [
+    "ASHTAKOOTA_KOOTA_MANIFEST",
+    "ASHTAKOOTA_KOOTA_ORDER",
+    "ASHTAKOOTA_TOTAL_MAXIMUM_SCORE",
+    "AshtakootaKootaDefinition",
     "BHAKOOT_COMPATIBILITY_DOMAIN",
     "BHAKOOT_DOSHA_POSITION_PAIRS",
     "BHAKOOT_KOOTA_ID",
@@ -195,6 +211,7 @@ __all__ = [
     "GRAHA_MAITRI_LORDS",
     "GRAHA_MAITRI_SCORING_MATRIX",
     "MATCHMAKING_BHAKOOT_ISSUE_CODES",
+    "MATCHMAKING_ASHTAKOOTA_ISSUE_CODES",
     "MATCHMAKING_GRAHA_MAITRI_ISSUE_CODES",
     "MATCHMAKING_GANA_ISSUE_CODES",
     "MATCHMAKING_SCHEMA_VERSION",
@@ -241,6 +258,9 @@ __all__ = [
     "YONI_SCORING_MATRIX",
     "YONI_SEXES",
     "MatchmakingJsonValue",
+    "MatchmakingAshtakootaIssue",
+    "MatchmakingAshtakootaMetadata",
+    "MatchmakingAshtakootaResult",
     "MatchmakingBhakootIdentity",
     "MatchmakingBhakootIssue",
     "MatchmakingBhakootKootaResult",
@@ -294,8 +314,10 @@ __all__ = [
     "MatchmakingYoniRelationship",
     "calculate_vashya_koota",
     "calculate_yoni_koota",
+    "aggregate_ashtakoota_results",
     "calculate_bhakoot_inclusive_distance",
     "calculate_bhakoot_koota",
+    "calculate_ashtakoota",
     "calculate_gana_koota",
     "calculate_graha_maitri_koota",
     "calculate_nadi_koota",
