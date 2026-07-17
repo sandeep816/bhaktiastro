@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.3 Complete)**
+Status: **In Progress (Task 11.4 Complete)**
 
 ## Architecture Boundary
 
@@ -105,6 +105,45 @@ Verification for Task 11.3:
 - Core Nakshatra regression tests: 15 passed.
 - Full suite: 1054 passed, 13 skipped, and 20 subtests passed.
 
+## Task 11.4 - Varna Koota
+
+Status: **Complete**
+
+Task 11.4 adds deterministic Varna Koota scoring from already supplied Rashi
+data. It provides:
+
+- Reuse of `backend.app.constants.rashi.RASHI_LIST` without a second Rashi
+  list.
+- One-based Rashi indexes matching the core project convention:
+  Aries/Mesha is index `1` and Pisces/Meena is index `12`.
+- A centralized element-based deterministic Varna mapping:
+  - Water signs (`Karka`, `Vrishchika`, `Meena`) -> `brahmin`
+  - Fire signs (`Mesha`, `Simha`, `Dhanu`) -> `kshatriya`
+  - Earth signs (`Vrishabha`, `Kanya`, `Makara`) -> `vaishya`
+  - Air signs (`Mithuna`, `Tula`, `Kumbha`) -> `shudra`
+- Stable Varna ranks: `shudra = 1`, `vaishya = 2`, `kshatriya = 3`,
+  `brahmin = 4`.
+- Explicit directional scoring only. Callers must provide `subject_role` and
+  `comparison_role`; no gender, bride, groom, or marriage role is inferred.
+- Maximum score `1`. The score is `1` when the comparison role's Varna rank is
+  greater than or equal to the subject role's Varna rank, otherwise `0`.
+- Safe invalid results for missing Rashi, unknown Rashi, out-of-range indexes,
+  missing direction, or invalid roles.
+- JSON-safe structured output with no compatibility judgement or prose.
+
+Task 11.4 does not calculate Moon sign, derive Rashi from birth data, calculate
+any other Koota, aggregate Ashtakoota, infer roles, produce final matchmaking
+judgement, or generate advice/remedy/interpretation text.
+
+Compatibility is preserved by adding Varna helpers as an opt-in matchmaking
+module and leaving Tasks 11.1 through 11.3 public contracts unchanged.
+
+Verification for Task 11.4:
+
+- Matchmaking foundation, validation, Nakshatra, and Varna tests: 109 passed.
+- Core Rashi regression tests: 18 passed.
+- Full suite: 1077 passed, 13 skipped, and 20 subtests passed.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -112,6 +151,8 @@ Verification for Task 11.3:
 - Derived astrology fields remain optional and are never calculated here.
 - Nakshatra pair context uses zero-based indexes and circular distance only;
   it does not assign compatibility meaning.
+- Varna Koota uses one-based Rashi indexes and requires explicit scoring
+  direction; it does not infer gender or final compatibility.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -122,7 +163,7 @@ Verification for Task 11.3:
 - 11.1 Matchmaking foundation architecture. **Complete.**
 - 11.2 Matchmaking input validation. **Complete.**
 - 11.3 Nakshatra compatibility foundations. **Complete.**
-- 11.4 Varna Koota.
+- 11.4 Varna Koota. **Complete.**
 - 11.5 Vashya Koota.
 - 11.6 Tara Koota.
 - 11.7 Yoni Koota.

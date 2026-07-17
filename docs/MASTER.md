@@ -191,6 +191,9 @@ Completed tasks:
 - **Task 11.3**: Add Nakshatra identity and ordered pair-context foundations
   with zero-based indexes, circular distances, stable issue codes, and no Koota
   scoring or compatibility judgement.
+- **Task 11.4**: Implement deterministic Varna Koota with one-based Rashi
+  indexes, centralized Varna mapping/ranks, explicit scoring direction, and no
+  final compatibility judgement.
 
 ## Next Task Instructions
 
