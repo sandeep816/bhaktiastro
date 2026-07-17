@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.5 Complete)**
+Status: **In Progress (Task 11.6 Complete)**
 
 ## Architecture Boundary
 
@@ -344,7 +344,7 @@ Verification for Task 11.5:
 
 ## Task 11.6 - Tara Koota
 
-Status: **Specification Complete; Runtime Not Implemented**
+Status: **Complete**
 
 ### Purpose and Scope
 
@@ -608,20 +608,21 @@ convention documented by:
 Where sources or regional traditions differ on Janma Tara or same-Nakshatra
 exceptions, the explicit BhaktiAstro rule in this section is authoritative.
 
-### Documentation Completion Rules
+### Completion and Verification
 
-This documentation milestone defines the Task 11.6 source of truth only. It
-does not add runtime code or tests and does not mark Task 11.6 implementation
-complete.
+Task 11.6 implements the specified inclusive count, modulo-9 classification,
+directional results, and final score as an opt-in matchmaking module. It reuses
+the Task 11.3 Nakshatra pair context and distance helper, leaves Tasks 11.1
+through 11.5 unchanged, and does not calculate later Kootas or aggregate an
+Ashtakoota score.
 
-When the runtime task is completed, update only the relevant sections of:
+Verification for Task 11.6:
 
-- `docs/SPRINT-11.md` to mark Task 11.6 complete and record focused,
-  matchmaking regression, Nakshatra regression, and full-suite results;
-- `docs/MASTER.md` to add Task 11.6 to completed Sprint 11 tasks; and
-- `CHANGELOG.md` to record the runtime capability.
-
-Do not mark Task 11.7 or Sprint 11 complete during Task 11.6.
+- Focused Tara Koota tests: 79 passed.
+- Matchmaking foundation, validation, Nakshatra, Varna, Vashya, and Tara
+  tests: 262 passed.
+- Core and matchmaking Nakshatra regression tests: 41 passed.
+- Full suite: 1230 passed, 13 skipped, and 20 subtests passed.
 
 ## Deterministic and Compatibility Principles
 
@@ -635,9 +636,9 @@ Do not mark Task 11.7 or Sprint 11 complete during Task 11.6.
 - Vashya Koota uses supplied sidereal Moon longitudes, explicit bride and groom
   roles, split-sign boundaries, and the directional matrix specified in Task
   11.5; it does not infer roles or calculate Moon positions.
-- Tara Koota will reuse zero-based Nakshatra pair context, inclusive circular
+- Tara Koota reuses zero-based Nakshatra pair context, inclusive circular
   counts, the modulo-9 cycle, and explicit bride/groom roles specified in Task
-  11.6; its runtime implementation remains pending.
+  11.6; it does not infer roles or derive missing Nakshatras.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -650,7 +651,7 @@ Do not mark Task 11.7 or Sprint 11 complete during Task 11.6.
 - 11.3 Nakshatra compatibility foundations. **Complete.**
 - 11.4 Varna Koota. **Complete.**
 - 11.5 Vashya Koota. **Complete.**
-- 11.6 Tara Koota. **Specification complete; runtime pending.**
+- 11.6 Tara Koota. **Complete.**
 - 11.7 Yoni Koota.
 - 11.8 Graha Maitri Koota.
 - 11.9 Gana Koota.

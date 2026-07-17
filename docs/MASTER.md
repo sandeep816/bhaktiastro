@@ -197,6 +197,9 @@ Completed tasks:
 - **Task 11.5**: Implement deterministic Vashya Koota from supplied sidereal
   Moon longitudes with reused Rashi normalization, split-sign classification,
   strict category validation, and explicit bride-row/groom-column scoring.
+- **Task 11.6**: Implement deterministic Tara Koota with reused zero-based
+  Nakshatra pair context, inclusive circular counting, modulo-9
+  classification, explicit bidirectional roles, and `0.0`/`1.5`/`3.0` scoring.
 
 ## Next Task Instructions
 

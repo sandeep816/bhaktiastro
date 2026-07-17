@@ -5,6 +5,8 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic Tara Koota classification and bidirectional scoring from
+  supplied sidereal Moon Nakshatras, with inclusive modulo-9 counting.
 - Source-of-truth Tara Koota input, inclusive counting, modulo-9
   classification, bidirectional scoring, validation, result-contract, and test
   specifications for Sprint 11.6.
