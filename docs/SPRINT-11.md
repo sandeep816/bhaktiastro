@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Tasks 11.1-11.12 Complete)**
+Status: **In Progress (Tasks 11.1-11.13 Complete)**
 
 ## Architecture Boundary
 
@@ -2816,7 +2816,7 @@ Task 11.13.
 
 ## Task 11.13 - Manglik Compatibility Foundation
 
-Status: **Specification Complete; Runtime Not Implemented**
+Status: **Complete**
 
 ### Purpose and Scope
 
@@ -3268,16 +3268,35 @@ Task 11.13 runtime implementation is not complete until focused tests cover:
 
 ### Documentation Progress Rules
 
-This specification completes only the Task 11.13 documentation milestone. It
-does not mark runtime completion. `docs/MASTER.md` must remain unchanged until
-the runtime module, focused tests, public exports, and required regression
-verification are complete. The implementation task must then change this
-section to `Status: **Complete**`, record concise verification totals, update
-the current progress pointer according to repository convention, and stop
-before Task 11.14.
+Task 11.13 runtime completion is recorded only after the runtime module,
+focused tests, public exports, and required regression verification are
+complete. `docs/MASTER.md` now records Task 11.13 as completed. No progress
+entry for Task 11.14 is added by this task.
 
 Task 11.14 remains Compatibility / Report Composition. This task must not be
 moved, renamed, replaced, specified, or implemented by Task 11.13.
+
+### Completion and Verification
+
+Task 11.13 is runtime-complete. The implementation adds the documented
+Lagna-only raw classifier, existing-Kundali chart adapter, strict precomputed
+bride/groom comparator, binary five-house convention, deterministic safe
+validation, immutable JSON-safe result contracts, and additive public exports.
+It reuses canonical longitude normalization, Rashi derivation, and whole-sign
+placement without adding a score, cancellation, interpretation, or Task 11.14
+composition behavior.
+
+Verification totals recorded for the implementation task:
+
+- focused Manglik compatibility suite: `273 passed`;
+- complete matchmaking suite: `2465 passed`;
+- Kundali, Lagna, placement, Rashi, and planet-position regression suite:
+  `65 passed`; and
+- complete project suite: `3433 passed, 13 skipped, 20 subtests passed`.
+
+The skips remain the repository's pre-existing manual-reference validation
+placeholders. Task 11.13 does not enable or alter them. Work stops here before
+Task 11.14.
 
 ## Deterministic and Compatibility Principles
 
@@ -3336,7 +3355,7 @@ moved, renamed, replaced, specified, or implemented by Task 11.13.
 - 11.10 Bhakoot Koota. **Complete.**
 - 11.11 Nadi Koota. **Complete.**
 - 11.12 Ashtakoota aggregation. **Complete.**
-- 11.13 Manglik compatibility foundation.
+- 11.13 Manglik compatibility foundation. **Complete.**
 - 11.14 Compatibility / Report Composition.
 - 11.15 Serialization and compatibility hardening.
 

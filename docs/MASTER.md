@@ -221,6 +221,11 @@ Completed tasks:
   completed Kootas with canonical ordering, raw and strict precomputed-result
   APIs, exact `math.fsum` totals, a fixed `36.0` maximum, and no partial score
   or interpretation behavior.
+- **Task 11.13**: Implement deterministic Lagna-only Manglik classification
+  and structured bride/groom status comparison using canonical whole-sign
+  house placement, the binary five-house convention, strict chart and
+  precomputed-result validation, and no score, cancellation, or marriage
+  judgement.
 
 ## Next Task Instructions
 

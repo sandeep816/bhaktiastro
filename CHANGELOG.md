@@ -5,6 +5,10 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic Lagna-only Manglik classification from raw longitudes or an
+  existing Kundali chart, plus strict structured comparison of precomputed
+  bride/groom classifications using the whole-sign houses `1`, `4`, `7`, `8`,
+  and `12` without scoring or cancellation rules.
 - Source-of-truth Manglik compatibility foundation using a Lagna-only,
   whole-sign five-house binary convention, separated raw/chart/precomputed
   APIs, structured same/mixed comparison, strict exclusions, validation,
