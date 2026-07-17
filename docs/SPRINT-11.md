@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.6 Complete)**
+Status: **In Progress (Task 11.7 Specification Complete; Runtime Pending)**
 
 ## Architecture Boundary
 
@@ -624,6 +624,307 @@ Verification for Task 11.6:
 - Core and matchmaking Nakshatra regression tests: 41 passed.
 - Full suite: 1230 passed, 13 skipped, and 20 subtests passed.
 
+## Task 11.7 - Yoni Koota
+
+Status: **Specification Complete; Runtime Not Implemented**
+
+### Purpose, Domain, and Scope
+
+Yoni Koota represents instinctive, physical, and intimate compatibility in
+the North Indian Ashtakoota system. Its maximum score is `4.0` points and its
+stable machine-readable compatibility domain is `intimacy`.
+
+Task 11.7 runtime implementation must provide:
+
+- reusable Yoni classification from one supplied sidereal Moon Nakshatra;
+- deterministic scoring of the two classified Yonis using the single
+  BhaktiAstro convention defined below;
+- the complete canonical Nakshatra mapping and `14 x 14` scoring matrix; and
+- a structured, JSON-safe result consistent with the Varna, Vashya, and Tara
+  Koota architecture.
+
+The caller must explicitly identify which ordered person is the bride and
+which is the groom. The calculator must not infer gender or marriage role from
+`person_a`, `person_b`, a Nakshatra's Yoni sex, names, identifiers, or input
+order. It must not derive a missing Moon longitude or Nakshatra from birth
+details, mutate supplied data, calculate another Koota, aggregate Ashtakoota,
+or produce a compatibility judgement, prediction, advice, or remedy.
+
+### BhaktiAstro Convention Decision
+
+Task 11.7 uses one explicitly selected North Indian Ashtakoota convention:
+
+- the 27 canonical Moon Nakshatras map to the 14 Yoni animals and Yoni-sex
+  classifications in the table below;
+- Abhijit is not inserted into the project's 27-Nakshatra sequence;
+- scoring is the symmetric animal-pair table below, with scores `4`, `3`, `2`,
+  `1`, and `0` for same, friendly, neutral, enemy, and sworn-enemy pairs;
+- Yoni sex is classification metadata attached to the Nakshatra, not the
+  person's sex or gender and not an additional scoring axis; and
+- any same-animal pair receives `4.0`, regardless of whether its two
+  Nakshatras have opposite or equal Yoni-sex classifications.
+
+This is the authoritative BhaktiAstro project decision. Runtime code must not
+blend in regional Yoni Porutham rules, a 28-star Abhijit table, alternative
+male/female assignments, directional sex-polarity adjustments, special
+same-Nakshatra deductions, or cancellation rules from another tradition.
+
+### Primary Inputs and Reused Nakshatra Logic
+
+The astrological input for each person is the already supplied sidereal Moon
+Nakshatra. Nakshatra Pada is not used by Yoni Koota and must not change the
+classification or score.
+
+Runtime implementation must reuse:
+
+- `backend.app.constants.nakshatra.NAKSHATRA_LIST` and `NAKSHATRA_COUNT`;
+- `normalize_matchmaking_nakshatra` for canonical names, zero-based indexes,
+  supported person structures, Pada preservation, and validation issues; and
+- `build_nakshatra_pair_context` for ordered identities, same-Nakshatra and
+  same-Pada state, role-independent pair normalization, and deterministic
+  issue ordering.
+
+It must not duplicate the canonical Nakshatra list, Moon-longitude-to-
+Nakshatra lookup, name normalization, index validation, pair extraction, or
+issue mapping. Ashwini remains zero-based index `0`, Revati remains index `26`,
+and a direct index input is never one-based.
+
+### Canonical Nakshatra-to-Yoni Mapping
+
+The stable animal identifiers are `horse`, `elephant`, `sheep`, `serpent`,
+`dog`, `cat`, `rat`, `cow`, `buffalo`, `tiger`, `deer`, `monkey`, `mongoose`,
+and `lion`. The stable Yoni-sex identifiers are `male` and `female`.
+
+| Index | Canonical Nakshatra | Yoni identifier | Traditional name | Yoni sex |
+|---:|---|---|---|---|
+| 0 | Ashwini | `horse` | Ashwa | `male` |
+| 1 | Bharani | `elephant` | Gaja | `male` |
+| 2 | Krittika | `sheep` | Mesha | `female` |
+| 3 | Rohini | `serpent` | Sarpa | `male` |
+| 4 | Mrigashira | `serpent` | Sarpa | `female` |
+| 5 | Ardra | `dog` | Shwana | `female` |
+| 6 | Punarvasu | `cat` | Marjara | `female` |
+| 7 | Pushya | `sheep` | Mesha | `male` |
+| 8 | Ashlesha | `cat` | Marjara | `male` |
+| 9 | Magha | `rat` | Mushika | `male` |
+| 10 | Purva Phalguni | `rat` | Mushika | `female` |
+| 11 | Uttara Phalguni | `cow` | Gau | `male` |
+| 12 | Hasta | `buffalo` | Mahisha | `female` |
+| 13 | Chitra | `tiger` | Vyaghra | `female` |
+| 14 | Swati | `buffalo` | Mahisha | `male` |
+| 15 | Vishakha | `tiger` | Vyaghra | `male` |
+| 16 | Anuradha | `deer` | Mriga | `female` |
+| 17 | Jyeshtha | `deer` | Mriga | `male` |
+| 18 | Moola | `dog` | Shwana | `male` |
+| 19 | Purva Ashadha | `monkey` | Vanara | `male` |
+| 20 | Uttara Ashadha | `mongoose` | Nakula | `male` |
+| 21 | Shravana | `monkey` | Vanara | `female` |
+| 22 | Dhanishtha | `lion` | Simha | `female` |
+| 23 | Shatabhisha | `horse` | Ashwa | `female` |
+| 24 | Purva Bhadrapada | `lion` | Simha | `male` |
+| 25 | Uttara Bhadrapada | `cow` | Gau | `female` |
+| 26 | Revati | `elephant` | Gaja | `female` |
+
+`sheep` is the canonical English identifier for Mesha in Task 11.7; `goat`
+and `ram` are not accepted aliases. `deer` is the canonical identifier for
+Mriga; `hare` and `rabbit` are not accepted aliases. Mongoose has only Uttara
+Ashadha in the 27-Nakshatra foundation because its traditional counterpart,
+Abhijit, belongs to the excluded 28-star variant. Runtime code must not invent
+a second mongoose Nakshatra or change Uttara Ashadha's Yoni sex.
+
+### Symmetric Scoring and Relationship Classes
+
+Yoni Koota preserves explicit bride and groom roles in its result, but the
+BhaktiAstro scoring convention is symmetric. Rows below represent the bride's
+Yoni and columns represent the groom's Yoni; the matrix equals its transpose,
+so reversing the roles must preserve the relationship and awarded score.
+
+| Relationship identifier | Meaning | Score |
+|---|---|---:|
+| `same` | Same Yoni animal | 4.0 |
+| `friendly` | Friendly Yoni animals | 3.0 |
+| `neutral` | Neutral Yoni animals | 2.0 |
+| `enemy` | Enemy Yoni animals | 1.0 |
+| `sworn_enemy` | Sworn-enemy / bitter-enemy Yoni animals | 0.0 |
+
+The relationship identifier is determined only by the exact matrix score.
+Runtime code must centralize the following table once and must not infer
+relationships from zoology, predator/prey assumptions, Yoni sex, or other
+Kootas.
+
+| Bride \\ Groom | `horse` | `elephant` | `sheep` | `serpent` | `dog` | `cat` | `rat` | `cow` | `buffalo` | `tiger` | `deer` | `monkey` | `mongoose` | `lion` |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `horse` | 4 | 2 | 2 | 3 | 2 | 2 | 2 | 1 | 0 | 1 | 3 | 3 | 2 | 1 |
+| `elephant` | 2 | 4 | 3 | 3 | 2 | 2 | 2 | 2 | 3 | 1 | 2 | 3 | 2 | 0 |
+| `sheep` | 2 | 3 | 4 | 2 | 1 | 2 | 1 | 3 | 3 | 1 | 2 | 0 | 3 | 1 |
+| `serpent` | 3 | 3 | 2 | 4 | 2 | 1 | 1 | 1 | 1 | 2 | 2 | 2 | 0 | 2 |
+| `dog` | 2 | 2 | 1 | 2 | 4 | 2 | 1 | 2 | 2 | 1 | 0 | 2 | 1 | 1 |
+| `cat` | 2 | 2 | 2 | 1 | 2 | 4 | 0 | 2 | 2 | 1 | 3 | 3 | 2 | 1 |
+| `rat` | 2 | 2 | 1 | 1 | 1 | 0 | 4 | 2 | 2 | 2 | 2 | 2 | 1 | 2 |
+| `cow` | 1 | 2 | 3 | 1 | 2 | 2 | 2 | 4 | 3 | 0 | 3 | 2 | 2 | 1 |
+| `buffalo` | 0 | 3 | 3 | 1 | 2 | 2 | 2 | 3 | 4 | 1 | 2 | 2 | 2 | 1 |
+| `tiger` | 1 | 1 | 1 | 2 | 1 | 1 | 2 | 0 | 1 | 4 | 1 | 1 | 2 | 1 |
+| `deer` | 3 | 2 | 2 | 2 | 0 | 3 | 2 | 3 | 2 | 1 | 4 | 2 | 2 | 1 |
+| `monkey` | 3 | 3 | 0 | 2 | 2 | 3 | 2 | 2 | 2 | 1 | 2 | 4 | 3 | 2 |
+| `mongoose` | 2 | 2 | 3 | 0 | 1 | 2 | 1 | 2 | 2 | 2 | 2 | 3 | 4 | 2 |
+| `lion` | 1 | 0 | 1 | 2 | 1 | 1 | 2 | 1 | 1 | 1 | 1 | 2 | 2 | 4 |
+
+The seven `sworn_enemy` pairs are exactly:
+
+- `horse` / `buffalo`;
+- `elephant` / `lion`;
+- `sheep` / `monkey`;
+- `serpent` / `mongoose`;
+- `dog` / `deer`;
+- `cat` / `rat`; and
+- `cow` / `tiger`.
+
+Both orders of each pair score `0.0`. All other non-diagonal relationships,
+including every friendly, neutral, and enemy pair, are defined exclusively by
+the complete matrix and must not be filled by a fallback default.
+
+### Same-Yoni and Same-Nakshatra Behavior
+
+- Every diagonal matrix cell is relationship `same` and awards the maximum
+  `4.0` points.
+- Two different Nakshatras assigned to the same animal also receive `4.0`.
+- The Yoni-sex combination does not raise or lower the matrix score.
+- The same Nakshatra has the same animal and therefore receives `4.0`, whether
+  the supplied Padas are equal, different, or absent.
+- Same-Nakshatra and same-Pada flags from the shared pair context remain audit
+  metadata only; there is no special override or cancellation.
+- Uttara Ashadha paired with itself is same mongoose and receives `4.0`, even
+  though both classifications necessarily expose Yoni sex `male`.
+
+### Boundary and Normalization Rules
+
+- Canonical names and zero-based indexes `0..26` must normalize through the
+  existing matchmaking Nakshatra helper and produce identical classifications.
+- Index `0` is Ashwini/horse; index `26` is Revati/elephant. Indexes must not
+  wrap: `-1` and `27` are invalid.
+- Booleans are not numeric Nakshatra indexes.
+- Pada, when supplied, must follow the shared integer range `1..4`; it is
+  preserved but ignored by Yoni classification and scoring.
+- Yoni Koota does not accept a raw Moon longitude as its direct input. When an
+  upstream astrology component derives the sidereal Moon Nakshatra from
+  longitude, that component owns `[0, 360)` normalization and all Nakshatra
+  cusp behavior. Task 11.7 must consume the resulting canonical Nakshatra and
+  must not duplicate or reinterpret longitude boundaries.
+- No Abhijit insertion, one-based conversion, modulo wrapping, case-folded
+  enum guessing, animal aliasing, or fuzzy boundary is permitted.
+
+### Validation and Invalid Input Behavior
+
+Runtime validation must follow the shared Nakshatra and matchmaking
+conventions:
+
+- accept canonical Nakshatra names, zero-based indexes `0..26`, and supported
+  person or pair structures handled by the existing normalization helpers;
+- reject missing Nakshatra, unknown names, wrong types, booleans, negative
+  indexes, and indexes greater than `26` with existing stable,
+  localization-ready issue codes;
+- reject missing, unknown, duplicate, or identical bride/groom role
+  assignments with stable role issue codes;
+- preserve deterministic bride-before-groom issue ordering;
+- return status `invalid` and score `None` whenever either identity or role
+  assignment is invalid; and
+- perform no partial classification result or fallback score for an invalid
+  pair.
+
+The low-level animal score lookup must raise `TypeError` when either category
+is not a string and `ValueError` when either string is empty, malformed, an
+alias, or not one of the 14 canonical identifiers. It must not silently guess,
+case-fold, or default an unknown enum/category. The high-level calculator must
+catch expected input validation failures and return the safe structured
+invalid result; unexpected programming errors must not be swallowed.
+
+### Public Result Contract
+
+The runtime task must expose stable helpers from
+`backend.app.matchmaking.__init__` for:
+
+1. classifying one normalized matchmaking Nakshatra identity or supported
+   Nakshatra input into its canonical animal and Yoni-sex identity;
+2. looking up the symmetric relationship and score for two canonical Yoni
+   animal identifiers; and
+3. calculating the complete Yoni Koota result from an ordered matchmaking pair
+   plus explicit `bride_role` and `groom_role`.
+
+The structured result must expose at least:
+
+- Koota identifier `yoni`;
+- compatibility domain `intimacy`;
+- status;
+- awarded score and maximum score `4.0`;
+- unchanged `person_a` and `person_b` Nakshatra identities;
+- explicit bride and groom role mapping;
+- bride Yoni identity with canonical Nakshatra name, zero-based index, animal
+  identifier, traditional animal name, and Yoni sex;
+- groom Yoni identity with the same fields;
+- relationship identifier and deterministic matrix row/column audit factors;
+- same-Nakshatra, same-Pada, and same-Yoni flags;
+- stable errors and warnings; and
+- references and deterministic schema metadata consistent with existing
+  matchmaking Koota results.
+
+Each returned object and nested collection must be newly allocated, must not
+share mutable defaults, and must be treated as immutable after construction.
+The calculator must not mutate caller inputs. Output ordering and identifiers
+must be stable and strictly JSON-safe. Role reversal must swap the bride/groom
+identity fields but preserve the symmetric relationship and score.
+
+### Required Runtime Tests
+
+Task 11.7 runtime implementation is not complete until focused tests cover:
+
+- all 27 Nakshatras by canonical name and zero-based index, including every
+  documented animal and Yoni-sex classification;
+- all 14 canonical animal identifiers and both Yoni-sex identifiers;
+- every one of the `14 x 14` scoring matrix cells, including matrix symmetry;
+- every relationship class: `same`, `friendly`, `neutral`, `enemy`, and
+  `sworn_enemy`;
+- both orders of all seven sworn-enemy pairs;
+- representative friendly, neutral, and enemy pairs in both role orders;
+- same-Yoni pairs, including every diagonal animal and different-Nakshatra
+  male/female counterparts, all scoring `4.0`;
+- same Nakshatra with same Pada, different Pada, and no Pada, all scoring
+  `4.0`, including Uttara Ashadha/mongoose;
+- explicit bride/groom role reversal while preserving `person_a` and
+  `person_b` order and the symmetric score;
+- index boundaries `0` and `26`, invalid `-1` and `27`, booleans, missing
+  values, wrong types, malformed names, and unsupported aliases;
+- invalid animal lookup values, including non-strings, empty strings,
+  case variants, and unknown identifiers;
+- no score dependence on Pada or Yoni sex and no Abhijit/28-star insertion;
+- deterministic issue ordering, output equality, input non-mutation,
+  independent nested collections, and strict JSON serialization;
+- stable public exports from `backend.app.matchmaking`; and
+- regression compatibility with Task 11.3 Nakshatra context and every
+  completed matchmaking module.
+
+### Convention Verification
+
+The 27-star animal and Yoni-sex assignments, the seven sworn-enemy pairs, and
+the selected scoring table are documented by the following North Indian
+Ashtakoota references:
+
+- [Yoni Koota - Saravali](https://saravali.github.io/astrology/koota_yoni.html)
+- [Horoscope Matching, Yoni Koota table](https://www.futuresamachar.com/download/horoscope-matching-325.pdf)
+- [Comparison of Panchangas](https://www.ghvisweswara.com/wp-content/uploads/2021/11/Comparison_of_Panchangas.pdf)
+
+Where those sources discuss a 28-star form or other traditions use different
+sex assignments or scoring modifiers, the explicit BhaktiAstro decisions and
+complete tables in this section are authoritative.
+
+### Documentation Progress
+
+This documentation task defines the Task 11.7 source of truth only. No runtime
+module, tests, public exports, or completion verification are added, and Task
+11.7 must remain runtime-incomplete in `docs/MASTER.md`. The next Task 11.7
+implementation must implement this specification without silently changing
+its convention, mappings, or scores, then add focused tests, exports, required
+progress updates, and full regression verification.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -639,6 +940,9 @@ Verification for Task 11.6:
 - Tara Koota reuses zero-based Nakshatra pair context, inclusive circular
   counts, the modulo-9 cycle, and explicit bride/groom roles specified in Task
   11.6; it does not infer roles or derive missing Nakshatras.
+- Yoni Koota will reuse zero-based Nakshatra identities, the canonical 27-star
+  mapping, explicit bride/groom roles, and the symmetric matrix specified in
+  Task 11.7; Yoni sex is metadata and does not alter the score.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -652,7 +956,7 @@ Verification for Task 11.6:
 - 11.4 Varna Koota. **Complete.**
 - 11.5 Vashya Koota. **Complete.**
 - 11.6 Tara Koota. **Complete.**
-- 11.7 Yoni Koota.
+- 11.7 Yoni Koota. **Specification complete; runtime pending.**
 - 11.8 Graha Maitri Koota.
 - 11.9 Gana Koota.
 - 11.10 Bhakoot Koota.

@@ -5,6 +5,9 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Source-of-truth Yoni Koota 27-Nakshatra classification, Yoni-sex metadata,
+  symmetric scoring matrix, validation, result-contract, and test
+  specifications for Sprint 11.7.
 - Deterministic Tara Koota classification and bidirectional scoring from
   supplied sidereal Moon Nakshatras, with inclusive modulo-9 counting.
 - Source-of-truth Tara Koota input, inclusive counting, modulo-9
