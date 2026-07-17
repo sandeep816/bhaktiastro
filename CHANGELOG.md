@@ -5,6 +5,11 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Source-of-truth Manglik compatibility foundation using a Lagna-only,
+  whole-sign five-house binary convention, separated raw/chart/precomputed
+  APIs, structured same/mixed comparison, strict exclusions, validation,
+  immutable result contracts, and exhaustive test specifications for Sprint
+  11.13.
 - Deterministic Ashtakoota aggregation over all eight completed Kootas, with
   canonical execution order, raw Moon-longitude orchestration, strict
   precomputed-result validation, exact `math.fsum` totals, and a fixed `36.0`

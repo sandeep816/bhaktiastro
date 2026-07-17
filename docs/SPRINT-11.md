@@ -2741,8 +2741,8 @@ Task 11.12 explicitly excludes:
 - Bhakoot, Nadi, Tara, or other Dosha cancellation and exception rules;
 - API, database, report, UI, localization text, analytics, or external-service
   integration; and
-- Task 11.13 Manglik compatibility, Task 11.14 summary composition, or Task
-  11.15 serialization hardening.
+- Task 11.13 Manglik compatibility, Task 11.14 Compatibility / Report
+  Composition, or Task 11.15 serialization hardening.
 
 ### Required Runtime Tests
 
@@ -2814,6 +2814,471 @@ The skips remain the repository's pre-existing manual-reference validation
 placeholders. Task 11.12 does not enable or alter them. Work stops here before
 Task 11.13.
 
+## Task 11.13 - Manglik Compatibility Foundation
+
+Status: **Specification Complete; Runtime Not Implemented**
+
+### Purpose and Scope
+
+Task 11.13 defines a deterministic, structured foundation for identifying the
+selected BhaktiAstro form of Manglik status for each partner and comparing the
+two statuses. It records Mars's whole-sign house from the Lagna and exposes the
+facts needed by later compatibility composition without making a marriage
+judgement.
+
+This task is separate from the `36.0`-point Ashtakoota total. It must not call,
+modify, rerun, append to, or reinterpret Task 11.12. Manglik classification is
+not a ninth Koota, does not change an individual Koota score, and does not
+change the Ashtakoota maximum.
+
+The foundation produces no prediction, remedy, recommendation, pass/fail
+label, compatibility advice, marriage advice, interpretive prose, or AI
+narrative. Task 11.14 may compose the structured result with other completed
+matchmaking artifacts, but it must not be implemented by Task 11.13.
+
+### BhaktiAstro Convention Decision
+
+Manglik conventions vary by lineage. BhaktiAstro deliberately selects one
+narrow, reproducible convention for this foundation:
+
+- use the sidereal whole-sign birth chart;
+- evaluate Mars from the Lagna only;
+- classify houses `1`, `4`, `7`, `8`, and `12` as Manglik houses;
+- do not include house `2`;
+- do not evaluate Mars from the Moon or Venus;
+- use a binary `manglik` or `non_manglik` classification;
+- compare the two binary classifications without awarding points; and
+- apply no cancellation, exception, weighting, severity, or interpretation
+  rule.
+
+This is a BhaktiAstro project convention, not an attempt to merge every
+traditional alternative. Sources describing the selected five-house base rule
+include [AstroCalc's Manglik overview](https://astrocalc.in/learn/manglik) and
+[ShreeKundli's distinction between the five-house and extended
+conventions](https://www.shreekundli.com/vedic-astrology/compatibility/manglik-dosha).
+These references provide convention context only. The rules in this section,
+including every explicit exclusion, are the sole implementation authority.
+
+### Relationship to Existing Modules
+
+Task 11.13 consumes existing chart facts and must not become another astronomy
+engine:
+
+- `backend.app.astronomy.planet_positions` remains authoritative for the
+  canonical Mars identity and sidereal planetary longitude;
+- `backend.app.kundali.lagna` remains authoritative for the sidereal Lagna;
+- `backend.app.kundali.rashi.normalize_longitude` and `get_rashi` remain
+  authoritative for longitude normalization and Rashi boundaries;
+- `backend.app.kundali.placement.get_planet_house_placement` remains
+  authoritative for whole-sign planet placement and one-based house numbers;
+- `backend.app.kundali.chart.KundaliChart` remains the established chart
+  mapping consumed by the chart adapter; and
+- `backend.app.matchmaking.validation` remains authoritative for
+  localization-ready issue structure, deterministic validation ordering, and
+  non-coercing type/range behavior; and
+- the matchmaking foundation remains authoritative for copied JSON-safe
+  collections, schema metadata, statuses, and public result style.
+
+Runtime code must call these utilities. It must not copy longitude modulo
+logic, Rashi division, planet-name tables, relative-sign arithmetic, or house
+placement formulas into the matchmaking package. It must not calculate a
+birth chart from date, time, place, timezone, ayanamsa, or ephemeris data.
+
+### Supported Inputs and Separated APIs
+
+Task 11.13 supports three input levels through separately named APIs. No API
+may guess the input mode from an overloaded mapping or positional argument.
+
+```python
+def classify_manglik(
+    *,
+    lagna_sidereal_longitude: object = None,
+    mars_sidereal_longitude: object = None,
+) -> ManglikClassificationResult: ...
+
+def classify_manglik_from_chart(
+    *,
+    chart: object = None,
+) -> ManglikClassificationResult: ...
+
+def compare_manglik_classifications(
+    *,
+    bride: object,
+    groom: object,
+) -> ManglikCompatibilityResult: ...
+```
+
+`classify_manglik` is the raw identity API. Both keyword-only inputs are
+required finite real sidereal longitudes in degrees. It derives the single
+person's Lagna Rashi, Mars Rashi, and Mars house with existing utilities.
+
+`classify_manglik_from_chart` is the existing-chart adapter. It accepts a
+`KundaliChart`-shaped mapping, not raw birth details. The mapping must contain:
+
+- `lagna`, as a mapping with finite `sidereal_longitude` and a one-based
+  integral non-boolean `rashi_index` in `1..12`; and
+- `planets`, as a non-string sequence containing exactly one mapping whose
+  canonical lowercase `planet` value is `mars`, with a finite
+  `sidereal_longitude`.
+
+The Lagna longitude and Rashi index must agree after canonical derivation. If
+the Mars mapping contains `rashi_index`, `rashi`, `rashi_degree`,
+`house_index`, or `house_number`, each supplied placement field must agree
+exactly with the canonical placement derived by existing utilities. Optional
+chart sections such as Vargas, Bhavas, Dashas, predictions, or Panchang are
+ignored and must not affect the result. The adapter copies required values and
+never mutates the chart.
+
+`compare_manglik_classifications` accepts exactly two Task 11.13
+classification-result mappings. This is the only precomputed-input API. A
+complete comparison requires two complete, valid classifications. The
+comparator strictly revalidates the public classification contract, copies
+both identities, and returns a structured invalid pair when either supplied
+result is invalid or malformed. It does not accept arbitrary planetary-
+position lists, caller-supplied boolean flags, category strings, or direct
+house numbers as substitutes for a classification result.
+
+A caller holding only longitudes must call `classify_manglik` separately for
+each person and then call `compare_manglik_classifications`. Loose precomputed
+planet positions and direct `mars_house` input are intentionally unsupported.
+This separation prevents stale or inconsistent caller-supplied house numbers
+from bypassing canonical chart placement.
+
+A caller holding bride and groom charts must likewise call
+`classify_manglik_from_chart` once for each role and pass the two validated
+results to `compare_manglik_classifications`. The comparator's explicit
+keyword names define the roles. No API infers bride or groom from gender,
+names, identifiers, array order, `person_a`, or `person_b`. Task 11.13 defines
+no fourth convenience API that accepts two charts; report or composition
+orchestration belongs to Task 11.14.
+
+### Longitude, Rashi, and House Derivation
+
+The raw classifier derives placement in this exact order:
+
+1. validate both supplied values as finite real numbers, rejecting booleans;
+2. normalize both through the existing longitude utility into `[0, 360)`;
+3. derive the one-based Lagna and Mars Rashi indexes with `get_rashi`;
+4. call `get_planet_house_placement` with the derived Lagna Rashi index and
+   normalized Mars longitude; and
+5. use the returned one-based `house_number` as the only classification
+   input.
+
+The house system is the existing whole-sign system. Houses are numbered
+`1..12` from the Lagna Rashi: the Lagna sign is house `1`, the next Rashi is
+house `2`, and so on circularly through house `12`. `house_index`, where
+included only as audit data, is zero-based `0..11` and must always equal
+`house_number - 1`.
+
+As a conformance identity for one-based Rashi indexes, the existing placement
+result must satisfy:
+
+```text
+house_number = ((mars_rashi_index - lagna_rashi_index) mod 12) + 1
+```
+
+This identity specifies expected behavior and tests; it is not permission to
+copy the formula into the matchmaking implementation. Runtime must obtain the
+house from `get_planet_house_placement`.
+
+There are no quadrant cusps or degree-based house boundaries. Each Rashi is a
+half-open interval beginning at an exact multiple of `30°`; exact normalized
+Rashi boundaries belong to the new sign under the existing Rashi utility.
+The exact Lagna degree within its Rashi does not move a planet to another
+house. Therefore a Mars longitude in the Lagna Rashi is house `1` even when it
+is numerically below the Lagna longitude.
+
+Core normalization owns deterministic six-decimal behavior. `0°`, `360°`,
+`-360°`, other finite negative values, and values greater than `360°` are
+accepted and normalized consistently. Task 11.13 must not add another modulo,
+epsilon, tolerance, rounding, or cusp policy.
+
+No public API normalizes a supplied house number modulo `12`. A redundant
+chart `house_number` must be an integral non-boolean value in `1..12`; `0`,
+`13`, negative values, floats with a fractional part, strings, and booleans
+are invalid. A valid but inconsistent redundant house is also invalid rather
+than silently replaced.
+
+### Exact Classification Rule
+
+The applicable Manglik-house constant is exactly, and in this stable order:
+
+```text
+[1, 4, 7, 8, 12]
+```
+
+For a valid person:
+
+```text
+classification = "manglik"     if mars_house in {1, 4, 7, 8, 12}
+classification = "non_manglik" otherwise
+```
+
+All seven other houses, including house `2`, are `non_manglik`. `manglik`
+means only that Mars occupies one selected house from the Lagna under this
+binary project convention. `non_manglik` means only that it does not. Neither
+identifier predicts an event, quantifies harm, or expresses suitability for
+marriage.
+
+There is no `partial_manglik`, `low`, `medium`, `high`, percentage, weight,
+intensity, severity, or house-specific rank. One supported house cannot be
+more Manglik than another. A classification reason code is factual:
+`mars_in_manglik_house` or `mars_not_in_manglik_house`.
+
+### Exact Bride/Groom Comparison Rule
+
+Task 11.13 is structured-only and awards no points. It has no `score`,
+`awarded_score`, `maximum_score`, threshold, grade, or contribution to the
+Ashtakoota total.
+
+The ordered role-preserving comparison table is:
+
+| Bride | Groom | `pair_classification` | `comparison_status` |
+|---|---|---|---|
+| `manglik` | `manglik` | `both_manglik` | `same_status` |
+| `non_manglik` | `non_manglik` | `both_non_manglik` | `same_status` |
+| `manglik` | `non_manglik` | `bride_manglik_groom_non_manglik` | `mixed_status` |
+| `non_manglik` | `manglik` | `bride_non_manglik_groom_manglik` | `mixed_status` |
+
+The same-versus-mixed comparison is symmetric. Swapping the two complete
+identities preserves `same_status` or `mixed_status`, while the role-specific
+fields and mixed `pair_classification` transpose. No row has greater authority
+than another, and no direction changes a person's classification.
+
+`same_status` is not a synonym for compatible, approved, cancelled, or safe.
+`mixed_status` is not a synonym for incompatible, rejected, harmful, or
+unsafe. In particular, `both_manglik` records two positive classifications;
+it does not apply a double-Manglik or mutual-Manglik cancellation rule.
+
+### Explicitly Excluded Factors and Exceptions
+
+Classification depends only on canonical Mars whole-sign house from the
+Lagna. Task 11.13 excludes all of the following as explicit BhaktiAstro
+project decisions:
+
+- Moon-based, Venus-based, or combined multiple-reference evaluation;
+- house `2` as a Manglik house;
+- partial, weighted, cumulative, intensity, or severity classification;
+- Mars sign exceptions or Rashi-specific exceptions;
+- Mars aspects, aspects to Mars, conjunctions, combustion, retrograde state,
+  dignity, strength, Shadbala, functional benefic/malefic status, or age;
+- Mars exaltation, debilitation, own sign, friendly sign, enemy sign, or
+  sign-lord and house-lord conditions;
+- benefic aspects, planetary lordship, conjunction with a benefic, or any
+  other mitigating placement;
+- mutual Manglik, double-Manglik, same-status, same-Rashi, or partner-chart
+  cancellation;
+- Navamsha, other divisional charts, Bhava Chalit, non-whole-sign cusps,
+  Vargas, Upapada, Dasha, transits, Gotra, or horoscope synthesis; and
+- every unnamed Manglik Dosha cancellation, exception, remedy, prediction,
+  recommendation, or marriage-advice rule.
+
+Runtime code must not silently add one of these rules because it appears in a
+source or another astrology tradition. Adding any excluded rule requires a
+later separately specified task with its precedence, inputs, output contract,
+and exhaustive tests.
+
+### Validation and Failure Propagation
+
+Expected invalid input is represented by deterministic structured results;
+it is never guessed, coerced, or repaired.
+
+Task 11.13 defines exactly four public issue codes:
+
+| Code | Use |
+|---|---|
+| `manglik_input_missing` | A required raw Lagna/Mars value or required nested chart value is absent. |
+| `manglik_input_invalid` | A supplied raw value has an invalid type, is non-finite, or violates its documented range. |
+| `manglik_chart_invalid` | The chart shape, Mars cardinality, canonical identity, or redundant placement is malformed or inconsistent. |
+| `manglik_classification_invalid` | A precomputed classification violates the Task 11.13 result contract. |
+
+Each issue uses the existing matchmaking validation issue shape and message
+key `matchmaking.validation.<code>`. The `field` path, not a new issue code,
+identifies Lagna versus Mars, chart nesting, and bride versus groom. No other
+issue code or human-language error message is part of this task.
+
+- missing Lagna or Mars longitude produces a field-specific
+  `manglik_input_missing` issue;
+- booleans, strings, containers, complex numbers, and other non-real values
+  produce a field-specific `manglik_input_invalid` issue;
+- `NaN`, positive infinity, and negative infinity produce a field-specific
+  `manglik_input_invalid` issue;
+- a non-mapping chart, malformed `lagna`, non-sequence `planets`, missing or
+  duplicate Mars, invalid canonical planet identity, absent required
+  longitude, invalid Rashi/house index, or inconsistent redundant placement
+  produces `manglik_input_missing`, `manglik_input_invalid`, or
+  `manglik_chart_invalid` at the exact offending field path;
+- an incomplete, invalid, malformed, wrong-component, wrong-schema, or
+  internally inconsistent precomputed classification produces a
+  `manglik_classification_invalid` issue; and
+- unknown category values are invalid; runtime must not case-fold or alias a
+  malformed caller-supplied classification.
+
+Issue codes and message keys follow the existing matchmaking convention and
+are ordered deterministically: bride before groom, then outer field order,
+then nested field order. Issues contain only stable machine-readable fields
+and JSON-safe details; exception objects and localized prose must not escape.
+
+If either classification is invalid, the pair result is `invalid`,
+`pair_classification` and `comparison_status` are empty, and there is no
+partial comparison. The pair may retain copied invalid bride and groom
+classification results for audit. The comparator validates both supplied
+classifications in bride-then-groom order so both ordinary contract failures
+can be reported deterministically.
+
+Expected `TypeError` and `ValueError` failures raised by the reused core
+validators for the documented public fields are translated to the structured
+issues above. Unexpected exceptions from chart access, longitude/Rashi/house
+utilities, copying, contract invariants, or programming errors propagate
+unchanged. Runtime must not catch `Exception`, fabricate a fallback house,
+return a partial successful comparison, or suppress a dependency failure.
+Python signature errors for positional use of keyword-only parameters or
+unknown keyword names remain ordinary `TypeError` exceptions.
+
+### Public Immutable Result Contract
+
+Task 11.13 follows the existing matchmaking result convention: typed,
+JSON-safe mapping results with newly allocated nested mappings and lists. It
+does not introduce a dataclass, tuple result, enum instance, Pydantic API
+response, or a second serialization system. Results and all nested values are
+immutable after construction by public contract, while independent mutable
+containers preserve compatibility with existing matchmaking results.
+
+`ManglikClassificationResult` exposes exactly:
+
+- `calculation`: `manglik_classification`;
+- `status`: `complete` or `invalid`;
+- `classification`: `manglik`, `non_manglik`, or an empty string when invalid;
+- `reference_point`: `lagna` for valid results, or an empty string when the
+  reference cannot be validated;
+- `lagna_sidereal_longitude` and `mars_sidereal_longitude`: normalized finite
+  values, or `None` when invalid;
+- `lagna_rashi_index` and `mars_rashi_index`: one-based indexes, or `None`;
+- `mars_house`: one-based `1..12`, or `None`;
+- `applicable_manglik_houses`: `[1, 4, 7, 8, 12]` as a fresh list;
+- `reason`: one stable factual reason code, or an empty string when invalid;
+- `errors`, `warnings`, and `references`: newly allocated lists; and
+- `metadata`: a newly allocated deterministic mapping.
+
+`ManglikCompatibilityResult` exposes exactly:
+
+- `calculation`: `manglik_compatibility`;
+- `status`: `complete` or `invalid`;
+- `bride_manglik` and `groom_manglik`: copied full classification results;
+- `bride_classification` and `groom_classification`: the two canonical binary
+  identifiers, or empty strings when invalid;
+- `bride_reference_point` and `groom_reference_point`: `lagna` for complete
+  results;
+- `bride_mars_house` and `groom_mars_house`: one-based houses, or `None`;
+- `applicable_manglik_houses`: `[1, 4, 7, 8, 12]` as a fresh list;
+- `pair_classification`: one exact table identifier, or an empty string;
+- `comparison_status`: `same_status`, `mixed_status`, or an empty string;
+- `reasons`: the bride's factual classification reason, the groom's factual
+  classification reason, then exactly `same_manglik_status` or
+  `mixed_manglik_status` for a complete comparison;
+- `errors`, `warnings`, and `references`: newly allocated lists; and
+- `metadata`: a newly allocated deterministic mapping.
+
+Neither result contains `score`, `maximum_score`, compatibility advice,
+interpretation, cancellation, remedy, or prediction fields. Warnings are empty
+in this foundation; they are reserved for future explicitly specified
+non-fatal contract conditions and must not contain astrological prose.
+
+Metadata contains at least the existing matchmaking schema version,
+component identifier, `deterministic=true`, `house_system=whole_sign`,
+`house_numbering=one_based`, `reference_points=["lagna"]`,
+`applicable_manglik_houses=[1, 4, 7, 8, 12]`,
+`classification_mode=binary`, `comparison_mode=structured_only`,
+`scoring_included=false`, `severity_included=false`,
+`cancellation_rules_included=false`, `divisional_charts_included=false`, and
+`ashtakoota_recalculated=false`. The compatibility result also records stable
+bride/groom role order and `same_mixed_comparison_symmetric=true`.
+
+Every call deep-copies accepted chart or precomputed values and allocates
+independent nested classifications, applicable-house lists, reasons, issues,
+warnings, references, and metadata. No result may share a mutable object with
+caller input, a module constant, a source chart, an earlier call, or a later
+call. Repeated equivalent calls compare equal before caller mutation, and
+mutation of one returned collection cannot affect any other result.
+
+All output must pass `json.dumps(..., allow_nan=False)`. Keys and identifiers
+are strings; longitudes are finite floats or `None`; house and Rashi indexes
+are integers or `None`; no tuple, set, enum instance, dataclass instance,
+exception object, callable, `NaN`, or infinity may escape. Key, reason, issue,
+warning, reference, applicable-house, and metadata ordering is deterministic.
+
+The runtime task must publicly export `MANGLIK_HOUSES`, the classification and
+pair identifiers, the typed issue/result/metadata mappings, and all three
+public functions from `backend.app.matchmaking`. It may add new exports only;
+every existing Kundali, placement, matchmaking, Koota, and Ashtakoota import
+and behavior must remain unchanged.
+
+### Required Runtime Tests
+
+Task 11.13 runtime implementation is not complete until focused tests cover:
+
+- the exact `[1, 4, 7, 8, 12]` constant order and positive classification for
+  every one of those houses;
+- negative classification for every other house `2`, `3`, `5`, `6`, `9`,
+  `10`, and `11`;
+- all 12 Lagna Rashis and all 144 Lagna-Rashi/Mars-Rashi combinations,
+  independently proving the derived one-based whole-sign house;
+- exact `0°`, every `30°` Rashi boundary, values immediately below each
+  boundary under core precision, and circular `330°/0°` behavior;
+- equivalent normalization for `0°`, `360°`, `-360°`, finite negative values,
+  and values greater than `360°` for both Lagna and Mars;
+- the sole supported `lagna` reference point and rejection of Moon, Venus,
+  combined, or caller-invented reference points in precomputed input;
+- all four bride/groom classification rows, including Manglik/Manglik,
+  non-Manglik/non-Manglik, and both role orders of mixed status;
+- same/mixed symmetry under swapping, plus correct transposition of
+  role-specific fields and mixed pair identifiers;
+- proof that both-Manglik remains `both_manglik` with no cancellation or
+  compatibility judgement;
+- chart-adapter success against real-shaped Kundali fixtures and equivalence
+  with raw classification for the same canonical longitudes;
+- redundant chart placement agreement and rejection of inconsistent
+  `rashi_index`, `rashi`, `rashi_degree`, `house_index`, or `house_number`;
+- house validation for `1`, `12`, `0`, `13`, negative, fractional, string,
+  boolean, and missing values without modulo normalization;
+- missing Lagna, missing Mars, duplicate Mars, malformed planet entries,
+  invalid canonical planet names, malformed chart context, and non-mapping
+  chart input;
+- missing raw values, booleans, non-real values, `NaN`, positive infinity,
+  and negative infinity for every longitude field;
+- malformed, incomplete, invalid-status, wrong-component, unknown-category,
+  wrong-house, wrong-reference, and internally inconsistent precomputed
+  classification results;
+- bride-before-groom deterministic issue order, validation of both ordinary
+  invalid precomputed classifications, no partial comparison, and propagation
+  of unexpected dependency exceptions;
+- repeated deterministic equality, caller-input non-mutation, immutable-after-
+  construction public expectations, deep-copy isolation, and independent
+  mutable collections for every result path;
+- strict `json.dumps(..., allow_nan=False)` serialization and exact absence of
+  scoring, severity, interpretation, recommendation, remedy, prediction,
+  Ashtakoota, and cancellation fields;
+- stable public exports for constants, typed contracts, raw classification,
+  chart classification, and precomputed comparison;
+- backward compatibility with direct astronomy, Rashi, Lagna, placement,
+  Kundali chart, matchmaking foundation, all eight Koota, and Ashtakoota
+  public imports and behavior; and
+- focused Manglik tests followed by the complete matchmaking, Rashi, Kundali,
+  planet-position, house-placement, and full project regression suites.
+
+### Documentation Progress Rules
+
+This specification completes only the Task 11.13 documentation milestone. It
+does not mark runtime completion. `docs/MASTER.md` must remain unchanged until
+the runtime module, focused tests, public exports, and required regression
+verification are complete. The implementation task must then change this
+section to `Status: **Complete**`, record concise verification totals, update
+the current progress pointer according to repository convention, and stop
+before Task 11.14.
+
+Task 11.14 remains Compatibility / Report Composition. This task must not be
+moved, renamed, replaced, specified, or implemented by Task 11.13.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -2849,6 +3314,9 @@ Task 11.13.
 - Ashtakoota aggregation orchestrates the eight completed Kootas in canonical
   order, derives its total only from validated component results, and adds no
   interpretation, threshold, cancellation, or replacement scoring rule.
+- Manglik compatibility uses only the canonical whole-sign Mars house from the
+  Lagna, the five-house binary convention specified in Task 11.13, and a
+  structured same/mixed comparison with no score, cancellation, or judgement.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -2869,7 +3337,7 @@ Task 11.13.
 - 11.11 Nadi Koota. **Complete.**
 - 11.12 Ashtakoota aggregation. **Complete.**
 - 11.13 Manglik compatibility foundation.
-- 11.14 Matchmaking summary composer.
+- 11.14 Compatibility / Report Composition.
 - 11.15 Serialization and compatibility hardening.
 
 This sequence is provisional and may be adjusted after repository and source
