@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Tasks 11.1-11.8 Complete)**
+Status: **In Progress (Task 11.9 Specification Complete; Runtime Pending)**
 
 ## Architecture Boundary
 
@@ -1280,6 +1280,330 @@ The skips are the repository's pre-existing manual-reference validation
 placeholders. Task 11.8 does not enable or alter them. Work stops here before
 Task 11.9.
 
+## Task 11.9 - Gana Koota
+
+Status: **Specification Complete; Runtime Not Implemented**
+
+### Purpose, Domain, and Scope
+
+Gana Koota represents compatibility of temperament, disposition, and
+day-to-day behavioural nature through the Gana assigned to each person's
+sidereal Moon Nakshatra. Its maximum score is `6.0` points and its stable
+machine-readable compatibility domain is `temperament`.
+
+Task 11.9 runtime implementation must provide:
+
+- reusable Gana classification from one supplied sidereal Moon Nakshatra;
+- deterministic directional scoring for explicitly assigned bride and groom
+  roles under the single BhaktiAstro convention below;
+- the complete canonical 27-Nakshatra mapping and `3 x 3` scoring matrix; and
+- a structured, immutable-after-construction, JSON-safe result consistent
+  with the completed matchmaking Koota architecture.
+
+The calculator must not infer gender or marriage roles, calculate a Moon
+position from birth details, mutate supplied data, calculate another Koota,
+apply a cancellation rule, aggregate Ashtakoota, or produce a compatibility
+judgement, prediction, advice, or remedy.
+
+### BhaktiAstro Convention Decisions
+
+Task 11.9 uses the directional North Indian Ashtakoota Gana convention
+documented by the Saravali/Maitreya table:
+
+- the canonical 27 Moon Nakshatras are divided into exactly three groups of
+  nine: `deva`, `manushya`, and `rakshasa`;
+- Abhijit is not inserted into the project's 27-Nakshatra sequence;
+- rows represent the explicitly assigned bride's Gana and columns represent
+  the explicitly assigned groom's Gana;
+- the exact directional matrix in this section is authoritative;
+- every same-Gana pair receives the maximum `6.0` points; and
+- Pada, Nakshatra lord, Rashi, Lagna, Navamsha, Graha Maitri, and the other
+  Kootas do not modify the base Gana score.
+
+The selected matrix is intentionally directional. BhaktiAstro does not use a
+symmetrized table that assigns a single score to an unordered mixed-Gana pair,
+does not average the two role orders, and does not transpose a source table
+silently. Gana Dosha cancellation based on Nakshatra distance, Rashi lords,
+Graha Maitri, Vashya, Tara, Yoni, Nadi, Navamsha, or another regional rule is
+outside Task 11.9. These choices are explicit BhaktiAstro project decisions
+and prevent incompatible traditions from being combined.
+
+### Required Inputs and Reused Nakshatra Architecture
+
+The astrological input for each person is that person's already supplied
+sidereal Moon Nakshatra. The high-level calculator must consume an ordered
+matchmaking pair plus explicit `bride_role` and `groom_role`, following the
+same role contract used by Tara and Yoni Koota. It must never infer bride or
+groom from `person_a`, `person_b`, names, identifiers, Gana, or call order.
+
+Runtime implementation must reuse:
+
+- `backend.app.constants.nakshatra.NAKSHATRA_LIST`, `NAKSHATRA_COUNT`, and
+  `NAKSHATRA_SPAN_DEGREES`;
+- `normalize_matchmaking_nakshatra` for canonical names, zero-based indexes,
+  supported person structures, Pada preservation, and validation issues; and
+- `build_nakshatra_pair_context` for ordered identities, same-Nakshatra and
+  same-Pada state, pair normalization, and deterministic issue ordering.
+
+It must not duplicate the canonical Nakshatra list, name normalization, index
+validation, pair extraction, issue mapping, or Moon-longitude-to-Nakshatra
+lookup. Ashwini remains zero-based index `0` and Revati remains index `26`.
+Direct index input is never one-based and is never wrapped modulo `27`.
+
+### Moon-Longitude Derivation and Nakshatra Boundaries
+
+Gana Koota does not accept a raw Moon longitude as its direct high-level
+input. When upstream data starts with a finite sidereal Moon longitude, the
+Nakshatra must be derived by the existing
+`backend.app.astrology.nakshatra.get_nakshatra` helper before it is supplied
+to the matchmaking layer. Gana runtime code must not copy or reinterpret that
+derivation.
+
+The reused core helper owns all longitude behavior:
+
+- longitude is normalized into `[0, 360)` at the existing six-decimal
+  `BOUNDARY_PRECISION`;
+- `0°` and normalized equivalents such as `360°` derive Ashwini/index `0`;
+- finite negative and greater-than-`360°` values derive the same Nakshatra as
+  their normalized equivalents;
+- each core Nakshatra interval is lower-inclusive and upper-exclusive, so a
+  value immediately below a cusp remains in the earlier Nakshatra and the
+  exact canonical cusp starts the next Nakshatra; and
+- a boolean or non-real longitude raises `TypeError`, while `NaN` and either
+  infinity raise `ValueError` under the core helper contract.
+
+Runtime tests must use the existing core constants and lookup output for cusp
+expectations; they must not calculate an independent approximate boundary or
+introduce an epsilon. Once a canonical name or index reaches Gana Koota, the
+shared matchmaking normalizer—not longitude arithmetic—owns normalization.
+
+### Canonical Nakshatra-to-Gana Mapping
+
+The stable category identifiers are exactly `deva`, `manushya`, and
+`rakshasa`. The mapping follows the canonical zero-based Nakshatra order:
+
+| Index | Canonical Nakshatra | Gana identifier |
+|---:|---|---|
+| 0 | Ashwini | `deva` |
+| 1 | Bharani | `manushya` |
+| 2 | Krittika | `rakshasa` |
+| 3 | Rohini | `manushya` |
+| 4 | Mrigashira | `deva` |
+| 5 | Ardra | `manushya` |
+| 6 | Punarvasu | `deva` |
+| 7 | Pushya | `deva` |
+| 8 | Ashlesha | `rakshasa` |
+| 9 | Magha | `rakshasa` |
+| 10 | Purva Phalguni | `manushya` |
+| 11 | Uttara Phalguni | `manushya` |
+| 12 | Hasta | `deva` |
+| 13 | Chitra | `rakshasa` |
+| 14 | Swati | `deva` |
+| 15 | Vishakha | `rakshasa` |
+| 16 | Anuradha | `deva` |
+| 17 | Jyeshtha | `rakshasa` |
+| 18 | Moola | `rakshasa` |
+| 19 | Purva Ashadha | `manushya` |
+| 20 | Uttara Ashadha | `manushya` |
+| 21 | Shravana | `deva` |
+| 22 | Dhanishtha | `rakshasa` |
+| 23 | Shatabhisha | `rakshasa` |
+| 24 | Purva Bhadrapada | `manushya` |
+| 25 | Uttara Bhadrapada | `manushya` |
+| 26 | Revati | `deva` |
+
+The mapping is exhaustive and contains exactly nine Nakshatras in each Gana:
+
+- `deva`: Ashwini, Mrigashira, Punarvasu, Pushya, Hasta, Swati, Anuradha,
+  Shravana, and Revati;
+- `manushya`: Bharani, Rohini, Ardra, Purva Phalguni, Uttara Phalguni, Purva
+  Ashadha, Uttara Ashadha, Purva Bhadrapada, and Uttara Bhadrapada; and
+- `rakshasa`: Krittika, Ashlesha, Magha, Chitra, Vishakha, Jyeshtha, Moola,
+  Dhanishtha, and Shatabhisha.
+
+Runtime code must centralize this mapping once by canonical zero-based index.
+It must verify complete `0..26` coverage and must not maintain separate lists
+that can disagree.
+
+### Directional Bride-Row / Groom-Column Scoring
+
+Rows are the bride's Gana and columns are the groom's Gana. The following
+matrix is the complete normative lookup table:
+
+| Bride \\ Groom | `deva` | `manushya` | `rakshasa` |
+|---|---:|---:|---:|
+| `deva` | 6.0 | 6.0 | 0.0 |
+| `manushya` | 5.0 | 6.0 | 0.0 |
+| `rakshasa` | 1.0 | 0.0 | 6.0 |
+
+No score outside `{0.0, 1.0, 5.0, 6.0}` is valid. Runtime code must preserve
+the row and column roles, perform one exact lookup, and must not average,
+round, rank, infer, or fill an unknown pair with a default.
+
+The directional asymmetries are normative:
+
+- bride `deva` / groom `manushya` scores `6.0`, while bride `manushya` /
+  groom `deva` scores `5.0`; and
+- bride `deva` / groom `rakshasa` scores `0.0`, while bride `rakshasa` /
+  groom `deva` scores `1.0`.
+
+Both bride `manushya` / groom `rakshasa` and bride `rakshasa` / groom
+`manushya` score `0.0`. Role reversal must transpose the audit lookup and may
+change the score only for the two documented asymmetric category pairs.
+
+### Same-Gana, Mixed-Gana, and Same-Nakshatra Behavior
+
+- Every diagonal matrix cell is `same_gana` and awards `6.0` points.
+- Same-Gana maximum scoring applies to `deva`, `manushya`, and `rakshasa`
+  without an exception based on the particular Nakshatras or Padas.
+- Mixed Ganas use only the exact directional matrix; no mixed pair is promoted
+  to same-Gana and no outside cancellation modifies its base score.
+- The same Nakshatra necessarily has the same Gana and therefore receives
+  `6.0`, whether the supplied Padas are equal, different, or absent.
+- Same-Nakshatra and same-Pada flags from the shared pair context remain audit
+  metadata only and do not trigger a special override.
+- Two different Nakshatras in the same Gana also receive `6.0`.
+
+The stable relationship identifier must be `same_gana` for diagonal cells and
+`mixed_gana` for off-diagonal cells. The exact bride and groom Gana fields
+and matrix audit factor remain the source of the particular mixed score.
+
+### Validation and Invalid Input Behavior
+
+Runtime validation must follow the shared Nakshatra and matchmaking
+conventions:
+
+- accept canonical Nakshatra names, zero-based indexes `0..26`, and supported
+  person or pair structures handled by the existing normalization helpers;
+- accept all canonical English, Hindi, and Sanskrit names already supported
+  by `normalize_matchmaking_nakshatra`, with its existing whitespace and case
+  normalization behavior;
+- reject missing Nakshatra, unknown names, wrong types, booleans, negative
+  indexes, and indexes greater than `26` with existing stable,
+  localization-ready issue codes;
+- preserve valid Pada `1..4` as identity metadata but ignore it for Gana
+  classification and scoring;
+- reject invalid Pada values through the existing shared issue contract;
+- reject missing, unknown, duplicate, or identical bride/groom role
+  assignments with stable role issue codes;
+- preserve deterministic bride-before-groom issue ordering;
+- return status `invalid` and score `None` whenever either identity or role
+  assignment is invalid; and
+- perform no partial classification or fallback scoring for an invalid pair.
+
+The low-level Gana score lookup must accept only the three exact canonical
+lowercase category identifiers. It must raise `TypeError` when either category
+is not a string and `ValueError` for empty, malformed, aliased, case-variant,
+or unknown identifiers. It must not case-fold, guess, coerce, or default a
+public enum/category input. The high-level calculator catches expected input
+validation failures and returns a safe structured invalid result; unexpected
+programming errors must not be swallowed.
+
+### Public Immutable Result Contract
+
+The runtime task must expose stable helpers from
+`backend.app.matchmaking.__init__` for:
+
+1. classifying one normalized matchmaking Nakshatra identity or supported
+   Nakshatra input into its canonical Gana identity;
+2. looking up the directional score for two exact bride and groom Gana
+   identifiers; and
+3. calculating the complete Gana Koota result from an ordered matchmaking pair
+   plus explicit `bride_role` and `groom_role`.
+
+The structured result must expose at least:
+
+- Koota identifier `gana`;
+- compatibility domain `temperament`;
+- status;
+- awarded score and maximum score `6.0`;
+- unchanged `person_a` and `person_b` Nakshatra identities;
+- explicit bride and groom role mapping;
+- bride Gana identity with canonical Nakshatra name, zero-based index, optional
+  Pada, source person identifier, and canonical Gana identifier;
+- groom Gana identity with the same fields;
+- relationship identifier, explicit bride-row/groom-column direction, and
+  deterministic matrix audit factors;
+- same-Nakshatra, same-Pada, and same-Gana flags;
+- stable errors and warnings; and
+- references and deterministic schema metadata consistent with existing
+  matchmaking Koota results.
+
+Every returned result, identity, issue, metadata mapping, factor list,
+reference list, error list, and warning list must be newly allocated. Returned
+objects must share no mutable defaults or nested collections and must be
+treated as immutable after construction. The calculator must not mutate caller
+inputs. Repeated equivalent calls must compare equal before caller mutation,
+and mutating one returned result must not affect a later or earlier result.
+
+All output must be strictly JSON-safe: dictionary keys and machine identifiers
+are strings; scores are finite numbers or `None` for invalid results; no
+`NaN`, infinity, tuple-only encoding, set, enum instance, dataclass instance,
+or other non-JSON value may escape. Output ordering, issue ordering, factor
+ordering, and identifiers must be deterministic. No interpretation paragraph,
+compatibility label, advice, remedy, API response, report formatting, other
+Koota, or Ashtakoota total belongs in Task 11.9.
+
+### Required Runtime Tests
+
+Task 11.9 runtime implementation is not complete until focused tests cover:
+
+- all 27 canonical Nakshatras by name and zero-based index, including every
+  documented mapping and exactly nine members per Gana;
+- all three canonical Gana identifiers;
+- every one of the `3 x 3` bride-row/groom-column matrix cells;
+- same-Gana maximum scores for all three diagonal categories and for
+  representative different-Nakshatra pairs in each Gana;
+- both role orders of the asymmetric Deva/Manushya and Deva/Rakshasa pairs,
+  proving that role reversal transposes the lookup;
+- both role orders of the zero-score Manushya/Rakshasa pair;
+- same Nakshatra with equal Pada, different Pada, and absent Pada, all scoring
+  `6.0`;
+- all 27 core Moon-longitude Nakshatra lower cusps and values immediately below
+  the next cusp at the existing six-decimal precision, classified through the
+  reused core lookup rather than duplicated arithmetic;
+- `0°`, `360°`, finite negative, and greater-than-`360°` core longitude
+  normalization, plus core rejection of booleans, non-real values, `NaN`, and
+  both infinities;
+- matchmaking index boundaries `0` and `26`, invalid `-1` and `27`, missing
+  values, wrong types, malformed names, and unsupported aliases;
+- invalid Gana lookup values, including non-strings, empty strings, case
+  variants, aliases, and unknown identifiers;
+- missing, unknown, duplicate, and identical bride/groom roles;
+- deterministic bride-before-groom issue ordering and no partial score;
+- proof that Pada, Nakshatra lord, Rashi, and every other Koota do not alter
+  the base matrix score;
+- deterministic output equality, input non-mutation, independent nested
+  collections, and strict `json.dumps(..., allow_nan=False)` serialization;
+- stable public exports from `backend.app.matchmaking`; and
+- regression compatibility with the core Nakshatra lookup, Task 11.3 pair
+  context, and every completed matchmaking module.
+
+### Convention Verification
+
+The 27-star classification, selected directional matrix, and documented
+convention differences are covered by:
+
+- [Gana Koota - Saravali/Maitreya table](https://saravali.github.io/astrology/koota_gana.html)
+- [Gana Koota in Kundli Matching - directional bride/groom table](https://www.astroyogi.com/blog/gana-koota-in-kundli-matching.aspx)
+- [Horoscope Matching - Gana classification and scoring discussion](https://www.futuresamachar.com/download/horoscope-matching-325.pdf)
+- [Comparison of Panchangas - Gana Koota convention comparison](https://www.ghvisweswara.com/wp-content/uploads/2021/11/Comparison_of_Panchangas.pdf)
+
+Some sources transpose bride and groom, use a symmetric `5` or `1` for both
+orders of a mixed pair, or apply cancellation and exception rules. BhaktiAstro
+selects the exact Saravali/Maitreya bride-row/groom-column matrix above and
+does not merge those alternatives into Task 11.9.
+
+### Documentation Progress
+
+This documentation task defines the complete Task 11.9 source of truth only.
+No runtime module, tests, constants, or public exports are added. Task 11.9
+must remain absent from the completed-task list in `docs/MASTER.md`. The next
+Task 11.9 runtime task must implement this specification, add focused tests and
+exports, run the required Nakshatra and matchmaking regressions plus the full
+suite, record verification totals, mark only Task 11.9 runtime-complete, and
+stop before Task 11.10.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -1301,6 +1625,9 @@ Task 11.9.
 - Graha Maitri Koota reuses Moon-Rashi derivation, Rashi lordship, and
   natural planetary relationships; only permanent friendship and the
   symmetric score rules specified in Task 11.8 apply.
+- Gana Koota will reuse the canonical 27-Nakshatra identity and ordered pair
+  context, require explicit bride/groom roles, and use only the directional
+  matrix specified in Task 11.9.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -1316,7 +1643,7 @@ Task 11.9.
 - 11.6 Tara Koota. **Complete.**
 - 11.7 Yoni Koota. **Complete.**
 - 11.8 Graha Maitri Koota. **Complete.**
-- 11.9 Gana Koota.
+- 11.9 Gana Koota. **Specification complete; runtime pending.**
 - 11.10 Bhakoot Koota.
 - 11.11 Nadi Koota.
 - 11.12 Ashtakoota aggregation.
