@@ -5,6 +5,9 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Source-of-truth Graha Maitri Koota Moon-Rashi derivation, permanent
+  planetary relationship, symmetric scoring matrix, validation,
+  result-contract, and test specifications for Sprint 11.8.
 - Deterministic Yoni Koota classification and symmetric scoring from supplied
   sidereal Moon Nakshatras, with complete 27-star mapping and `14 x 14` matrix
   coverage.

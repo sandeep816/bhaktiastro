@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.7 Complete)**
+Status: **In Progress (Task 11.8 Specification Complete; Runtime Pending)**
 
 ## Architecture Boundary
 
@@ -933,6 +933,335 @@ Verification for Task 11.7:
 - Core and matchmaking Nakshatra regression tests: 41 passed.
 - Full suite: 1518 passed, 13 skipped, and 20 subtests passed.
 
+## Task 11.8 - Graha Maitri Koota
+
+Status: **Specification Complete; Runtime Not Implemented**
+
+### Purpose, Domain, and Scope
+
+Graha Maitri Koota, also called Rasyadhipati Maitri, represents mental,
+intellectual, and emotional affinity through the natural relationship between
+the lords of the bride's and groom's sidereal Moon Rashis. Its maximum score
+is `5.0` points and its stable machine-readable compatibility domain is
+`mental_compatibility`.
+
+Task 11.8 runtime implementation must provide:
+
+- reusable Moon-Rashi and Rashi-lord classification from one supplied
+  sidereal Moon longitude;
+- both directional natural relationships between the two Moon-sign lords;
+- deterministic combined scoring under the single BhaktiAstro convention
+  defined below; and
+- a structured, JSON-safe result consistent with the completed matchmaking
+  Koota architecture.
+
+The calculator must not calculate birth-chart planetary positions, use a
+geographic longitude as a Moon longitude, infer bride/groom roles, mutate
+supplied data, calculate another Koota, aggregate Ashtakoota, or produce a
+compatibility judgement, prediction, advice, or remedy.
+
+### BhaktiAstro Convention Decisions
+
+Task 11.8 uses one explicitly selected North Indian Ashtakoota convention:
+
+- only the **natural/permanent relationship** (`Naisargika Maitri`) between
+  the two classical Moon-Rashi lords is used;
+- the relationship is evaluated in both directions because natural planetary
+  friendship is not universally reciprocal;
+- the two directional statuses are combined using the exact score table and
+  complete `7 x 7` matrix below;
+- equal lords always receive the maximum `5.0` points as a special case;
+- the final score is symmetric even when the two directional natural
+  relationships differ; and
+- only Sun, Moon, Mars, Mercury, Jupiter, Venus, and Saturn can occur because
+  the canonical twelve Rashis have no Rahu or Ketu lordship.
+
+Temporary (`Tatkalika`) friendship is not used. Compound or five-fold
+friendship (`Panchadha Maitri`) is not used. Runtime code must not inspect the
+current houses, conjunctions, relative planetary positions, Lagna, Navamsha,
+transits, Dashas, planetary strength, dignity, or functional benefic/malefic
+status. It must not add Lagna/Navamsha score overrides, Bhakoot cancellation,
+Maha-Nakshatra exceptions, or regional variants.
+
+These choices are authoritative BhaktiAstro project decisions. They prevent a
+fixed Moon-sign-lord Koota from silently changing with chart placements or
+from blending incompatible relationship systems.
+
+### Required Inputs and Reused Moon-Rashi Logic
+
+The only astrological input for each person is that person's finite sidereal
+Moon longitude in degrees. The high-level calculator must receive the bride
+and groom values through explicitly named inputs; it must not infer roles from
+`person_a`, `person_b`, a name, identifier, or call order. The existing
+`MatchmakingPerson.longitude` field is a geographic birth longitude and must
+never be treated as the Moon longitude.
+
+Runtime implementation must reuse:
+
+- `backend.app.kundali.rashi.normalize_longitude` for normalization into
+  `[0, 360)`;
+- `backend.app.kundali.rashi.get_rashi` for the canonical one-based Rashi,
+  names, lord metadata, and degree within the Rashi;
+- `backend.app.constants.rashi.RASHI_LIST`, `RASHI_COUNT`, and existing Rashi
+  boundaries;
+- `backend.app.kundali.graha_lordship.get_rashi_lord` or
+  `get_rashi_lord_by_index` for lord resolution; and
+- `backend.app.kundali.graha_relationship.NATURAL_RELATIONSHIPS` and
+  `get_natural_relationship` for directional natural friendship.
+
+It must not duplicate longitude normalization, Rashi calculation, the Rashi
+list, Rashi lordship, or the natural planetary relationship table.
+
+### Moon Rashi Derivation and Boundaries
+
+For each valid input:
+
+1. Normalize the supplied sidereal Moon longitude with the existing Rashi
+   engine into `[0, 360)`.
+2. Derive the one-based Rashi index and degree within the Rashi using
+   `get_rashi`.
+3. Resolve the Rashi's canonical lord through the existing lordship helper.
+4. Normalize the emitted lord identifier to the existing lowercase project
+   keys: `sun`, `moon`, `mars`, `mercury`, `jupiter`, `venus`, or `saturn`.
+
+All Rashi cusps follow the existing half-open intervals: the lower boundary is
+included and the upper boundary is excluded. Therefore `0°` is Mesha,
+`29.999999°` remains Mesha at existing precision, `30°` is Vrishabha,
+`359.999999°` remains Meena, and `360°` normalizes to `0°`/Mesha. Finite
+negative and greater-than-`360°` values must produce the same identity as
+their normalized equivalents. Runtime code must not introduce an epsilon,
+fuzzy cusp, independent rounding rule, or a second longitude normalizer.
+
+### Canonical Rashi-to-Lord Mapping
+
+This table documents the required result of the reused Rashi constants and
+lordship helper. Runtime code must not maintain a second independent mapping.
+
+| Index | English Rashi | Sanskrit Rashi | Canonical lord |
+|---:|---|---|---|
+| 1 | Aries | Mesha | `mars` |
+| 2 | Taurus | Vrishabha | `venus` |
+| 3 | Gemini | Mithuna | `mercury` |
+| 4 | Cancer | Karka | `moon` |
+| 5 | Leo | Simha | `sun` |
+| 6 | Virgo | Kanya | `mercury` |
+| 7 | Libra | Tula | `venus` |
+| 8 | Scorpio | Vrishchika | `mars` |
+| 9 | Sagittarius | Dhanu | `jupiter` |
+| 10 | Capricorn | Makara | `saturn` |
+| 11 | Aquarius | Kumbha | `saturn` |
+| 12 | Pisces | Meena | `jupiter` |
+
+Sun and Moon each rule one Rashi. Mars, Mercury, Jupiter, Venus, and Saturn
+each rule two. Rahu, Ketu, Uranus, Neptune, Pluto, alternative co-lords, and
+modern rulerships are outside Task 11.8.
+
+### Canonical Natural/Permanent Relationships
+
+The relationship from a row lord toward another lord is directional. The
+following tables are the required existing `NATURAL_RELATIONSHIPS` values:
+
+| Lord | Natural friends | Natural neutrals | Natural enemies |
+|---|---|---|---|
+| `sun` | `moon`, `mars`, `jupiter` | `mercury` | `venus`, `saturn` |
+| `moon` | `sun`, `mercury` | `mars`, `jupiter`, `venus`, `saturn` | none |
+| `mars` | `sun`, `moon`, `jupiter` | `venus`, `saturn` | `mercury` |
+| `mercury` | `sun`, `venus` | `mars`, `jupiter`, `saturn` | `moon` |
+| `jupiter` | `sun`, `moon`, `mars` | `saturn` | `mercury`, `venus` |
+| `venus` | `mercury`, `saturn` | `mars`, `jupiter` | `sun`, `moon` |
+| `saturn` | `mercury`, `venus` | `jupiter` | `sun`, `moon`, `mars` |
+
+A lord is intentionally absent from its own friend/neutral/enemy groups.
+Equal lords use the explicit same-lord rule before calling the natural
+relationship helper; an `unsupported` self-relationship must never lower or
+invalidate a same-lord match.
+
+The complete directional status table is:
+
+| From \\ Toward | `sun` | `moon` | `mars` | `mercury` | `jupiter` | `venus` | `saturn` |
+|---|---|---|---|---|---|---|---|
+| `sun` | same | friend | friend | neutral | friend | enemy | enemy |
+| `moon` | friend | same | neutral | friend | neutral | neutral | neutral |
+| `mars` | friend | friend | same | enemy | friend | neutral | neutral |
+| `mercury` | friend | enemy | neutral | same | neutral | friend | neutral |
+| `jupiter` | friend | friend | friend | enemy | same | enemy | neutral |
+| `venus` | enemy | enemy | neutral | friend | neutral | same | friend |
+| `saturn` | enemy | enemy | enemy | friend | neutral | friend | same |
+
+### Combined Relationship and Score Rules
+
+For different lords, obtain both directional natural statuses and combine
+them without bride/groom weighting or averaging:
+
+| Combined identifier | Directional status pair, in either order | Score |
+|---|---|---:|
+| `mutual_friend` | friend + friend | 5.0 |
+| `friend_neutral` | friend + neutral | 4.0 |
+| `mutual_neutral` | neutral + neutral | 3.0 |
+| `friend_enemy` | friend + enemy | 1.0 |
+| `neutral_enemy` | neutral + enemy | 0.5 |
+| `mutual_enemy` | enemy + enemy | 0.0 |
+
+Equal lords use combined identifier `same_lord` and score `5.0`. No other
+score is valid. In particular, the selected convention gives `1.0` for a
+friend/enemy pair and `0.5` for a neutral/enemy pair. Traditions that assign
+`2.0` and `1.0` to those combinations are not used by Task 11.8.
+
+### Complete Bride-Lord / Groom-Lord Scoring Matrix
+
+Rows represent the bride's Moon-sign lord and columns represent the groom's
+Moon-sign lord. Although the row-to-column and column-to-row natural statuses
+may differ, the combined score matrix is symmetric and equals its transpose.
+
+| Bride \\ Groom | `sun` | `moon` | `mars` | `mercury` | `jupiter` | `venus` | `saturn` |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `sun` | 5.0 | 5.0 | 5.0 | 4.0 | 5.0 | 0.0 | 0.0 |
+| `moon` | 5.0 | 5.0 | 4.0 | 1.0 | 4.0 | 0.5 | 0.5 |
+| `mars` | 5.0 | 4.0 | 5.0 | 0.5 | 5.0 | 3.0 | 0.5 |
+| `mercury` | 4.0 | 1.0 | 0.5 | 5.0 | 0.5 | 5.0 | 4.0 |
+| `jupiter` | 5.0 | 4.0 | 5.0 | 0.5 | 5.0 | 0.5 | 3.0 |
+| `venus` | 0.0 | 0.5 | 3.0 | 5.0 | 0.5 | 5.0 | 5.0 |
+| `saturn` | 0.0 | 0.5 | 0.5 | 4.0 | 3.0 | 5.0 | 5.0 |
+
+The matrix is normative as an audit table. Runtime code should derive it from
+the existing directional natural-relationship table plus the centralized
+combined-score rules instead of hard-coding a second source of planetary
+friendship. It must not fill unknown pairs with a default score.
+
+### Directionality, Symmetry, and Same-Lord Behavior
+
+- The bride-to-groom status is the bride lord's natural view of the groom
+  lord.
+- The groom-to-bride status is the groom lord's natural view of the bride
+  lord.
+- Role reversal swaps those two statuses and the row/column audit fields but
+  preserves the combined identifier and score.
+- Same-lord pairs always return `same_lord` and `5.0`, including different
+  Rashis with a shared lord.
+- The different-Rashi same-lord pairs are Mesha/Vrishchika, Vrishabha/Tula,
+  Mithuna/Kanya, Dhanu/Meena, and Makara/Kumbha, in either role order.
+- Same Rashi also necessarily has the same lord and receives `5.0`; degree
+  within the Rashi does not change the score.
+- One-sided friendship is not promoted to mutual friendship: friend/neutral
+  scores `4.0`, friend/enemy scores `1.0`, and neutral/enemy scores `0.5`.
+
+### Validation and Invalid Input Behavior
+
+Low-level Moon-Rashi classification must preserve the existing Rashi utility
+contract:
+
+- raise `TypeError` when a longitude is a boolean or is not a real number;
+- raise `ValueError` when a longitude is `NaN`, positive infinity, or negative
+  infinity; and
+- accept all other finite numeric values and normalize them through the
+  existing utility.
+
+The low-level lord relationship lookup must:
+
+- accept only the seven canonical lowercase lord identifiers;
+- raise `TypeError` when either lord is not a string;
+- raise `ValueError` for empty, malformed, aliased, unsupported, or non-
+  canonical identifiers, including Rahu and Ketu; and
+- never case-fold, guess, or default a public enum/category input.
+
+The high-level calculator must follow the safe-result convention used by the
+completed Kootas: catch expected input validation failures, return status
+`invalid` with score `None`, emit stable localization-ready issue codes in
+deterministic bride-before-groom order, and perform no partial score.
+Unexpected programming errors must not be swallowed.
+
+### Public Result Contract
+
+The runtime task must expose stable helpers from
+`backend.app.matchmaking.__init__` for:
+
+1. classifying one finite sidereal Moon longitude into its canonical Moon
+   Rashi and lord identity;
+2. looking up the two directional natural relationships, combined identifier,
+   and score for two canonical lord identifiers; and
+3. calculating the complete Graha Maitri Koota result from explicitly named
+   bride and groom sidereal Moon longitudes.
+
+The structured result must expose at least:
+
+- Koota identifier `graha_maitri`;
+- compatibility domain `mental_compatibility`;
+- status;
+- awarded score and maximum score `5.0`;
+- bride Moon-Rashi identity with normalized longitude, canonical Rashi names,
+  one-based Rashi index, degree within the Rashi, and canonical lord;
+- groom Moon-Rashi identity with the same fields;
+- explicit bride-row/groom-column audit metadata;
+- bride-to-groom and groom-to-bride natural relationship statuses;
+- combined relationship identifier and same-lord flag;
+- deterministic factors sufficient to audit the score lookup;
+- stable errors and warnings; and
+- references and schema metadata consistent with existing matchmaking Koota
+  results.
+
+Each returned object and nested collection must be newly allocated, must not
+share mutable defaults, and must be treated as immutable after construction.
+The calculator must not mutate caller inputs. Output ordering and identifiers
+must be stable and strictly JSON-safe. No interpretation paragraph, advice,
+remedy, API response, report formatting, other Koota, or Ashtakoota
+aggregation belongs in Task 11.8.
+
+### Required Runtime Tests
+
+Task 11.8 runtime implementation is not complete until focused tests cover:
+
+- representative Moon longitudes for all twelve Rashis and every documented
+  Rashi-to-lord assignment;
+- all twelve exact Rashi lower cusps and values immediately below the next
+  cusp at the existing six-decimal precision;
+- `0°`, `360°`, finite negative, and greater-than-`360°` normalization;
+- every natural friend, neutral, and enemy entry for all seven classical
+  lords;
+- every one of the `7 x 7` scoring matrix cells and matrix symmetry;
+- all combined identifiers and scores: `same_lord`/`5.0`,
+  `mutual_friend`/`5.0`, `friend_neutral`/`4.0`,
+  `mutual_neutral`/`3.0`, `friend_enemy`/`1.0`,
+  `neutral_enemy`/`0.5`, and `mutual_enemy`/`0.0`;
+- same-lord maximum scores for all seven lords, including all five
+  different-Rashi shared-lord pairs in both role orders;
+- asymmetric natural relationships such as Sun/Mercury, Moon/Mercury, and
+  Moon/Venus, verifying that role reversal swaps directional statuses but not
+  the combined score;
+- proof that degree within one Rashi does not change its lord or score;
+- booleans, non-numeric values, missing values, `NaN`, and both infinities;
+- empty, malformed, case-variant, aliased, Rahu, Ketu, and unknown lord
+  identifiers;
+- deterministic bride-before-groom issue ordering and no partial scoring;
+- no dependence on temporary positions, Panchadha Maitri, Lagna, Navamsha,
+  Pada, Nakshatra, Bhava, dignity, strength, or another Koota;
+- deterministic output equality, input non-mutation, independent nested
+  collections, and strict JSON serialization;
+- stable public exports from `backend.app.matchmaking`; and
+- regression compatibility with the existing Rashi, Graha lordship, Graha
+  relationship, Kundali, and completed matchmaking foundations.
+
+### Convention Verification
+
+The selected natural-relationship method, `5.0`/`4.0`/`3.0`/`1.0`/`0.5`/`0.0`
+combination rules, and complete seven-lord matrix are documented by:
+
+- [Horoscope Matching - Natural Graha Maitri Guna Milaan Table](https://www.futuresamachar.com/download/horoscope-matching-325.pdf)
+- [Ashtakoota Gun Milan - Graha Maitri scoring rules](https://www.rashisetu.com/blog/ashtakoota-gun-milan-explained)
+- [Comparison of Panchangas - Graha Maitra Koota](https://www.ghvisweswara.com/wp-content/uploads/2021/11/Comparison_of_Panchangas.pdf)
+
+Where other sources assign different intermediate points or add chart-based
+exceptions, the explicit BhaktiAstro decisions and tables in this section are
+authoritative.
+
+### Documentation Progress
+
+This documentation task defines the Task 11.8 source of truth only. No runtime
+module, tests, or public exports are added, and Task 11.8 must remain absent
+from the completed-task list in `docs/MASTER.md`. The next Task 11.8 runtime
+task must implement this specification, add focused tests and exports, run the
+required regression layers, record verification totals, mark only Task 11.8
+runtime-complete, and stop before Task 11.9.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -951,6 +1280,9 @@ Verification for Task 11.7:
 - Yoni Koota reuses zero-based Nakshatra identities, the canonical 27-star
   mapping, explicit bride/groom roles, and the symmetric matrix specified in
   Task 11.7; Yoni sex is metadata and does not alter the score.
+- Graha Maitri Koota will reuse Moon-Rashi derivation, Rashi lordship, and
+  natural planetary relationships; only permanent friendship and the
+  symmetric score rules specified in Task 11.8 apply.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -965,7 +1297,7 @@ Verification for Task 11.7:
 - 11.5 Vashya Koota. **Complete.**
 - 11.6 Tara Koota. **Complete.**
 - 11.7 Yoni Koota. **Complete.**
-- 11.8 Graha Maitri Koota.
+- 11.8 Graha Maitri Koota. **Specification complete; runtime pending.**
 - 11.9 Gana Koota.
 - 11.10 Bhakoot Koota.
 - 11.11 Nadi Koota.
