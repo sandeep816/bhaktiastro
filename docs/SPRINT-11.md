@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.9 Specification Complete; Runtime Pending)**
+Status: **In Progress (Tasks 11.1-11.9 Complete)**
 
 ## Architecture Boundary
 
@@ -1282,7 +1282,7 @@ Task 11.9.
 
 ## Task 11.9 - Gana Koota
 
-Status: **Specification Complete; Runtime Not Implemented**
+Status: **Complete**
 
 ### Purpose, Domain, and Scope
 
@@ -1594,15 +1594,30 @@ orders of a mixed pair, or apply cancellation and exception rules. BhaktiAstro
 selects the exact Saravali/Maitreya bride-row/groom-column matrix above and
 does not merge those alternatives into Task 11.9.
 
-### Documentation Progress
+### Completion and Verification
 
-This documentation task defines the complete Task 11.9 source of truth only.
-No runtime module, tests, constants, or public exports are added. Task 11.9
-must remain absent from the completed-task list in `docs/MASTER.md`. The next
-Task 11.9 runtime task must implement this specification, add focused tests and
-exports, run the required Nakshatra and matchmaking regressions plus the full
-suite, record verification totals, mark only Task 11.9 runtime-complete, and
-stop before Task 11.10.
+Task 11.9 is runtime-complete. The implementation:
+
+- reuses canonical Nakshatra constants, shared Nakshatra normalization, and
+  ordered pair-context construction without accepting or recalculating Moon
+  longitude;
+- exposes reusable Gana classification, strict directional category lookup,
+  and the ordered-pair calculator with explicit bride and groom roles;
+- implements the complete 27-Nakshatra mapping and exact directional
+  bride-row/groom-column `3 x 3` matrix; and
+- returns deterministic JSON-safe results with independent nested collections,
+  stable validation issues, and matrix audit factors.
+
+Verification completed for this task:
+
+- focused Gana Koota tests: `145 passed`;
+- complete matchmaking regression layer: `862 passed`;
+- core and matchmaking Nakshatra regressions: `41 passed`; and
+- full regression suite: `1830 passed`, `13 skipped`, and `20 subtests passed`.
+
+The skips are the repository's pre-existing manual-reference validation
+placeholders. Task 11.9 does not enable or alter them. Work stops here before
+Task 11.10.
 
 ## Deterministic and Compatibility Principles
 
@@ -1625,8 +1640,8 @@ stop before Task 11.10.
 - Graha Maitri Koota reuses Moon-Rashi derivation, Rashi lordship, and
   natural planetary relationships; only permanent friendship and the
   symmetric score rules specified in Task 11.8 apply.
-- Gana Koota will reuse the canonical 27-Nakshatra identity and ordered pair
-  context, require explicit bride/groom roles, and use only the directional
+- Gana Koota reuses the canonical 27-Nakshatra identity and ordered pair
+  context, requires explicit bride/groom roles, and uses only the directional
   matrix specified in Task 11.9.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
@@ -1643,7 +1658,7 @@ stop before Task 11.10.
 - 11.6 Tara Koota. **Complete.**
 - 11.7 Yoni Koota. **Complete.**
 - 11.8 Graha Maitri Koota. **Complete.**
-- 11.9 Gana Koota. **Specification complete; runtime pending.**
+- 11.9 Gana Koota. **Complete.**
 - 11.10 Bhakoot Koota.
 - 11.11 Nadi Koota.
 - 11.12 Ashtakoota aggregation.

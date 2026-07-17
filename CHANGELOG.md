@@ -5,6 +5,9 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic Gana Koota classification and directional scoring from
+  supplied sidereal Moon Nakshatras, with complete 27-star mapping and exact
+  bride-row/groom-column `3 x 3` matrix coverage.
 - Source-of-truth Gana Koota 27-Nakshatra classification, directional
   bride-row/groom-column scoring matrix, validation, immutable result-contract,
   boundary, normalization, and test specifications for Sprint 11.9.

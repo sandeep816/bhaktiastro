@@ -206,6 +206,9 @@ Completed tasks:
 - **Task 11.8**: Implement deterministic Graha Maitri Koota with reused
   Moon-Rashi derivation, Rashi lordship, permanent natural relationships,
   strict lord validation, and the complete symmetric `7 x 7` scoring matrix.
+- **Task 11.9**: Implement deterministic Gana Koota with reused Nakshatra
+  normalization and pair context, complete 27-star classification, strict
+  category validation, and directional bride-row/groom-column scoring.
 
 ## Next Task Instructions
 
