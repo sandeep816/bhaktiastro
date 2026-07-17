@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Tasks 11.1-11.10 Complete)**
+Status: **In Progress (Task 11.11 Specification Complete; Runtime Pending)**
 
 ## Architecture Boundary
 
@@ -1961,6 +1961,374 @@ The skips are the repository's pre-existing manual-reference validation
 placeholders. Task 11.10 does not enable or alter them. Work stops here before
 Task 11.11.
 
+## Task 11.11 - Nadi Koota
+
+Status: **Specification Complete; Runtime Not Implemented**
+
+### Purpose, Domain, and Scope
+
+Nadi Koota represents the Ashtakoota compatibility domain traditionally
+associated with physiological constitution, hereditary factors, and progeny
+health through the Nadi assigned to each person's sidereal Moon Nakshatra. Its
+maximum score is `8.0` points and its stable machine-readable compatibility
+domain is `physiological_compatibility`.
+
+Task 11.11 runtime implementation must provide:
+
+- reusable Nadi classification from one supplied sidereal Moon Nakshatra;
+- deterministic symmetric scoring for explicitly assigned bride and groom
+  roles under the single North Indian convention in this section;
+- the complete canonical 27-Nakshatra mapping and `3 x 3` scoring matrix; and
+- a structured, immutable-after-construction, JSON-safe result consistent
+  with the completed matchmaking Koota architecture.
+
+The calculator must not infer gender or marriage roles, calculate a Moon
+position from birth details, mutate caller data, calculate another Koota,
+apply a cancellation or exception, aggregate Ashtakoota, make a medical claim,
+or produce a compatibility judgement, prediction, advice, or remedy.
+
+### BhaktiAstro Convention Decisions
+
+Task 11.11 uses the North Indian Ashtakoota Nadi convention documented by the
+Saravali/Maitreya Nadi Koota rule and the Future Samachar Nadi Chakra:
+
+- the canonical 27 Moon Nakshatras are divided into exactly three groups of
+  nine: `adi`, `madhya`, and `antya`;
+- Adi corresponds to the traditional Vata classification, Madhya to Pitta,
+  and Antya to Kapha, but the stable scoring identifiers are only `adi`,
+  `madhya`, and `antya`;
+- Abhijit is not inserted into the project's 27-Nakshatra sequence;
+- same-Nadi pairs receive `0.0` and set Nadi Dosha;
+- different-Nadi pairs receive the maximum `8.0` and do not set Nadi Dosha;
+- the matrix is symmetric, so role reversal never changes classification or
+  score; and
+- no intermediate, partial, averaged, severity-weighted, or direction-specific
+  score is permitted.
+
+The selected mapping and binary scoring matrix are authoritative. BhaktiAstro
+does not derive Nadi by repeating a guessed arithmetic pattern, by Pada, by
+Rashi, by Gotra, or by an Ayurvedic questionnaire. Runtime code must perform
+one exact canonical mapping lookup and one exact matrix lookup.
+
+### Required Inputs and Reused Nakshatra Architecture
+
+The astrological input for each person is that person's already supplied
+sidereal Moon Nakshatra. The high-level calculator must consume an ordered
+matchmaking pair plus explicit `bride_role` and `groom_role`, following the
+same role contract used by Tara, Yoni, and Gana Koota. It must never infer
+bride or groom from `person_a`, `person_b`, names, identifiers, Nakshatra,
+Nadi, or call order.
+
+Runtime implementation must reuse:
+
+- `backend.app.constants.nakshatra.NAKSHATRA_LIST`, `NAKSHATRA_COUNT`, and
+  `NAKSHATRA_SPAN_DEGREES`;
+- `normalize_matchmaking_nakshatra` for canonical names, zero-based indexes,
+  supported person structures, Pada preservation, and validation issues; and
+- `build_nakshatra_pair_context` for ordered identities, same-Nakshatra and
+  same-Pada state, pair normalization, and deterministic issue ordering.
+
+It must not duplicate the canonical Nakshatra list, name normalization, index
+validation, pair extraction, role validation conventions, issue mapping, or
+Moon-longitude-to-Nakshatra lookup. Ashwini remains zero-based index `0` and
+Revati remains index `26`. A direct index is never one-based and is never
+wrapped modulo `27`.
+
+### Moon-Nakshatra Derivation, Normalization, and Boundaries
+
+Nadi Koota does not accept a raw Moon longitude as its direct high-level
+input. When upstream data starts with a sidereal Moon longitude, the
+Nakshatra must be derived first by the existing
+`backend.app.astrology.nakshatra.get_nakshatra` helper. Nadi runtime code must
+not copy, wrap, round, or reinterpret that derivation.
+
+The reused core helper owns all longitude behavior:
+
+- a finite longitude is normalized into `[0, 360)` at the existing
+  six-decimal `BOUNDARY_PRECISION` using the existing core lookup span;
+- `0°`, `360°`, `-360°`, and normalized equivalents derive Ashwini/index `0`;
+- finite negative and greater-than-`360°` values derive the same Nakshatra as
+  their normalized equivalents;
+- each core Nakshatra interval is lower-inclusive and upper-exclusive, so a
+  value immediately below a canonical lookup cusp remains in the earlier
+  Nakshatra and the exact cusp starts the next Nakshatra; and
+- a boolean or non-real longitude raises `TypeError`, while `NaN` and either
+  infinity raise `ValueError` under the core helper contract.
+
+Runtime tests must obtain cusp expectations from the core constants and
+lookup output. They must not calculate a separate approximate span, invent an
+epsilon, or introduce Nadi-specific longitude handling. Once a canonical name
+or index reaches the matchmaking layer, the shared matchmaking normalizer—not
+longitude arithmetic—owns normalization.
+
+### Canonical Nakshatra-to-Nadi Mapping
+
+The stable Nadi identifiers are exactly `adi`, `madhya`, and `antya`. The
+mapping follows the canonical zero-based Nakshatra order:
+
+| Index | Canonical Nakshatra | Nadi identifier | Traditional constitution |
+|---:|---|---|---|
+| 0 | Ashwini | `adi` | Vata |
+| 1 | Bharani | `madhya` | Pitta |
+| 2 | Krittika | `antya` | Kapha |
+| 3 | Rohini | `antya` | Kapha |
+| 4 | Mrigashira | `madhya` | Pitta |
+| 5 | Ardra | `adi` | Vata |
+| 6 | Punarvasu | `adi` | Vata |
+| 7 | Pushya | `madhya` | Pitta |
+| 8 | Ashlesha | `antya` | Kapha |
+| 9 | Magha | `antya` | Kapha |
+| 10 | Purva Phalguni | `madhya` | Pitta |
+| 11 | Uttara Phalguni | `adi` | Vata |
+| 12 | Hasta | `adi` | Vata |
+| 13 | Chitra | `madhya` | Pitta |
+| 14 | Swati | `antya` | Kapha |
+| 15 | Vishakha | `antya` | Kapha |
+| 16 | Anuradha | `madhya` | Pitta |
+| 17 | Jyeshtha | `adi` | Vata |
+| 18 | Moola | `adi` | Vata |
+| 19 | Purva Ashadha | `madhya` | Pitta |
+| 20 | Uttara Ashadha | `antya` | Kapha |
+| 21 | Shravana | `antya` | Kapha |
+| 22 | Dhanishtha | `madhya` | Pitta |
+| 23 | Shatabhisha | `adi` | Vata |
+| 24 | Purva Bhadrapada | `adi` | Vata |
+| 25 | Uttara Bhadrapada | `madhya` | Pitta |
+| 26 | Revati | `antya` | Kapha |
+
+The mapping is exhaustive and contains exactly nine Nakshatras in each Nadi:
+
+- `adi`: Ashwini, Ardra, Punarvasu, Uttara Phalguni, Hasta, Jyeshtha, Moola,
+  Shatabhisha, and Purva Bhadrapada;
+- `madhya`: Bharani, Mrigashira, Pushya, Purva Phalguni, Chitra, Anuradha,
+  Purva Ashadha, Dhanishtha, and Uttara Bhadrapada; and
+- `antya`: Krittika, Rohini, Ashlesha, Magha, Swati, Vishakha, Uttara Ashadha,
+  Shravana, and Revati.
+
+Runtime code must centralize this mapping once by canonical zero-based index,
+verify complete `0..26` coverage and exactly nine members per Nadi, and must
+not maintain separate name lists that can disagree.
+
+### Exact Symmetric Scoring Convention
+
+Rows represent the explicitly assigned bride's Nadi and columns represent the
+explicitly assigned groom's Nadi for audit consistency. The matrix is the
+complete normative lookup table:
+
+| Bride \\ Groom | `adi` | `madhya` | `antya` |
+|---|---:|---:|---:|
+| `adi` | 0.0 | 8.0 | 8.0 |
+| `madhya` | 8.0 | 0.0 | 8.0 |
+| `antya` | 8.0 | 8.0 | 0.0 |
+
+No score outside `{0.0, 8.0}` is valid. The score rule is exactly:
+
+```text
+score = 0.0 and nadi_dosha = true   when bride_nadi == groom_nadi
+score = 8.0 and nadi_dosha = false  when bride_nadi != groom_nadi
+```
+
+The matrix is symmetric. Bride and groom roles remain explicit for identity
+and audit output, but they do not make scoring directional. Role reversal must
+swap the bride and groom identities while preserving the relationship,
+same-Nadi flag, Nadi-Dosha flag, and score. Runtime must not average, rank,
+round, infer, or default an unknown category pair.
+
+### Same-Nadi, Different-Nadi, and Same-Nakshatra Behavior
+
+- Every diagonal matrix cell has relationship `same_nadi`, sets
+  `same_nadi = true` and `nadi_dosha = true`, and awards `0.0`.
+- Same-Nadi scoring applies equally to Adi/Adi, Madhya/Madhya, and Antya/Antya
+  and to every pair of Nakshatras within each group.
+- Every off-diagonal matrix cell has relationship `different_nadi`, sets
+  `same_nadi = false` and `nadi_dosha = false`, and awards `8.0`.
+- The same Nakshatra necessarily has the same Nadi and therefore always scores
+  `0.0` and sets Nadi Dosha.
+- Same Nakshatra with equal Padas, different Padas, or absent Padas has the
+  same `0.0` result. Pada is preserved as identity metadata only and never
+  changes Nadi classification or scoring.
+- Two different Nakshatras in the same Nadi score `0.0`; two Nakshatras in
+  different Nadis score `8.0`.
+
+Same-Nakshatra and same-Pada flags from the shared pair context remain audit
+metadata only. They never override the canonical mapping or matrix.
+
+### Explicit Exclusion of Cancellation and Exception Rules
+
+Task 11.11 implements raw base Nadi Koota only. BhaktiAstro explicitly excludes
+all Nadi Dosha cancellation, Parihara, mitigation, and exception rules,
+including rules based on:
+
+- different Padas of the same Nakshatra;
+- one Nakshatra spanning different Rashis;
+- the same Rashi with different Nakshatras;
+- different Rashis, specific Rashi pairs, or Rashi parity;
+- same, different, friendly, or mutually related Rashi lords;
+- a special list of exempt Nakshatras;
+- Gotra, lineage, caste, Varna, or an asserted hereditary relationship;
+- Lagna, Navamsha, Graha placement, aspect, dignity, strength, or house state;
+- Graha Maitri, Gana, Bhakoot, another Koota, or an aggregate Ashtakoota
+  threshold; and
+- remedies, practitioner judgement, or any regional cancellation tradition.
+
+Therefore every same-Nadi pair scores `0.0` in Task 11.11, even when one or
+more excluded exception conditions would apply elsewhere. Every
+different-Nadi pair scores `8.0`. These exclusions are explicit BhaktiAstro
+project decisions and prevent the selected North Indian base table from being
+mixed with incompletely specified exception traditions.
+
+### Validation and Invalid Input Behavior
+
+Runtime validation must follow the shared Nakshatra and matchmaking
+conventions:
+
+- accept canonical Nakshatra names, zero-based indexes `0..26`, and supported
+  person or pair structures handled by the existing normalization helpers;
+- accept all canonical English, Hindi, and Sanskrit names already supported
+  by `normalize_matchmaking_nakshatra`, with its existing whitespace and case
+  normalization behavior;
+- reject missing Nakshatra, unknown names, wrong types, booleans, negative
+  indexes, and indexes greater than `26` with existing stable,
+  localization-ready issue codes;
+- preserve valid Pada `1..4` as identity metadata but ignore it for Nadi
+  classification and scoring;
+- reject invalid Pada values through the existing shared issue contract;
+- reject missing, unknown, duplicate, or identical bride/groom role
+  assignments with stable role issue codes;
+- preserve deterministic bride-before-groom issue ordering;
+- return status `invalid` and score `None` whenever either identity or role
+  assignment is invalid; and
+- perform no partial classification, dosha flag, or fallback scoring for an
+  invalid pair.
+
+The low-level Nadi relationship lookup must accept only the three exact
+canonical lowercase identifiers `adi`, `madhya`, and `antya`. It must raise
+`TypeError` when either category is not a string and `ValueError` for empty,
+malformed, aliased, case-variant, transliterated, or unknown identifiers,
+including `aadi`, `aadya`, `vata`, `pitta`, and `kapha`. It must not case-fold,
+guess, coerce, or default a public category input. The high-level calculator
+catches expected input validation failures and returns a safe structured
+invalid result; unexpected programming errors must not be swallowed.
+
+Core longitude validation remains independently testable: booleans and
+non-real inputs raise `TypeError`, and `NaN` and both infinities raise
+`ValueError` through `get_nakshatra` before data reaches Nadi Koota.
+
+### Public Immutable Result Contract
+
+The runtime task must expose stable helpers from
+`backend.app.matchmaking.__init__` for:
+
+1. classifying one normalized matchmaking Nakshatra identity or supported
+   Nakshatra input into its canonical Nadi identity;
+2. looking up the symmetric relationship and score for two exact bride and
+   groom Nadi identifiers; and
+3. calculating the complete Nadi Koota result from an ordered matchmaking pair
+   plus explicit `bride_role` and `groom_role`.
+
+The structured result must expose at least:
+
+- Koota identifier `nadi`;
+- compatibility domain `physiological_compatibility`;
+- status, awarded score, and maximum score `8.0`;
+- unchanged `person_a` and `person_b` Nakshatra identities;
+- explicit bride and groom role mapping;
+- bride Nadi identity with canonical Nakshatra name, zero-based index, optional
+  Pada, source person identifier, and canonical Nadi identifier;
+- groom Nadi identity with the same fields;
+- relationship identifier `same_nadi` or `different_nadi` and deterministic
+  bride-row/groom-column matrix audit factors;
+- same-Nakshatra, same-Pada, same-Nadi, and Nadi-Dosha flags;
+- stable errors and warnings; and
+- references and deterministic schema metadata consistent with existing
+  matchmaking Koota results, including `directional = false`,
+  `symmetric = true`, Nakshatra count `27`, and index base `0`.
+
+Every returned result, identity, relationship, issue, metadata mapping,
+direction mapping, factor list, reference list, error list, and warning list
+must be newly allocated. Returned objects must share no mutable defaults or
+nested collections and must be treated as immutable after construction. The
+calculator must not mutate caller inputs. Repeated equivalent calls must
+compare equal before caller mutation, and mutating one returned result must not
+affect an earlier or later result.
+
+All output must be strictly JSON-safe: dictionary keys and machine identifiers
+are strings; valid scores are finite `0.0` or `8.0`; invalid score is `None`;
+no `NaN`, infinity, tuple-only encoding, set, enum instance, dataclass
+instance, or other non-JSON value may escape. Output ordering, issue ordering,
+factor ordering, and identifiers must be deterministic. No interpretation
+paragraph, medical conclusion, compatibility label, cancellation claim,
+advice, remedy, API response, report formatting, other Koota, or Ashtakoota
+total belongs in Task 11.11.
+
+### Required Runtime Tests
+
+Task 11.11 runtime implementation is not complete until focused tests cover:
+
+- all 27 canonical Nakshatras by name and zero-based index, including every
+  documented mapping and exactly nine members per Nadi;
+- all three exact canonical Nadi identifiers and all nine cells of the
+  symmetric `3 x 3` matrix;
+- every one of the `27 x 27` ordered bride/groom Nakshatra pairs, asserting all
+  `729` identity mappings, relationships, flags, and scores;
+- all `243` same-Nadi ordered combinations: `81` Adi/Adi, `81` Madhya/Madhya,
+  and `81` Antya/Antya, each scoring `0.0`;
+- all `486` different-Nadi ordered combinations: all six off-diagonal Nadi
+  category cells with `81` Nakshatra pairs each, all scoring `8.0`;
+- all 27 same-Nakshatra cases with equal Pada, different Pada where supplied,
+  and absent Pada, proving that every case scores `0.0`;
+- representative different-Nakshatra pairs within every same Nadi and every
+  ordered different-Nadi category pair;
+- role reversal for all 729 pairs, proving that identities swap while
+  relationship, same-Nadi state, Nadi-Dosha state, and score remain symmetric;
+- all 27 core Moon-longitude Nakshatra lower cusps and values immediately below
+  the next cusp at the existing six-decimal precision, classified through the
+  reused core lookup rather than duplicated arithmetic;
+- `0°`, `360°`, `-360°`, finite negative, and greater-than-`360°` core
+  longitude normalization, plus core rejection of booleans, non-real values,
+  `NaN`, and both infinities;
+- matchmaking index boundaries `0` and `26`, invalid `-1` and `27`, missing
+  values, wrong types, malformed names, and unsupported aliases;
+- invalid Nadi lookup values, including non-strings, empty strings, case
+  variants, whitespace variants, transliterations, Ayurvedic aliases, and
+  unknown identifiers;
+- missing, unknown, duplicate, and identical bride/groom roles;
+- deterministic bride-before-groom issue ordering and no partial score or
+  dosha flag;
+- proof that Pada, Rashi, Rashi lordship, Gotra, special Nakshatra lists,
+  another Koota, and every excluded cancellation condition do not alter the
+  base matrix score;
+- deterministic output equality, input non-mutation, independent nested
+  collections, and strict `json.dumps(..., allow_nan=False)` serialization;
+- stable public exports from `backend.app.matchmaking`; and
+- regression compatibility with the core Nakshatra lookup, Task 11.3 pair
+  context, and every completed matchmaking module.
+
+### Convention Verification
+
+The complete 27-star classification, exact binary matrix, North Indian use,
+and existence of excluded exception traditions are documented by:
+
+- [Nadi Koota - Saravali/Maitreya mapping and base rule](https://saravali.github.io/astrology/koota_nadi.html)
+- [Nadi Dosha and Married Life - North Indian Nadi Chakra](https://www.futuresamachar.com/en/nadi-dosha-and-married-life-1163)
+- [Horoscope Matching - Nadi Guna Milaan table and exception discussion](https://www.futuresamachar.com/download/horoscope-matching-325.pdf)
+- [Nadi Koota in Kundli Matching - complete mapping and matrix](https://www.astroyogi.com/blog/nadi-koota-in-kundli-matching.aspx)
+
+Some sources cancel same-Nadi results for different Padas, same or different
+Rashis, particular Nakshatras, or Rashi-lord conditions. BhaktiAstro selects
+only the common base mapping and symmetric `0.0`/`8.0` matrix above and does
+not merge any cancellation or exception into Task 11.11.
+
+### Documentation Progress
+
+This documentation task defines the complete Task 11.11 source of truth only.
+No runtime module, test, constant, or public export is added. Task 11.11 must
+remain absent from the completed-task list in `docs/MASTER.md`. The next Task
+11.11 runtime task must implement this specification, add focused tests and
+exports, run the required Nakshatra and matchmaking regressions plus the full
+suite, record verification totals, mark only Task 11.11 runtime-complete, and
+stop before Task 11.12.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -1989,6 +2357,10 @@ Task 11.11.
   one-based distance, preserves directional counts, and uses only the symmetric
   base `7.0`/`0.0` rule without cancellation exceptions specified in Task
   11.10.
+- Nadi Koota will reuse canonical Nakshatra normalization and ordered pair
+  context, preserve explicit bride/groom roles, and use only the symmetric
+  base `0.0`/`8.0` matrix without cancellation exceptions specified in Task
+  11.11.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
@@ -2006,7 +2378,7 @@ Task 11.11.
 - 11.8 Graha Maitri Koota. **Complete.**
 - 11.9 Gana Koota. **Complete.**
 - 11.10 Bhakoot Koota. **Complete.**
-- 11.11 Nadi Koota.
+- 11.11 Nadi Koota. **Specification complete; runtime pending.**
 - 11.12 Ashtakoota aggregation.
 - 11.13 Manglik compatibility foundation.
 - 11.14 Matchmaking summary composer.

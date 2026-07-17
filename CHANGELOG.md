@@ -5,6 +5,10 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Source-of-truth Nadi Koota 27-Nakshatra classification, symmetric binary
+  scoring matrix, exception exclusions, validation, immutable result-contract,
+  boundary, normalization, and exhaustive test specifications for Sprint
+  11.11.
 - Deterministic Bhakoot Koota full Moon-Rashi classification, inclusive
   circular distance, and symmetric `7.0`/`0.0` scoring with exhaustive
   `12 x 12` Rashi-pair coverage and no cancellation exceptions.
