@@ -5,6 +5,11 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Source-of-truth Compatibility / Report Composition orchestration over
+  completed Ashtakoota and Manglik results, with separated raw, strict
+  precomputed, and serialization APIs, canonical section ordering, immutable
+  JSON-safe contracts, strict validation, and exhaustive test specifications
+  for Sprint 11.14.
 - Deterministic Lagna-only Manglik classification from raw longitudes or an
   existing Kundali chart, plus strict structured comparison of precomputed
   bride/groom classifications using the whole-sign houses `1`, `4`, `7`, `8`,

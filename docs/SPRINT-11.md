@@ -3298,6 +3298,729 @@ The skips remain the repository's pre-existing manual-reference validation
 placeholders. Task 11.13 does not enable or alter them. Work stops here before
 Task 11.14.
 
+## Task 11.14 - Compatibility / Report Composition
+
+Status: **Specification Complete; Runtime Not Implemented**
+
+### Purpose and Scope
+
+Task 11.14 defines a deterministic structured report composer over the two
+completed compatibility foundations:
+
+- Task 11.12, the eight-Koota Ashtakoota aggregate with maximum `36.0`; and
+- Task 11.13, the Lagna-only binary Manglik compatibility result with no
+  score.
+
+The composer presents validated calculation artifacts in one stable,
+machine-readable mapping suitable for later API, UI, HTML, or PDF consumers.
+It does not implement any of those consumers. It is an orchestration and data
+composition layer only, not a new calculation, interpretation, or rendering
+layer.
+
+Task 11.14 does not alter Task 11.12 or Task 11.13. Ashtakoota remains the
+only scored component, its maximum remains exactly `36.0`, and Manglik remains
+structured-only. The report has no independent astrology rule and no authority
+to change either component.
+
+### BhaktiAstro Project Decisions
+
+The source-of-truth project decisions are:
+
+- the report is structured data only;
+- no overall compatibility, suitability, pass/fail, approval, rejection, or
+  marriage-outcome label is included;
+- report `status` describes only technical completeness and validation;
+- no score combines Ashtakoota and Manglik;
+- no percentage is included because Task 11.12 does not expose one;
+- no partial-success report is allowed;
+- invalid raw calculations may be retained for technical audit, but the report
+  remains `invalid` and must not be treated as complete;
+- strict precomputed or serialization input never returns a repaired report;
+- component errors and exceptions are never hidden;
+- bride and groom roles are explicit and preserved; and
+- stable identifiers and factual component values replace narrative prose.
+
+The composer must not infer compatibility meaning from a high or low
+Ashtakoota score, `same_status` or `mixed_status` Manglik metadata, or any
+combination of the two.
+
+### Dependency and Architecture Boundary
+
+Runtime implementation must import and orchestrate these existing public
+contracts from `backend.app.matchmaking`:
+
+- `calculate_ashtakoota` and `MatchmakingAshtakootaResult`;
+- `aggregate_ashtakoota_results` for strict Koota-result revalidation;
+- `ASHTAKOOTA_KOOTA_ORDER`, `ASHTAKOOTA_KOOTA_MANIFEST`, and
+  `ASHTAKOOTA_TOTAL_MAXIMUM_SCORE`;
+- `classify_manglik` and `ManglikClassificationResult`;
+- `compare_manglik_classifications` and `ManglikCompatibilityResult`;
+- `MANGLIK_HOUSES`, the Manglik classification identifiers, pair identifiers,
+  and comparison-status identifiers; and
+- `MATCHMAKING_SCHEMA_VERSION`, the existing JSON-safe value convention, and
+  matchmaking validation issue structure.
+
+The composer must not import private classification tables, Koota matrices,
+planetary relationships, Nakshatra mappings, Rashi mappings, house formulas,
+or private result builders. It must not copy or reimplement longitude
+normalization, Nakshatra/Rashi derivation, Koota scoring, aggregation totals,
+Mars placement, Manglik classification, or bride/groom comparison logic.
+
+Task 11.14 does not accept birth date, time, place, timezone, geographic
+longitude, person profiles, or calculate a Kundali. It consumes only the six
+explicit sidereal longitudes on the raw path or completed Task 11.12 and 11.13
+results on the precomputed path.
+
+### Three Explicitly Separated Public APIs
+
+Task 11.14 defines exactly three keyword-only public APIs:
+
+```python
+def compose_compatibility_report(
+    *,
+    bride_moon_longitude: object = None,
+    groom_moon_longitude: object = None,
+    bride_lagna_longitude: object = None,
+    groom_lagna_longitude: object = None,
+    bride_mars_longitude: object = None,
+    groom_mars_longitude: object = None,
+) -> MatchmakingCompatibilityReport: ...
+
+def compose_compatibility_report_from_results(
+    *,
+    ashtakoota: object,
+    manglik: object,
+) -> MatchmakingCompatibilityReport: ...
+
+def serialize_compatibility_report(
+    *,
+    report: object,
+) -> dict[str, MatchmakingJsonValue]: ...
+```
+
+No overload, mode flag, positional role input, mixed raw/precomputed call, or
+input-shape guessing is permitted. Python rejects positional arguments and
+unknown keywords with `TypeError`.
+
+#### Raw-Input Composer
+
+`compose_compatibility_report` is the safe orchestration API. All six inputs
+are required finite real sidereal longitudes in degrees; booleans are not
+numeric inputs. The names define the roles. Geographic birth longitude must
+never be substituted for any of them.
+
+For every call, execution order is exactly:
+
+1. call `calculate_ashtakoota` once with the bride and groom Moon longitudes;
+2. call `classify_manglik` once with the bride Lagna and Mars longitudes;
+3. call `classify_manglik` once with the groom Lagna and Mars longitudes;
+4. call `compare_manglik_classifications` once with the resulting bride and
+   groom classifications; and
+5. compose copied report sections from those public results.
+
+The composer passes the caller's raw values to the public calculators. It does
+not normalize them first, create an alternative pair context, or derive a
+Rashi, Nakshatra, house, category, score, total, or Manglik status. Normalized
+report input summaries come only from the public component results.
+
+Expected invalid raw values are represented by the existing safe component
+results and yield one report with `status="invalid"`. The report retains copied
+component facts and issues for audit, but technical validation fails and there
+is no partial-success status. A valid Ashtakoota total retained beside an
+invalid Manglik result, or vice versa, is component audit data and does not make
+the report partially complete.
+
+#### Strict Precomputed Composer
+
+`compose_compatibility_report_from_results` accepts one complete Task 11.12
+aggregate and one complete Task 11.13 compatibility mapping. It is a strict
+low-level API. It does not accept eight loose Koota results in place of the
+aggregate, two loose Manglik classifications in place of the comparison, raw
+longitudes, charts, or a previously composed report.
+
+The API revalidates both inputs as described below, copies them, and produces a
+complete report. Incorrect types raise `TypeError`; malformed values raise
+`ValueError`. It never returns an invalid report for strict caller-supplied
+component data, silently drops a component, invokes the raw calculators as a
+fallback, or repairs a field.
+
+Its fail-fast validation workflow is exactly:
+
+1. require both keyword arguments and validate the Ashtakoota outer type;
+2. validate Ashtakoota JSON safety, mutable aliasing, field order, schema,
+   status, Moon audits, Koota identifier order, and outer aggregate fields;
+3. call `aggregate_ashtakoota_results` with the supplied Koota results and
+   audit longitudes, then compare the authoritative regenerated scores,
+   maximums, total, directions, and warnings to the supplied aggregate;
+4. validate the Manglik outer type, JSON safety, mutable aliasing, field order,
+   schema, status, nested classifications, and role metadata;
+5. call `compare_manglik_classifications` with the supplied nested bride and
+   groom identities, then compare the regenerated classifications, houses,
+   pair category, comparison status, reasons, and metadata to the supplied
+   comparison;
+6. validate available cross-component schema and role facts; and
+7. compose one complete report from independent copies.
+
+Failure at any step raises immediately and later steps do not run.
+
+#### Strict Report Serializer
+
+`serialize_compatibility_report` accepts one complete validated Task 11.14
+report. It strictly revalidates the entire report, revalidates the Koota
+breakdown through the Task 11.12 strict aggregator, and reconstructs the
+Task 11.13 comparison from the report's normalized Lagna/Mars audit fields.
+It then returns a deep independent JSON-safe mapping in canonical key and
+section order. The report intentionally stores component summaries rather
+than duplicate full aggregate/comparison objects. The serializer does not
+return a JSON string, write a file, call `json.dumps`, render HTML/PDF, or add
+presentation formatting.
+
+Wrong report types raise `TypeError`; malformed, invalid-status, wrong-version,
+aliased, or non-JSON-safe reports raise `ValueError`. Serialization never
+coerces an unsupported object, converts `NaN` to `None`, drops an unknown
+field, fills a missing field, or changes component data.
+
+Its workflow is exactly:
+
+1. require a mapping with the 14 exact top-level fields in canonical order;
+2. require complete technical status, exact schema/report identifiers,
+   canonical sections/notes, valid metadata, and empty errors;
+3. reject non-JSON-safe data and mutable aliasing before copying;
+4. pass the report's Koota breakdown and summarized Moon longitudes through
+   `aggregate_ashtakoota_results`, then compare its authoritative output to the
+   Ashtakoota summary and Koota breakdown, while validating the separately
+   preserved source `execution_mode` as either `raw_calculators` or
+   `precomputed_results` rather than replacing it with the validator call's
+   `precomputed_results` mode;
+5. pass the summarized bride/groom Lagna and Mars longitudes through
+   `classify_manglik` and `compare_manglik_classifications`, then compare the
+   authoritative output to the Manglik summary;
+6. revalidate validation counts, prefixed warnings, exclusion flags, field
+   order, and every nested JSON-safe value; and
+7. construct a new canonical mapping recursively, allocating a new mapping or
+   list at every mutable path.
+
+The serializer does not call the raw report composer and does not return the
+input mapping itself.
+
+### Chart-Based Composition Decision
+
+Task 11.14 defines no chart-pair report API. A caller with existing Kundali
+charts may call `classify_manglik_from_chart` separately for bride and groom,
+call `compare_manglik_classifications`, and supply that complete comparison
+with a complete Ashtakoota aggregate to the strict precomputed composer.
+
+This task does not infer Moon longitude from a chart, search chart planets,
+calculate a Kundali, or combine a chart-shaped API with six raw longitude
+arguments. A dedicated chart orchestration convenience API is deferred unless
+a later task specifies exact Moon extraction, chart validation, and provenance
+requirements. Therefore Task 11.14 runtime tests do not test malformed chart
+mappings; Task 11.13 retains sole responsibility for its chart adapter tests.
+
+### Exact Report Composition Workflow
+
+After obtaining or strictly validating the two components, the composer must:
+
+1. verify the Ashtakoota calculation identifier, schema, status, canonical
+   Koota order, directions, component count, scores, maximums, total, Moon
+   audit longitudes, issues, warnings, and JSON safety;
+2. verify the Manglik calculation identifier, schema, status, nested bride and
+   groom classifications, roles, reference points, Mars houses, applicable
+   houses, pair classification, comparison status, reasons, issues, warnings,
+   and JSON safety;
+3. preserve bride/groom roles without transposition, averaging, symmetry
+   assumptions, or inference from gender or person data;
+4. derive the bride and groom input summaries only from normalized component
+   audit fields; on the raw path use the two direct classification results so
+   valid audit values survive an invalid comparison, and on the strict path use
+   the complete comparison's nested classifications;
+5. copy the Ashtakoota summary, all eight Koota results, and Manglik summary
+   without recalculating any value;
+6. copy component issues and warnings into deterministic report-level paths;
+7. derive only technical validation counts and complete/invalid report status;
+8. allocate all lists and mappings independently; and
+9. emit fields and sections in the canonical order below.
+
+No output field may be derived from an astrology table or formula. The only
+composer-derived values are report structure, technical status/counts, stable
+section identifiers, copied input summaries, and documented exclusion notes.
+
+### Canonical Report Sections and Order
+
+The stable `sections` value is exactly:
+
+```text
+[
+  "report_metadata",
+  "input_summary",
+  "ashtakoota_summary",
+  "koota_breakdown",
+  "manglik_summary",
+  "validation_status",
+  "errors",
+  "warnings",
+  "notes"
+]
+```
+
+The order is part of the public contract. It must not depend on input mapping
+order, calculator import order, caller-supplied precomputed order, dictionary
+sorting, locale, or score. Every report includes all nine section identifiers,
+including empty errors and warnings. A consumer maps them to report fields as
+follows:
+
+| Position | Section identifier | Authoritative report field(s) |
+|---:|---|---|
+| 1 | `report_metadata` | `schema_version`, `report_type`, `metadata` |
+| 2 | `input_summary` | `bride`, `groom` |
+| 3 | `ashtakoota_summary` | `ashtakoota` |
+| 4 | `koota_breakdown` | `koota_results` |
+| 5 | `manglik_summary` | `manglik` |
+| 6 | `validation_status` | `status`, `validation` |
+| 7 | `errors` | `errors` |
+| 8 | `warnings` | `warnings` |
+| 9 | `notes` | `notes` |
+
+`sections` contains identifiers, not duplicate mutable section payloads. This
+avoids two report paths that could diverge after caller mutation.
+
+### Bride and Groom Input Summaries
+
+The `bride` and `groom` mappings each expose exactly:
+
+- `role`: `bride` or `groom`;
+- `moon_sidereal_longitude`: the normalized Task 11.12 audit longitude or
+  `None` when raw input is invalid;
+- `lagna_sidereal_longitude`: the normalized longitude copied from that role's
+  Task 11.13 nested classification or `None`;
+- `mars_sidereal_longitude`: the normalized longitude copied from that role's
+  Task 11.13 nested classification or `None`; and
+- `manglik_reference_point`: `lagna` for a complete classification or an empty
+  string when invalid.
+
+No name, ID, gender, birth details, geographic coordinate, Rashi, Nakshatra,
+Pada, or chart is invented or accepted. On the precomputed path, the composer
+can validate role metadata and internal consistency but cannot prove that two
+independently supplied components belong to the same real people. This
+provenance limitation is explicit and must not be represented as a successful
+cross-component identity check.
+
+### Ashtakoota Summary and Koota Breakdown
+
+The `ashtakoota` summary exposes exactly:
+
+- `calculation`: `ashtakoota_aggregation`;
+- `status`: copied component status;
+- `bride_moon_longitude` and `groom_moon_longitude`: normalized audit values;
+- `total_score`: copied exactly, including `0.0` and fractional values, or
+  `None` for an invalid raw component;
+- `total_maximum_score`: exactly `36.0`;
+- `score_by_koota`: a fresh canonical-order mapping;
+- `maximum_score_by_koota`: a fresh canonical-order mapping;
+- `component_status_by_koota`: a fresh canonical-order mapping derived only by
+  copying each Koota result's existing `status`;
+- `koota_order`: the canonical eight identifiers;
+- `execution_mode`: copied from Task 11.12 metadata; and
+- `percentage_included`: always `false` under the current Task 11.12 contract.
+
+There is no `percentage` or `percentage_score` field. The composer must not
+calculate `total_score / 36`, round a percentage, or expose display formatting.
+If a future aggregation schema adds an authoritative percentage, Task 11.14
+requires a separately documented schema revision before including it.
+
+For a complete report, the score, maximum, and component-status mappings each
+contain exactly eight canonical entries. For an invalid raw report they copy
+the structurally valid Task 11.12 data exactly: an input-validation failure may
+have empty Koota results and score/status mappings, while a completed eight-
+calculator execution with one or more invalid components may retain all eight
+ordered audit results and `None` scores. The composer never fabricates missing
+component results or fills an invalid mapping with defaults.
+
+For a complete report, the top-level `koota_results` field is a deep copy of
+exactly eight complete Task 11.12 component mappings in this order:
+
+```text
+varna, vashya, tara, yoni, graha_maitri, gana, bhakoot, nadi
+```
+
+Each result appears exactly once. The composer preserves the entire validated
+component mapping, including its classification factors, direction, score,
+maximum, errors, warnings, references, and metadata. It must not flatten,
+rename, reinterpret, or independently verify an astrological matrix result.
+For an invalid raw report, `koota_results` is instead an exact deep copy of the
+invalid aggregate's existing zero-or-eight component list. Its section remains
+present, but it is not a complete Koota breakdown.
+
+### Manglik Summary
+
+The `manglik` summary exposes exactly:
+
+- `calculation`: `manglik_compatibility`;
+- `status`: copied component status;
+- `bride_classification` and `groom_classification`;
+- `bride_reference_point` and `groom_reference_point`, both `lagna` for a
+  complete result;
+- `bride_mars_house` and `groom_mars_house`;
+- `applicable_manglik_houses`: `[1, 4, 7, 8, 12]` as a fresh list;
+- `pair_classification`: one Task 11.13 role-preserving identifier;
+- `comparison_status`: `same_status` or `mixed_status`;
+- `reasons`: the exact ordered Task 11.13 reason identifiers; and
+- `validation_status`: `complete` or `invalid` copied from the component.
+
+The summary has no score, maximum, percentage, severity, compatibility label,
+cancellation, prediction, or advice field. `pair_classification` and
+`comparison_status` are factual Task 11.13 categories, not suitability
+judgements. `both_manglik` is not converted to a cancellation, and
+`mixed_status` is not converted to failure.
+
+### Technical Validation, Errors, Warnings, and Notes
+
+The top-level `validation` mapping exposes exactly:
+
+- `status`: `complete` or `invalid`;
+- `is_valid`: `true` only when both components are complete and valid;
+- `component_statuses`: `{ashtakoota: <status>, manglik: <status>}` in that
+  order;
+- `validated_components`: `[]`, `['ashtakoota']`, `['manglik']`, or both in
+  canonical order, based only on structural validation;
+- `expected_component_count`: `2`;
+- `validated_component_count`: `0..2`;
+- `error_count`; and
+- `warning_count`.
+
+Report-level errors copy component issues in this order: all Ashtakoota issues,
+then raw bride-classification issues, raw groom-classification issues, and the
+Manglik comparison issues. Fields are prefixed `ashtakoota.`,
+`manglik.bride.`, `manglik.groom.`, or `manglik.comparison.` while the original
+issue code, message key, severity, JSON-safe value, and copied metadata are
+preserved. The composer does not deduplicate or suppress a comparison issue
+merely because an underlying classification issue also exists. On the strict
+path all components are complete, so errors are empty. Report-level warnings
+use the same source order. Within a source result, its existing order is
+preserved. The composer creates no astrological warning.
+
+`MatchmakingCompatibilityReportIssue` uses the existing issue fields exactly:
+`field`, `code`, `message_key`, `severity`, JSON-safe `value`, and newly
+allocated JSON-safe `metadata`. Task 11.14 defines no human-language error
+field.
+
+The top-level `notes` list is always present and, for schema version `1.0`, is
+exactly this ordered list of stable machine-readable identifiers:
+
+```text
+[
+  "structured_report_only",
+  "no_overall_compatibility_label",
+  "no_combined_ashtakoota_manglik_score",
+  "no_manglik_cancellation",
+  "no_prediction_advice_or_remedies"
+]
+```
+
+These notes document scope; they do not interpret a result. No localized prose
+or caller-supplied note is accepted by Task 11.14.
+
+### Strict Precomputed Ashtakoota Validation
+
+Before composing from caller-supplied results, runtime must strictly validate
+the outer Task 11.12 mapping and reuse
+`aggregate_ashtakoota_results(ashtakoota["koota_results"], ...)` to revalidate
+all eight component results. It must not reproduce individual Koota validation
+or scoring.
+
+Validation requires:
+
+- a mapping with the exact current Task 11.12 top-level fields in canonical
+  order and `calculation="ashtakoota_aggregation"`;
+- `status="complete"`, empty errors, JSON-safe warnings/references, and the
+  current matchmaking schema version;
+- finite normalized bride and groom Moon longitudes;
+- exactly eight Koota result mappings in canonical order;
+- no duplicate, missing, or unexpected Koota identifier;
+- every component status `complete`, exact canonical role/direction metadata,
+  finite non-boolean score within its Koota bounds, and exact imported maximum;
+- canonical-order score and maximum mappings with exactly one entry per Koota;
+- total maximum exactly `36.0` and total score exactly equal to the strict
+  reaggregated total with no new rounding or tolerance;
+- metadata Koota order, count, validated count, aggregation method,
+  percentage flag, interpretation flag, cancellation flag, and execution mode
+  consistent with Task 11.12; and
+- strict JSON-safe keys and values with no `NaN`, infinity, tuple, set, enum,
+  dataclass, exception, callable, or unsupported object.
+
+Wrong Koota input order is invalid even though Task 11.12's strict aggregator
+can reorder loose component input. Report composition requires canonical
+source order so serialized audit order is never caller-dependent. The strict
+reaggregated result validates component rules, directions, bounds, maximums,
+and total; the composer compares the supplied aggregate fields to that result
+but preserves a valid supplied `raw_calculators` or `precomputed_results`
+execution-mode identifier.
+
+### Strict Precomputed Manglik Validation
+
+Runtime must require a mapping with the exact current Task 11.13 compatibility
+fields in canonical order. It revalidates the supplied nested bride and groom
+classifications by calling `compare_manglik_classifications` and requires the
+recomputed public comparison to match every authoritative supplied field.
+
+Validation requires:
+
+- `calculation="manglik_compatibility"`, `status="complete"`, empty errors,
+  JSON-safe warnings/references, and the current schema version;
+- two complete exact Task 11.13 classification mappings in bride/groom order;
+- normalized finite Lagna and Mars longitudes and internally consistent Rashi
+  indexes, Mars houses, binary categories, reason identifiers, and metadata;
+- `lagna` as the only reference point for both roles;
+- Mars houses in `1..12`, with classification consistent with imported
+  `MANGLIK_HOUSES` through the public classifier;
+- applicable houses exactly `[1, 4, 7, 8, 12]`;
+- one exact pair classification, `same_status` or `mixed_status`, and the exact
+  ordered reasons returned by the public comparator;
+- metadata role order exactly bride then groom, scoring disabled, severity
+  disabled, cancellation disabled, divisional charts disabled, and
+  Ashtakoota recalculation disabled; and
+- strict JSON-safe keys and values with no non-finite or unsupported object.
+
+The composer does not independently classify a house or reconstruct a pair
+category. The public Task 11.13 comparator is the authority. Unknown category
+aliases, Moon/Venus reference points, house `0`/`13`, house `2` classified as
+Manglik, altered reasons, or a mismatched role category are rejected rather
+than coerced.
+
+### Cross-Component, Aliasing, and Version Validation
+
+The precomputed composer validates cross-component facts that are actually
+available:
+
+- bride/groom role order is preserved in both components;
+- Ashtakoota direction metadata retains its documented bride/groom or
+  `person_a`/`person_b` mapping;
+- Manglik metadata role order is bride then groom; and
+- all component schema versions equal `MATCHMAKING_SCHEMA_VERSION`.
+
+It must not claim to match person IDs because neither completed component
+contract contains a shared person identifier. It also cannot compare Moon
+longitude to Lagna/Mars longitude as identity evidence. A future provenance
+contract requires a new version.
+
+Caller-supplied precomputed component trees and serialized report trees must
+not contain the same mutable list or mapping object reachable through two
+different semantic paths, either within one component or across both
+components. Such aliasing raises `ValueError` with deterministic path metadata;
+it is not silently broken only during copying. Valid output nevertheless deep
+copies every structure so no mutable identity is shared between source input,
+summary mappings, Koota breakdown, nested metadata, issue values, prior calls,
+or later calls.
+
+Task 11.14 defines `COMPATIBILITY_REPORT_SCHEMA_VERSION` equal to the current
+`MATCHMAKING_SCHEMA_VERSION` (`"1.0"`) and stable report type
+`matchmaking_compatibility_report`. Both appear at top level and in metadata.
+The current strict APIs reject missing, unknown, older, or newer component and
+report versions. A future version may add fields only through an explicit
+schema revision; version `1.0` fields, identifiers, and ordering must not be
+renamed or repurposed.
+
+### Failure and Exception Propagation
+
+The raw composer distinguishes expected invalid inputs from unexpected
+failures:
+
+- ordinary missing, boolean, non-real, `NaN`, and infinity values are handled
+  by the existing safe calculators and yield an invalid report;
+- component issues remain visible with deterministic section-prefixed paths;
+- a component mapping with ordinary `status="invalid"` makes the report
+  invalid, even if the other component is complete;
+- a malformed result returned by a completed public calculator is a
+  programming contract violation and raises `TypeError` or `ValueError`; and
+- an unexpected exception from any calculator, validator, copying operation,
+  or invariant propagates immediately unchanged.
+
+Execution is fail-fast for exceptions. If Ashtakoota raises, no Manglik call is
+made. If bride classification raises, groom classification and comparison are
+not called. If groom classification raises, comparison is not called. If the
+comparator raises, no report is returned. Runtime must not catch `Exception`,
+continue after a raised dependency, fabricate a component, suppress an error,
+or return a partial report.
+
+For strict precomputed composition and serialization:
+
+- wrong outer/component types, including a non-mapping, raise `TypeError`;
+- missing fields, invalid status, invalid total/maximum, wrong count/order,
+  duplicate/missing/unexpected Koota, invalid score, malformed Manglik data,
+  role mismatch, schema mismatch, aliasing, or non-JSON-safe values raise
+  `ValueError`;
+- messages identify the component and validation aspect in deterministic
+  section/field order; and
+- no exception is also converted into a returned invalid report.
+
+### Public Immutable Report Contract
+
+Task 11.14 follows the existing matchmaking typed-mapping convention. It does
+not introduce a dataclass, tuple result, Pydantic API schema, report template,
+ORM object, or alternate serialization architecture. The public report and all
+nested values are immutable after construction by contract, while newly
+allocated mutable Python mappings/lists preserve existing caller ergonomics.
+
+`MatchmakingCompatibilityReport` exposes exactly these top-level fields in
+this stable order:
+
+1. `schema_version`: `"1.0"`;
+2. `report_type`: `matchmaking_compatibility_report`;
+3. `status`: `complete` or `invalid`, meaning technical state only;
+4. `bride`: the copied normalized input summary;
+5. `groom`: the copied normalized input summary;
+6. `ashtakoota`: the Ashtakoota summary;
+7. `koota_results`: the ordered deep-copied eight-Koota breakdown;
+8. `manglik`: the Manglik summary;
+9. `validation`: the technical validation summary;
+10. `errors`: deterministic copied issues;
+11. `warnings`: deterministic copied warnings;
+12. `notes`: the five stable scope identifiers;
+13. `sections`: the nine canonical section identifiers; and
+14. `metadata`: deterministic report metadata.
+
+The report does not embed an additional full `MatchmakingAshtakootaResult` or
+`ManglikCompatibilityResult`. `ashtakoota` and `manglik` are the exact
+report-level summaries defined above; `koota_results` preserves the full
+individual Koota mappings. The serializer reconstitutes strict validation from
+these authoritative audit fields without adding a duplicated mutable component
+tree.
+
+Metadata exposes at least component `matchmaking_compatibility_report`, schema
+version, `deterministic=true`, report type, canonical section order, expected
+section count `9`, component order `['ashtakoota', 'manglik']`, expected
+component count `2`, validated component count, source calculation identifiers,
+`structured_only=true`, `overall_compatibility_label_included=false`,
+`combined_score_included=false`, `percentage_included=false`,
+`interpretation_included=false`, `recommendations_included=false`,
+`remedies_included=false`, and `rendering_included=false`.
+
+Repeated equivalent calls compare equal before caller mutation. Every output
+mapping/list, including summaries, Koota results, score mappings, maximum
+mappings, component statuses, applicable houses, reasons, issues, warnings,
+notes, sections, and metadata, is independently allocated. Mutation of any
+returned path cannot affect another path, source component, previous call,
+future call, imported constant, or manifest.
+
+Every complete or invalid raw report must pass
+`json.dumps(report, allow_nan=False)`. All mapping keys and identifiers are
+strings; scores and longitudes are finite numbers or `None`; no tuple, set,
+enum instance, dataclass instance, exception object, callable, `NaN`, or
+infinity may escape. Serialization preserves canonical key and list order.
+
+The runtime task must add only stable public exports for the report schema/type
+constants, section/component order constants, typed issue/summary/metadata/
+report mappings, raw composer, strict precomputed composer, and strict mapping
+serializer. All existing Task 11.1-11.13 imports and behavior remain unchanged.
+
+### Explicitly Excluded Behavior
+
+Task 11.14 explicitly excludes:
+
+- every new or copied Koota classification, mapping, matrix, boundary,
+  direction, formula, score, total, or maximum rule;
+- every new or copied Manglik house, reference-point, classification,
+  comparison, cancellation, exception, severity, or intensity rule;
+- Manglik cancellation, double-Manglik cancellation, and all planetary or
+  divisional exceptions;
+- a Manglik score, combined Ashtakoota-plus-Manglik score, score adjustment,
+  bonus, penalty, weighted total, normalized total, or percentage;
+- an overall compatibility label, pass/fail threshold, suitability judgement,
+  marriage recommendation, rejection, or advice;
+- remedies, predictions, Dasha analysis, Navamsha interpretation, horoscope
+  synthesis, Gotra, transit analysis, or AI-generated narrative;
+- localization prose, presentation formatting, UI components, charts,
+  templates, HTML, PDF generation, or file output;
+- FastAPI routes, Pydantic API schemas, database persistence, analytics,
+  caching, external services, or network calls;
+- chart-pair convenience composition and birth-detail/Kundali calculation; and
+- Task 11.15 serialization hardening or any later Sprint task.
+
+The mapping serializer in this task establishes deterministic report copying;
+it does not implement the broader cross-module serialization hardening reserved
+for Task 11.15.
+
+### Required Runtime Tests
+
+Task 11.14 runtime implementation is not complete until focused tests cover:
+
+- raw composition through the real public Ashtakoota calculator, two real
+  Manglik classifiers, and real Manglik comparator, each called exactly once
+  in documented order without copied calculation logic;
+- strict composition from one real complete Ashtakoota aggregate and one real
+  complete Manglik comparison;
+- exact top-level field order, nine-section order, two-component order, and
+  exact canonical eight-Koota order;
+- every Koota included once, all component statuses, individual maximums
+  `1.0..8.0`, and total maximum `36.0`;
+- a structurally valid precomputed full `36.0` Ashtakoota fixture, all-zero
+  `0.0` fixture, and fractional fixture, preserving totals without rounding;
+- independent proof that the report total and Koota mappings equal the
+  authoritative aggregate rather than a composer calculation;
+- explicit absence of percentage and proof that no division by `36.0` occurs;
+- all four Manglik pair classifications, both comparison statuses, both role
+  orders of mixed status, and exact reason ordering with no score or
+  cancellation;
+- normalized input summaries for `0°`, `360°`, `-360°`, finite negative, and
+  greater-than-`360°` Moon, Lagna, and Mars longitudes;
+- every exact `30°` Rashi boundary relevant to raw Lagna/Mars classification;
+- missing values, booleans, non-real values, `NaN`, and both infinities for all
+  six raw inputs, with deterministic component/role issue ordering;
+- one ordinary invalid component while the other is complete, both invalid,
+  no partial-success status, and retained audit data without invented values;
+- a unique injected exception at each raw dependency call, proving unchanged
+  propagation, fail-fast order, and no returned report;
+- strict rejection of missing Ashtakoota or Manglik input, wrong outer and
+  component types, invalid/incomplete statuses, errors on a complete component,
+  and wrong calculation identifiers;
+- strict rejection of invalid/non-finite/out-of-range Ashtakoota scores,
+  incorrect total, incorrect `36.0` maximum, wrong component maximum, wrong
+  Koota count, duplicate/missing/unexpected name, and wrong source order;
+- strict rejection of malformed direction metadata, score mappings, maximum
+  mappings, component statuses, Koota metadata, and execution metadata;
+- strict rejection of malformed Manglik nested classifications, non-binary or
+  inconsistent category, Moon/Venus/unknown reference point, invalid Mars
+  house, altered applicable houses, wrong pair category, comparison status,
+  reasons, role order, or exclusion flags;
+- strict rejection of mismatched schema/report versions, wrong report type,
+  missing/unexpected/reordered report fields, sections, notes, or metadata;
+- strict rejection of `NaN`, infinity, non-string mapping keys, tuples, sets,
+  enums, dataclasses, exceptions, callables, unsupported objects, and mutable
+  aliasing within or across caller-supplied trees;
+- proof that cross-component person identity is not falsely claimed when no
+  shared person ID exists;
+- strict serializer validation and a canonical deep-copied mapping equal to a
+  complete source report before mutation;
+- deterministic equality across repeated raw, precomputed, and serialization
+  calls; caller-input non-mutation; immutable-after-construction public
+  expectations; deep-copy isolation; and independent mutable collections at
+  every nested path;
+- `json.dumps(..., allow_nan=False)` for complete and invalid raw reports;
+- exact absence of overall label, pass/fail, combined score, Manglik score,
+  percentage, interpretation, advice, recommendation, remedy, prediction,
+  cancellation, UI, PDF, API, and chart-composition fields;
+- absence of a public chart-pair composer and no malformed-chart tests beyond
+  Task 11.13 regressions;
+- stable public exports for constants, typed contracts, both composers, and
+  serializer;
+- backward compatibility with every Task 11.12 and 11.13 public import and
+  direct call; and
+- focused report tests followed by complete matchmaking, Ashtakoota, Manglik,
+  Rashi, Kundali, and full project regression suites proving existing outputs
+  remain unchanged.
+
+### Documentation Progress Rules
+
+This specification completes only the Task 11.14 documentation milestone. It
+does not mark runtime completion. `docs/MASTER.md` remains unchanged until the
+runtime composer, strict validators, serializer, public exports, focused tests,
+and required regressions are complete.
+
+The implementation task must then change this section to
+`Status: **Complete**`, record concise verification totals, update
+`docs/MASTER.md` according to repository convention, and stop before Task
+11.15. Task 11.14 does not specify or begin Task 11.15.
+
 ## Deterministic and Compatibility Principles
 
 - Inputs and nested collections are copied rather than mutated or shared.
@@ -3336,6 +4059,10 @@ Task 11.14.
 - Manglik compatibility uses only the canonical whole-sign Mars house from the
   Lagna, the five-house binary convention specified in Task 11.13, and a
   structured same/mixed comparison with no score, cancellation, or judgement.
+- Compatibility / Report Composition orchestrates only validated Task 11.12
+  and Task 11.13 results in canonical section order, preserves component roles
+  and scores, and adds no percentage, combined score, interpretation, verdict,
+  or rendering behavior.
 - Non-finite values are converted to JSON-safe values.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
