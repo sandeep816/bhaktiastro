@@ -209,6 +209,10 @@ Completed tasks:
 - **Task 11.9**: Implement deterministic Gana Koota with reused Nakshatra
   normalization and pair context, complete 27-star classification, strict
   category validation, and directional bride-row/groom-column scoring.
+- **Task 11.10**: Implement deterministic Bhakoot Koota with reused full
+  Moon-Rashi derivation, inclusive circular directional distances, the
+  complete symmetric `12 x 12` base scoring convention, and no cancellation
+  exceptions.
 
 ## Next Task Instructions
 

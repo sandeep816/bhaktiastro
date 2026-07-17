@@ -5,6 +5,9 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic Bhakoot Koota full Moon-Rashi classification, inclusive
+  circular distance, and symmetric `7.0`/`0.0` scoring with exhaustive
+  `12 x 12` Rashi-pair coverage and no cancellation exceptions.
 - Source-of-truth Bhakoot Koota full Moon-Rashi derivation, inclusive circular
   distance, symmetric dosha scoring, validation, immutable result-contract,
   cancellation-exclusion, boundary, and exhaustive test specifications for

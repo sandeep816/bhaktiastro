@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.10 Specification Complete; Runtime Pending)**
+Status: **In Progress (Tasks 11.1-11.10 Complete)**
 
 ## Architecture Boundary
 
@@ -1621,7 +1621,7 @@ Task 11.10.
 
 ## Task 11.10 - Bhakoot Koota
 
-Status: **Specification Complete; Runtime Not Implemented**
+Status: **Complete**
 
 ### Purpose, Domain, and Scope
 
@@ -1933,15 +1933,33 @@ Some sources add directional exceptions, Rashi-lord friendship, same-lord
 cancellation, or other Parihara rules. The explicit base scoring rule and
 exclusions in this section are authoritative for BhaktiAstro Task 11.10.
 
-### Documentation Progress
+### Completion and Verification
 
-This documentation task defines the complete Task 11.10 source of truth only.
-No runtime module, test, constant, or public export is added. Task 11.10 must
-remain absent from the completed-task list in `docs/MASTER.md`. The next Task
-11.10 runtime task must implement this specification, add focused tests and
-exports, run the required Rashi, Kundali, and matchmaking regressions plus the
-full suite, record verification totals, mark only Task 11.10 runtime-complete,
-and stop before Task 11.11.
+Task 11.10 is runtime-complete. The implementation:
+
+- reuses canonical longitude normalization and full Moon-Rashi lookup without
+  duplicating validation, boundaries, names, or index derivation;
+- exposes reusable Bhakoot Rashi classification, strict inclusive circular
+  distance, complete relationship lookup, the derived symmetric `12 x 12`
+  matrix, and the keyword-only bride/groom calculator;
+- implements only the documented base North Indian `7.0`/`0.0` scoring rule
+  and does not apply Rashi-lord friendship, cancellation, Parihara, split-sign,
+  or interpretation rules; and
+- returns deterministic JSON-safe results with independent nested collections,
+  stable validation issues, directional distance metadata, and scoring audit
+  factors.
+
+Verification completed for this task:
+
+- focused Bhakoot Koota tests: `241 passed`;
+- complete matchmaking regression layer: `1103 passed`;
+- Rashi, Graha lordship, Kundali, and Kundali API regressions: `118 passed`;
+  and
+- full regression suite: `2071 passed`, `13 skipped`, and `20 subtests passed`.
+
+The skips are the repository's pre-existing manual-reference validation
+placeholders. Task 11.10 does not enable or alter them. Work stops here before
+Task 11.11.
 
 ## Deterministic and Compatibility Principles
 
@@ -1967,8 +1985,8 @@ and stop before Task 11.11.
 - Gana Koota reuses the canonical 27-Nakshatra identity and ordered pair
   context, requires explicit bride/groom roles, and uses only the directional
   matrix specified in Task 11.9.
-- Bhakoot Koota will reuse full Moon-Rashi derivation and inclusive circular
-  one-based distance, preserve directional counts, and use only the symmetric
+- Bhakoot Koota reuses full Moon-Rashi derivation and inclusive circular
+  one-based distance, preserves directional counts, and uses only the symmetric
   base `7.0`/`0.0` rule without cancellation exceptions specified in Task
   11.10.
 - Non-finite values are converted to JSON-safe values.
@@ -1987,7 +2005,7 @@ and stop before Task 11.11.
 - 11.7 Yoni Koota. **Complete.**
 - 11.8 Graha Maitri Koota. **Complete.**
 - 11.9 Gana Koota. **Complete.**
-- 11.10 Bhakoot Koota. **Specification complete; runtime pending.**
+- 11.10 Bhakoot Koota. **Complete.**
 - 11.11 Nadi Koota.
 - 11.12 Ashtakoota aggregation.
 - 11.13 Manglik compatibility foundation.
