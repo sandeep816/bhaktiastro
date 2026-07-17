@@ -203,6 +203,9 @@ Completed tasks:
 - **Task 11.7**: Implement deterministic Yoni Koota with reused Nakshatra
   normalization, the canonical 27-star animal and Yoni-sex mapping, strict
   category validation, and the complete symmetric `14 x 14` scoring matrix.
+- **Task 11.8**: Implement deterministic Graha Maitri Koota with reused
+  Moon-Rashi derivation, Rashi lordship, permanent natural relationships,
+  strict lord validation, and the complete symmetric `7 x 7` scoring matrix.
 
 ## Next Task Instructions
 

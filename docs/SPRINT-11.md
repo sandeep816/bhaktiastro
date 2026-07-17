@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Task 11.8 Specification Complete; Runtime Pending)**
+Status: **In Progress (Tasks 11.1-11.8 Complete)**
 
 ## Architecture Boundary
 
@@ -1253,14 +1253,32 @@ Where other sources assign different intermediate points or add chart-based
 exceptions, the explicit BhaktiAstro decisions and tables in this section are
 authoritative.
 
-### Documentation Progress
+### Completion and Verification
 
-This documentation task defines the Task 11.8 source of truth only. No runtime
-module, tests, or public exports are added, and Task 11.8 must remain absent
-from the completed-task list in `docs/MASTER.md`. The next Task 11.8 runtime
-task must implement this specification, add focused tests and exports, run the
-required regression layers, record verification totals, mark only Task 11.8
-runtime-complete, and stop before Task 11.9.
+Task 11.8 is runtime-complete. The implementation:
+
+- reuses the canonical longitude normalizer, Rashi lookup, Rashi lordship, and
+  natural/permanent Graha relationship helpers;
+- exposes reusable Moon-Rashi lord classification, strict two-lord
+  relationship lookup, the derived symmetric audit matrix, and the keyword-only
+  bride/groom Koota calculator from `backend.app.matchmaking`;
+- implements only the documented permanent relationship convention and does
+  not introduce temporary friendship, Panchadha Maitri, or chart-dependent
+  overrides; and
+- returns deterministic JSON-safe results with independent nested collections,
+  stable validation issues, and complete score-audit fields.
+
+Verification completed for this task:
+
+- focused Graha Maitri tests: `167 passed`;
+- complete matchmaking regression layer: `717 passed`;
+- Rashi, lordship, relationship, Kundali, and Kundali API regressions:
+  `124 passed`; and
+- full regression suite: `1685 passed`, `13 skipped`, and `20 subtests passed`.
+
+The skips are the repository's pre-existing manual-reference validation
+placeholders. Task 11.8 does not enable or alter them. Work stops here before
+Task 11.9.
 
 ## Deterministic and Compatibility Principles
 
@@ -1280,7 +1298,7 @@ runtime-complete, and stop before Task 11.9.
 - Yoni Koota reuses zero-based Nakshatra identities, the canonical 27-star
   mapping, explicit bride/groom roles, and the symmetric matrix specified in
   Task 11.7; Yoni sex is metadata and does not alter the score.
-- Graha Maitri Koota will reuse Moon-Rashi derivation, Rashi lordship, and
+- Graha Maitri Koota reuses Moon-Rashi derivation, Rashi lordship, and
   natural planetary relationships; only permanent friendship and the
   symmetric score rules specified in Task 11.8 apply.
 - Non-finite values are converted to JSON-safe values.
@@ -1297,7 +1315,7 @@ runtime-complete, and stop before Task 11.9.
 - 11.5 Vashya Koota. **Complete.**
 - 11.6 Tara Koota. **Complete.**
 - 11.7 Yoni Koota. **Complete.**
-- 11.8 Graha Maitri Koota. **Specification complete; runtime pending.**
+- 11.8 Graha Maitri Koota. **Complete.**
 - 11.9 Gana Koota.
 - 11.10 Bhakoot Koota.
 - 11.11 Nadi Koota.
