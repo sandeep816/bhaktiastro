@@ -11,7 +11,7 @@ replace formulas, Sprint progress, runtime tests, or implementation code.
 | --- | --- | --- | --- |
 | Matchmaking | [matchmaking.md](matchmaking.md) | verified structural/domain-contract vectors | [SPEC-MATCHMAKING-001](../specifications/MATCHMAKING.md) |
 | Reporting | not yet created | pending; Task 12.1 uses repository-backed structural tests | [SPEC-REPORTING-001](../specifications/REPORTING.md) |
-| Golden astronomical fixtures | not yet created | governance approved; no qualifying fixture data | [SPEC-GOLDEN-FIXTURES-001](../specifications/GOLDEN-FIXTURES.md) |
+| Golden astronomical fixtures | [Mumbai TIME_JD provisional plan](golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md) | one proposed/pending human evidence plan; no expected values or qualifying fixture data | [SPEC-GOLDEN-FIXTURES-001](../specifications/GOLDEN-FIXTURES.md) |
 
 No vector marked `verified` is thereby claimed to be independent astronomical
 ephemeris validation. Each vector's source, assumptions, and linked test define
@@ -42,6 +42,16 @@ record and may be linked to a future fixture without promoting it automatically.
 The existing Jodhpur and Delhi Panchang JSON files remain pre-schema structural
 fixtures with verification status `pending`. They are not canonical golden
 fixtures and do not appear as populated vectors in this catalogue.
+
+## Provisional Golden Fixture Evidence Plans
+
+| Record ID | Record | Current classification | Fixture lifecycle | Vector verification | Warning |
+| --- | --- | --- | --- | --- | --- |
+| `GF-MUMBAI-20240701-TIME_JD-V1` | [Mumbai Time and Julian Day Evidence Plan](golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md) | Not assigned; `provisional_reference` is intended only after externally sourced candidate values exist | `proposed` | `pending` | Contains no expected values, is not a machine fixture, and is not regression-ready |
+
+This catalogue entry records case selection and promotion blockers only. It
+does not classify the Mumbai record as `golden`, verify a value, approve a
+source or tolerance, or alter the status of any automated test.
 
 ## Verification Status Vocabulary
 
