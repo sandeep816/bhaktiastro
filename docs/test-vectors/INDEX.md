@@ -11,6 +11,7 @@ replace formulas, Sprint progress, runtime tests, or implementation code.
 | --- | --- | --- | --- |
 | Matchmaking | [matchmaking.md](matchmaking.md) | verified structural/domain-contract vectors | [SPEC-MATCHMAKING-001](../specifications/MATCHMAKING.md) |
 | Reporting | not yet created | pending; Task 12.1 uses repository-backed structural tests | [SPEC-REPORTING-001](../specifications/REPORTING.md) |
+| Golden astronomical fixtures | not yet created | governance approved; no qualifying fixture data | [SPEC-GOLDEN-FIXTURES-001](../specifications/GOLDEN-FIXTURES.md) |
 
 No vector marked `verified` is thereby claimed to be independent astronomical
 ephemeris validation. Each vector's source, assumptions, and linked test define
@@ -30,6 +31,17 @@ the scope of verification.
 A vector may list more than one category when the purposes are explicit. A
 structural runtime fixture is not automatically a manually verified or
 external-reference vector.
+
+Fixture classification is a separate concern governed by
+[SPEC-GOLDEN-FIXTURES-001](../specifications/GOLDEN-FIXTURES.md). Its closed
+`structural`, `regression`, `provisional_reference`, and `golden`
+classifications describe a dataset's purpose and qualification. This index's
+`manual_astronomical` and `external_reference` categories describe the evidence
+record and may be linked to a future fixture without promoting it automatically.
+
+The existing Jodhpur and Delhi Panchang JSON files remain pre-schema structural
+fixtures with verification status `pending`. They are not canonical golden
+fixtures and do not appear as populated vectors in this catalogue.
 
 ## Verification Status Vocabulary
 

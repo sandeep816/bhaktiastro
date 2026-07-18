@@ -1,7 +1,6 @@
 # Sprint 14 - API Versioning and Stability
 
-Status: In progress - Task 14.1 documentation foundation complete; no runtime
-task is approved
+Status: Complete
 
 Primary permanent contract:
 [SPEC-API-STABILITY-001](specifications/API-STABILITY.md)
@@ -53,8 +52,10 @@ process in the [architecture index](architecture/INDEX.md) remain controlling.
 
 ## Task sequence
 
-Only Task 14.1 is approved. This document does not assign Task 14.2 or authorize
-runtime inventory, compatibility tooling, warnings, shims, or contract tests.
+Task 14.1 is the sole approved and completed Sprint 14 task. No Task 14.2 is
+assigned. Runtime inventory, compatibility tooling, warnings, shims, and
+contract tests remain separately authorized future work rather than Sprint 14
+completion criteria.
 
 ## Task 14.1 - API Versioning and Stability Foundation
 
@@ -130,7 +131,13 @@ Task 14.1 does not:
 
 ## Stop point
 
-Task 14.1 is complete when its permanent specification and navigation updates
-are committed. Sprint 14 remains open only at the roadmap level. No later
-Sprint 14 task is currently approved; the next implementation or inventory
-task must be defined and authorized separately rather than inferred here.
+Task 14.1 and Sprint 14 are complete. The approved permanent governance
+contract and navigation updates are committed, and no additional approved
+completion criterion remains. No Task 14.2 is created merely to close the
+Sprint.
+
+Future public-contract inventory, runtime enforcement, compatibility tooling,
+warnings, shims, and contract tests remain deferred until separately defined
+and authorized. Their deferral does not imply implementation and is not a
+Sprint 14 blocker. The sequencing gate is released for Sprint 15 - Golden
+Fixture Expansion without beginning any of that future API-stability work.

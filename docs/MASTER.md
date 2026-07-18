@@ -22,18 +22,20 @@ permanent calculator contracts.
   [SPEC-INTERPRETATION-001](specifications/INTERPRETATION.md)
 - Approved API versioning and stability contract:
   [SPEC-API-STABILITY-001](specifications/API-STABILITY.md)
+- Approved Golden Fixture governance contract:
+  [SPEC-GOLDEN-FIXTURES-001](specifications/GOLDEN-FIXTURES.md)
 - Reviewed examples and boundary cases:
   [Test-vector index](test-vectors/INDEX.md)
-- Active Sprint execution record: [SPRINT-14.md](SPRINT-14.md)
-- Most recently completed Sprint execution record: [SPRINT-13.md](SPRINT-13.md)
-- Previous completed Sprint execution records: [SPRINT-12.md](SPRINT-12.md)
-  and [SPRINT-11.md](SPRINT-11.md)
+- Active Sprint execution record: [SPRINT-15.md](SPRINT-15.md)
+- Most recently completed Sprint execution record: [SPRINT-14.md](SPRINT-14.md)
+- Previous completed Sprint execution records: [SPRINT-13.md](SPRINT-13.md)
+  and [SPRINT-12.md](SPRINT-12.md)
 
 Current product status: Sprint 11, the Documentation Architecture Foundation
-gate, Sprint 12, and Sprint 13 are complete. `SPEC-REPORTING-001` and
-`SPEC-INTERPRETATION-001` version 1.0 are approved and implemented. Sprint 14
-Task 14.1 has completed its documentation-only API stability foundation; no
-runtime enforcement task is approved.
+gate, and Sprints 12 through 14 are complete. `SPEC-REPORTING-001` and
+`SPEC-INTERPRETATION-001` version 1.0 are approved and implemented. Sprint 15
+Task 15.1 has completed its documentation-only Golden Fixture governance;
+fixture data and tests have not started.
 
 ## Project Rules
 
@@ -69,6 +71,7 @@ runtime enforcement task is approved.
 - Sprint 11: Matchmaking Foundation.
 - Sprint 12: Report Data Model Foundation.
 - Sprint 13: Interpretation Data Boundary.
+- Sprint 14: API Versioning and Stability.
 
 Sprint 4 completed:
 
@@ -205,28 +208,27 @@ Sprint 10B completed:
 
 ## Current Sprint
 
-Current sprint: Sprint 14 - API Versioning and Stability.
-**Task 14.1 documentation foundation complete; no runtime task approved.**
+Current sprint: Sprint 15 - Golden Fixture Expansion.
+**Task 15.1 documentation complete; fixture data and tests not started.**
 
-Primary sprint document: [SPRINT-14.md](SPRINT-14.md).
+Primary sprint document: [SPRINT-15.md](SPRINT-15.md).
 
 Permanent contract:
-[SPEC-API-STABILITY-001](specifications/API-STABILITY.md).
+[SPEC-GOLDEN-FIXTURES-001](specifications/GOLDEN-FIXTURES.md).
 
-Task 14.1 defines the public/private boundary, exact compatibility categories,
-Python and model stability, strict serializer/schema evolution, vocabulary and
-identifier stability, conservative error and ordering commitments, minimum
-deprecation windows, breaking-change gates, and a future inventory and
-contract-test plan.
+Task 15.1 defines fixture classifications and lifecycle, golden qualification,
+schema and identifiers, provenance and manual review, exact time/DST context,
+per-scope tolerance governance, storage boundaries, failure policy, and the
+future Mumbai, London, New York, and Kundali fixture boundaries.
 
-Task 14.1 changes no runtime code, tests, public exports, schemas,
-vocabularies, identifiers, serializers, or domain behavior. No Task 14.2 is
-documented. Any runtime inventory or contract-test enforcement requires a
-separately defined and authorized task.
+Task 15.1 changes no runtime code, tests, fixtures, skipped-test state, public
+exports, calculations, or API behavior. Existing Jodhpur and Delhi JSON files
+remain structural and pending. No later Sprint 15 task is approved; future
+fixture work requires independent sources and separate authorization.
 
-## Previous Completed Sprint
+## Completed Matchmaking Reference
 
-Current sprint: Sprint 11 - Matchmaking Foundation. **Complete.**
+Sprint 11 - Matchmaking Foundation. **Complete.**
 
 Primary sprint document: `docs/SPRINT-11.md`.
 
@@ -297,7 +299,7 @@ before Sprint 12 began.
 The completed Matchmaking contract is now migrated to
 [`SPEC-MATCHMAKING-001`](specifications/MATCHMAKING.md), with reviewed examples
 in [the Matchmaking vector catalogue](test-vectors/matchmaking.md). Sprints 12
-and 13 are complete. Sprint 14's documentation-only stability foundation does
+through 14 are complete. Sprint 15's documentation-only fixture governance does
 not change the completed Sprint 11 contracts.
 
 ## Next Task Instructions

@@ -7,14 +7,14 @@
 | Owning domain | Interpretation |
 | Related ADRs | [ADR-001](../architecture/ADR-001-Project-Principles.md), [ADR-002](../architecture/ADR-002-Astrology-Calculation-Standards.md), [ADR-003](../architecture/ADR-003-Validation-Standards.md), [ADR-004](../architecture/ADR-004-Public-API-Contracts.md), [ADR-005](../architecture/ADR-005-Testing-Standards.md) |
 | Related Sprint task | [Sprint 13, Task 13.1](../SPRINT-13.md#task-131---interpretation-data-boundary-foundation) |
-| Implementation status | `not_started` |
+| Implementation status | `implemented` |
 | Test-vector status | `pending` |
-| Backward compatibility | Additive planned foundation; no existing public contract changes |
+| Backward compatibility | Additive implemented foundation; no existing public contract changes |
 
-This is the permanent source of truth for the Sprint 13.1 Interpretation Data
-Boundary Foundation. It defines a strict, domain-neutral representation for
-validated interpretive facts derived from already-computed astrology results.
-It does not generate interpretation text.
+This is the permanent source of truth for the implemented Sprint 13.1
+Interpretation Data Boundary Foundation. It defines a strict, domain-neutral
+representation for validated interpretive facts derived from already-computed
+astrology results. It does not generate interpretation text.
 
 ## Purpose and scope
 
@@ -540,10 +540,10 @@ title or note, or render content. The Reporting schema remains
 `bhaktiastro.reporting.document` version `1.0` and is not replaced or extended
 by this specification.
 
-## Public API plan
+## Public API
 
-Runtime implementation will create additive exports under
-`backend.app.interpretation`. It will export the eight models; the
+Runtime implementation exports the additive boundary under
+`backend.app.interpretation`. It exports the eight models; the
 `InterpretationScalar`, `InterpretationValue`, and `InterpretationJsonValue`
 aliases; the six constants below; and only these keyword-only functions.
 
@@ -666,10 +666,10 @@ transition, replacement reference, continued support during the approved
 period, and an explicit removal task. Task 13.1 defines no schema negotiation,
 migration, compatibility reader, or deserialization.
 
-This plan is additive. It changes no Sprint 10, Matchmaking, Reporting,
-Kundali, Panchang, Dasha, Yoga, Dosha, Transit, API, serializer, or public
-export. Runtime implementation must preserve those contracts and must not
-force existing objects into this hierarchy.
+This implemented contract is additive. It changes no Sprint 10, Matchmaking,
+Reporting, Kundali, Panchang, Dasha, Yoga, Dosha, Transit, API, serializer, or
+public export. Runtime implementation must preserve those contracts and must
+not force existing objects into this hierarchy.
 
 ## Explicit exclusions
 
@@ -690,13 +690,13 @@ Task 13.1 excludes:
   email, UI, frontend, image, chart, layout, or Sprint 17 work;
 - API endpoints, transport schemas, persistence, databases, ORM models,
   caching, authentication, telemetry, or background jobs;
-- Sprint 10 migration or rewrite, Sprint 11 changes, Sprint 12 changes,
-  runtime code, tests, public exports, serializers, and any later Sprint 13
-  implementation task.
+- Sprint 10 migration or rewrite, Sprint 11 changes, Sprint 12 changes, or any
+  runtime, test, export, serializer, adapter, rule, or narrative work beyond
+  the implemented boundary.
 
-## Required future runtime tests
+## Runtime test contract
 
-Runtime implementation is not complete until tests cover:
+The implemented runtime contract requires tests covering:
 
 - all eight exact immutable model types, deliberate unhashability, structural
   equality, exact field order, constants, aliases, and schema version;
@@ -755,28 +755,29 @@ format and cover only reviewed structural cases:
 - deterministic serialization; and
 - mutation isolation.
 
-Vectors remain `pending` until the immutable models and reviewed structural
-expected payloads exist. No astrology rule, interpretation, tendency outcome,
-confidence, prose, or independent astronomical value is fabricated here.
+Vectors remain `pending` until reviewed structural expected payloads are
+approved. The immutable models exist, but no astrology rule, interpretation,
+tendency outcome, confidence, prose, or independent astronomical value is
+fabricated here.
 
-## Planned implementation references
+## Implementation references
 
-Planned additive runtime package: `backend/app/interpretation/`.
+Canonical additive runtime package: `backend/app/interpretation/`.
 
-Planned focused coverage:
+Focused coverage:
 
 - `backend/tests/test_interpretation_models.py`;
 - `backend/tests/test_interpretation_validation.py`;
 - `backend/tests/test_interpretation_serialization.py`; and
 - `backend/tests/test_interpretation_public_api.py`.
 
-These paths are plans, not runtime artifacts created by this task.
+These paths are the implemented runtime and test artifacts for Task 13.1.
 
 ## Change history and supersession
 
 | Version | Change |
 | --- | --- |
-| `1.0` | Approved the documentation-only Interpretation Data Boundary Foundation contract. |
+| `1.0` | Approved and implemented the Interpretation Data Boundary Foundation contract without changing its schema. |
 
 A future change must identify compatibility impact, update this history, make
 an explicit schema decision, and name any superseded contract. This

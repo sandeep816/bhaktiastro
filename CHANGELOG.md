@@ -5,6 +5,11 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Approved Golden Fixture Governance and Reference specification defining
+  structural, regression, provisional-reference, and golden classifications;
+  strict qualification, provenance, time/DST, tolerance, schema, identifier,
+  storage, review, failure, and future-test contracts for Sprint 15.1 without
+  creating or promoting fixture data.
 - Approved API Versioning and Stability specification defining the public
   contract boundary, compatibility categories, Python/model/serializer/schema
   guarantees, vocabulary and identifier stability, conservative error and
@@ -164,6 +169,9 @@ All notable changes to BhaktiAstro will be documented in this file.
 - Project README.
 
 ### Changed
+- Closed Sprint 14 after its sole approved documentation task, advanced project
+  navigation to Sprint 15, and corrected stale Interpretation runtime-status
+  metadata without changing runtime behavior.
 - Tightened Panchang response schemas to require boundary timing fields and reject undocumented response keys.
 
 ## [0.1.0] - TBD
