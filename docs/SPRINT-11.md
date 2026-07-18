@@ -3300,7 +3300,7 @@ Task 11.14.
 
 ## Task 11.14 - Compatibility / Report Composition
 
-Status: **Specification Complete; Runtime Not Implemented**
+Status: **Complete**
 
 ### Purpose and Scope
 
@@ -4011,15 +4011,32 @@ Task 11.14 runtime implementation is not complete until focused tests cover:
 
 ### Documentation Progress Rules
 
-This specification completes only the Task 11.14 documentation milestone. It
-does not mark runtime completion. `docs/MASTER.md` remains unchanged until the
-runtime composer, strict validators, serializer, public exports, focused tests,
-and required regressions are complete.
+Task 11.14 runtime completion is recorded after the three documented APIs,
+strict validators, public exports, focused tests, and required regressions are
+complete. `docs/MASTER.md` now records Task 11.14 as completed. Task 11.15
+remains the next incomplete task and is not begun here.
 
-The implementation task must then change this section to
-`Status: **Complete**`, record concise verification totals, update
-`docs/MASTER.md` according to repository convention, and stop before Task
-11.15. Task 11.14 does not specify or begin Task 11.15.
+### Completion and Verification
+
+Task 11.14 is runtime-complete. The implementation adds raw six-longitude
+composition, strict composition from completed Ashtakoota and Manglik results,
+and strict deterministic report serialization. It preserves canonical report
+and Koota ordering, delegates all calculation and revalidation to the existing
+Task 11.12 and Task 11.13 public contracts, rejects malformed or aliased strict
+inputs, and adds no interpretation, combined score, percentage, cancellation,
+recommendation, or rendering behavior.
+
+Verification totals recorded for the implementation task:
+
+- focused Compatibility / Report Composition suite: `95 passed`;
+- Ashtakoota and Manglik regression suites: `413 passed`;
+- complete matchmaking suite: `2560 passed`;
+- Rashi and Kundali regression suite: `102 passed`; and
+- complete project suite: `3528 passed, 13 skipped, 20 subtests passed`.
+
+The skips remain the repository's pre-existing manual-reference validation
+placeholders. Task 11.14 does not enable or alter them. Work stops here before
+Task 11.15.
 
 ## Deterministic and Compatibility Principles
 
@@ -4083,7 +4100,7 @@ The implementation task must then change this section to
 - 11.11 Nadi Koota. **Complete.**
 - 11.12 Ashtakoota aggregation. **Complete.**
 - 11.13 Manglik compatibility foundation. **Complete.**
-- 11.14 Compatibility / Report Composition.
+- 11.14 Compatibility / Report Composition. **Complete.**
 - 11.15 Serialization and compatibility hardening.
 
 This sequence is provisional and may be adjusted after repository and source

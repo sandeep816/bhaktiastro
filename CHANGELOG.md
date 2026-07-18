@@ -5,6 +5,10 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Deterministic structured Compatibility / Report Composition over completed
+  Ashtakoota and Manglik results, with separated raw, strict precomputed, and
+  serialization APIs, canonical ordering, strict JSON-safe validation, and no
+  combined score or interpretation.
 - Source-of-truth Compatibility / Report Composition orchestration over
   completed Ashtakoota and Manglik results, with separated raw, strict
   precomputed, and serialization APIs, canonical section ordering, immutable

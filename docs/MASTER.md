@@ -226,6 +226,10 @@ Completed tasks:
   house placement, the binary five-house convention, strict chart and
   precomputed-result validation, and no score, cancellation, or marriage
   judgement.
+- **Task 11.14**: Implement deterministic structured compatibility report
+  composition through separated raw, strict precomputed, and serialization
+  APIs, reusing completed Ashtakoota and Manglik results without adding a
+  combined score, interpretation, verdict, recommendation, or rendering.
 
 ## Next Task Instructions
 
