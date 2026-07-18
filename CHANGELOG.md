@@ -5,6 +5,10 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Strict deterministic serialization for all Sprint 11 matchmaking result
+  families, with exact contract validation, recursive JSON-safe copying,
+  mutation isolation, cycle and alias rejection, additive public serializers,
+  and full backward-compatibility regression coverage.
 - Source-of-truth Sprint 11 serialization and compatibility-hardening contract
   covering every matchmaking result family, exact schema and field ordering,
   strict recursive JSON safety, mutation isolation, versioning, additive

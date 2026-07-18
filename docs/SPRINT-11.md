@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Tasks 11.1-11.14 Complete)**
+Status: **Complete (Tasks 11.1-11.15 Complete)**
 
 ## Architecture Boundary
 
@@ -4040,7 +4040,7 @@ Task 11.15.
 
 ## Task 11.15 - Serialization and Compatibility Hardening
 
-Status: **Specification Complete; Runtime Not Implemented**
+Status: **Complete**
 
 ### Purpose and Scope
 
@@ -4743,12 +4743,31 @@ Task 11.15 runtime completion requires:
 - runtime verification totals and any narrowly fixed structural bug are
   recorded.
 
-This documentation commit completes only the Task 11.15 specification. It must
-not change runtime code, tests, public exports, or `docs/MASTER.md`; it must not
-mark Task 11.15 or Sprint 11 runtime-complete. Runtime implementation may mark
-Task 11.15 `Complete`, mark Sprint 11 complete in `docs/MASTER.md`, and record
-final totals only after every criterion above passes. Work then stops without
-beginning Sprint 12.
+### Completion and Verification
+
+Task 11.15 and Sprint 11 are runtime-complete. The implementation adds the
+central strict recursive validator/copier, exact family contract registry,
+eleven keyword-only serializers, ordered schema-family constants, and additive
+public exports. It preserves every existing calculator and report output while
+rejecting malformed field order, identifiers, graph aliasing, cycles,
+non-finite numbers, unsupported Python objects, and inconsistent aggregate or
+Manglik data. Existing invalid Nadi identity placeholders remain unchanged:
+their deterministic issues continue to live on the owning Koota result, while
+complete Kootas require valid nested identities.
+
+Verification totals recorded for the implementation task:
+
+- focused serialization and compatibility-hardening suite: `79 passed`;
+- complete matchmaking suite: `2639 passed`;
+- Kundali, Rashi, Nakshatra, Lagna, placement, and planet-position dependency
+  regression suite: `143 passed`; and
+- complete project suite: `3607 passed, 13 skipped, 20 subtests passed`.
+
+Black formatting, Python compilation, public import, strict
+`json.dumps(..., allow_nan=False)`, and Git diff checks pass. Ruff was not
+available and was not added. The skips remain the repository's pre-existing
+manual-reference validation placeholders. Work stops here without beginning
+Sprint 12.
 
 ## Deterministic and Compatibility Principles
 
@@ -4792,7 +4811,7 @@ beginning Sprint 12.
   and Task 11.13 results in canonical section order, preserves component roles
   and scores, and adds no percentage, combined score, interpretation, verdict,
   or rendering behavior.
-- Non-finite values are converted to JSON-safe values.
+- Non-finite values are rejected at the strict serialization boundary.
 - Stable schemas and public imports must remain backward-compatible as the
   sprint grows.
 - Calculation completion is explicit; empty results remain `not_evaluated`.
@@ -4813,10 +4832,10 @@ beginning Sprint 12.
 - 11.12 Ashtakoota aggregation. **Complete.**
 - 11.13 Manglik compatibility foundation. **Complete.**
 - 11.14 Compatibility / Report Composition. **Complete.**
-- 11.15 Serialization and compatibility hardening.
+- 11.15 Serialization and compatibility hardening. **Complete.**
 
-This sequence is provisional and may be adjusted after repository and source
-inspection for each task. Tasks 11.2 onward are not implemented by Task 11.1.
+Sprint 11 is complete. This sequence remains the historical implementation
+order; no Sprint 12 work is included here.
 
 ## Non-Goals
 

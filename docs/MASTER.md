@@ -35,6 +35,7 @@ project rules.
 - Sprint 9: Advanced Lagna and Arudha Engine.
 - Sprint 10A: Prediction Framework Architecture.
 - Sprint 10B: Prediction Rules Foundation.
+- Sprint 11: Matchmaking Foundation.
 
 Sprint 4 completed:
 
@@ -171,7 +172,7 @@ Sprint 10B completed:
 
 ## Current Sprint
 
-Current sprint: Sprint 11 - Matchmaking Foundation.
+Current sprint: Sprint 11 - Matchmaking Foundation. **Complete.**
 
 Primary sprint document: `docs/SPRINT-11.md`.
 
@@ -230,6 +231,13 @@ Completed tasks:
   composition through separated raw, strict precomputed, and serialization
   APIs, reusing completed Ashtakoota and Manglik results without adding a
   combined score, interpretation, verdict, recommendation, or rendering.
+- **Task 11.15**: Harden serialization for every Sprint 11 matchmaking result
+  family with strict recursive JSON validation and copying, exact schema and
+  field-order enforcement, mutation isolation, additive public serializers,
+  and full compatibility regression coverage.
+
+Sprint 11 is complete. The next roadmap milestone is Sprint 12 - Report Data
+Model Foundation; it is not begun by Task 11.15.
 
 ## Next Task Instructions
 
