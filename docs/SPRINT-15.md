@@ -1,7 +1,7 @@
 # Sprint 15 - Golden Fixture Expansion
 
-Status: In progress - Tasks 15.1 and 15.2 documentation complete; source and
-fixture data and tests not started
+Status: In progress - Tasks 15.1 through 15.3 documentation complete; source
+and fixture data and tests not started
 
 Primary permanent contracts:
 
@@ -22,6 +22,11 @@ calculation change.
 Task 15.2 defines the canonical source categories, trust and independence
 model, provenance, review, conflict, lifecycle, and source-record schema that
 all future Golden Fixture work must use. It collects no source or fixture data.
+
+Task 15.3 authorizes the exact contract for selecting one future Mumbai case
+and preparing its provisional human evidence record. It selects no date,
+coordinates, calculation values, source values, or tolerances and creates no
+record or fixture.
 
 ## Source-of-truth and sequencing decision
 
@@ -69,9 +74,9 @@ Task 15.1 governs these areas but implements none of them.
 
 ## Approved task sequence
 
-Tasks 15.1 and 15.2 are the only approved tasks, and both are documentation-
-only and complete. No runtime fixture task or Task 15.3 number is authorized by
-this document.
+Tasks 15.1 through 15.3 are the only approved tasks, and all are documentation-
+only and complete. No source-collection, fixture, runtime, test-activation, or
+Task 15.4 work is authorized by this document.
 
 ## Task 15.1 - Golden Fixture Governance and Reference Specification
 
@@ -167,11 +172,180 @@ Task 15.2 is complete when:
 5. cross-document links, anchors, Markdown scope, and diff checks pass; and
 6. one focused documentation commit leaves a clean working tree.
 
+## Task 15.3 - Mumbai Reference Case Selection and Provisional Evidence Record
+
+Status: Complete - documentation authorization only
+
+### Purpose and lifecycle boundary
+
+Task 15.3 defines and authorizes the selection contract for one exact Mumbai
+reference case that a later, separately authorized execution task may populate,
+independently verify, review, and promote through the Golden Fixture lifecycle.
+This task is case-selection and evidence-planning documentation only. It does
+not select final inputs where approved authoritative evidence is absent and
+does not create the evidence record.
+
+The future human record must use fixture lifecycle `proposed` and human-vector
+verification status `pending`. It records `provisional_reference` only as the
+intended later fixture classification; that classification cannot be claimed
+until the record contains externally sourced candidate values as required by
+the canonical contract. These are separate vocabularies. Provisional does not
+mean verified, selected does not mean approved, and proposed source candidates
+do not establish Golden status. No regression or accuracy test may depend on
+the future record while it remains in these states.
+
+### Required case identity
+
+The future record must select and record one internally consistent case with:
+
+- provisional fixture ID `GF-MUMBAI-<YYYYMMDD>-<SCOPE>-V1`, where the local
+  civil date and scope token satisfy the canonical identifier contract;
+- lifecycle `proposed`, vector verification status `pending`, and intended
+  later classification `provisional_reference`, subject to its canonical
+  externally sourced candidate-value prerequisite;
+- location name, country and recorded country-code standard, finite latitude
+  and longitude, coordinate source, coordinate datum when available, and an
+  explicit elevation value or justified null decision;
+- one local civil date and either one exact local time or an explicitly bounded
+  all-day/event scope;
+- IANA timezone `Asia/Kolkata`, the UTC offset at the selected instant, the
+  timezone-database version used to verify it, and consistent local and UTC
+  representations when the case identifies an instant; and
+- explicit calendar and time scale.
+
+The canonical Mumbai contract requires the selected modern instant's `+05:30`
+offset to be verified from the recorded timezone source. This requirement is
+not evidence by itself. Task 15.3 assigns no date, time, coordinates, datum,
+elevation, tzdata version, or final fixture ID.
+
+### Narrow scope selection
+
+The later record must choose only the minimum approved Golden Fixture scope
+tokens needed for its evidence. It must separately list included outputs,
+excluded outputs, the reason each output family is included, and the reason
+each excluded family is deferred.
+
+Candidate outputs are Julian Day, ayanamsa, Sun longitude, Moon longitude,
+Tithi, Nakshatra, Yoga, Karana, Vara, sunrise, sunset, moonrise, and moonset.
+They map into the canonical scopes `julian_day`, `ayanamsa`,
+`planetary_positions`, `panchang_elements`, `panchang_boundaries`, and
+`rise_set` as applicable. Listing an output here does not include or approve it.
+No candidate may be included unless its exact inputs, configuration, sources,
+precision, comparison method, and future tolerance-review path can be stated.
+
+### Calculation-configuration plan
+
+Before any expected value is collected, the future record must document:
+
+- ayanamsha system and exact spelling;
+- ephemeris engine and version, plus ephemeris files or fallback mode;
+- calculation flags, tropical or sidereal frame, geocentric or topocentric
+  mode, and coordinate assumptions;
+- rise/set model, refraction policy, solar-disc policy, and elevation policy;
+- rounding and retained source-precision policy; and
+- language/localization policy for source labels and canonical machine values.
+
+These details project into the existing fixture `calculation_config`, source
+settings, limitations, and technical notes. They do not add fields to either
+canonical schema. Unknown settings remain explicit blockers and are never
+inferred from current BhaktiAstro defaults.
+
+### Reference-source plan
+
+The future record must identify at least one proposed `primary` source candidate
+and one materially independent `secondary` source candidate for every included
+output family. For each candidate it must record:
+
+- proposed canonical source category and scope-specific trust level;
+- exact source name, publisher, version, publication or access date, citation,
+  calculation engine/data lineage, and relevant settings;
+- compatibility of its time, location, frame, ayanamsha, rise/set, precision,
+  and output definitions with the selected case; and
+- a written lineage assessment covering publisher, underlying dataset,
+  calculation engine, operator/transcription path, independence from the other
+  candidate, and independence from BhaktiAstro.
+
+Popularity, public accessibility, or a recognizable brand does not approve a
+source. Candidate labels remain proposed until separate source records satisfy
+`SPEC-GOLDEN-REFERENCE-SOURCES-001`; shared Swiss Ephemeris or other material
+lineage cannot be presented as independent corroboration.
+
+### Future provisional evidence record
+
+A later execution task may create:
+
+```text
+docs/test-vectors/golden-fixtures/GF-MUMBAI-<YYYYMMDD>-<SCOPE>-V1.md
+```
+
+That record must contain case identity, lifecycle and verification states,
+calculation configuration, source candidates, source-lineage analysis,
+included and excluded outputs with reasons, unresolved questions, reviewer
+status, and promotion blockers. It remains a human evidence-planning artifact,
+not a machine fixture or enabled-test input. The later task may also update
+`docs/test-vectors/INDEX.md`; Task 15.3 creates or changes neither file.
+
+### Promotion gates
+
+No later task may create a machine Golden Fixture until all of these gates are
+met and recorded:
+
+1. exact case inputs and stable provisional fixture ID are reviewed and
+   approved;
+2. complete canonical source records exist for every qualifying source;
+3. material independence from BhaktiAstro and between qualifying sources is
+   confirmed per output family;
+4. candidate expected values are obtained independently rather than copied from
+   current runtime output;
+5. original observations and all differences are retained and reviewed;
+6. comparison modes and tolerances are justified separately for every output;
+7. a named reviewer is assigned and the review date is recorded;
+8. every unresolved blocker or out-of-policy discrepancy is closed or the
+   affected output is removed from scope; and
+9. fixture classification, lifecycle, and vector verification status advance
+   only through their respective canonical promotion rules.
+
+Passing these planning gates does not itself activate a test. Fixture schema
+validation, linked machine data, focused tests, regressions, and `active`
+status belong to separately authorized later work.
+
+### Explicit non-goals and file boundary
+
+Task 15.3 includes no runtime implementation, fixture loader or validator,
+schema code, machine JSON, expected astronomical value, current-runtime
+snapshot, expected-value assertion, tolerance selection or implementation,
+source collection, online Panchang transcription, or skipped-test activation.
+It does not modify Jodhpur or Delhi fixtures, Accuracy or Validation Plan
+status, calculations, APIs, tests, public exports, canonical specifications,
+the ROADMAP, or Sprint 16 planning.
+
+The only Task 15.3 file updates are `docs/SPRINT-15.md`, `docs/MASTER.md`, and
+`CHANGELOG.md`.
+
+### Completion criteria
+
+Task 15.3 documentation is complete when:
+
+1. this task contract is formally approved with an explicit pre-runtime,
+   pre-source, pre-fixture, and pre-Golden boundary;
+2. the exact future evidence-record location and required contents are defined;
+3. case identity, narrow scope, configuration, source-candidate independence,
+   and promotion gates are complete without invented values;
+4. `MASTER.md` identifies Task 15.3 as the latest approved Sprint 15 task and
+   keeps Sprint 15 in progress;
+5. the changelog records authorization without claiming source or fixture
+   completion;
+6. Markdown links and anchors, changed-file scope, and `git diff --check` pass;
+   and
+7. one focused documentation commit leaves a clean working tree.
+
 ## Proposed future sequence - not approved
 
 The following unnumbered order mirrors the ROADMAP and is planning context
-only. Each area requires a separately authorized documentation/evidence and
-fixture/test task before work begins:
+only. Task 15.3 defines the contract for the first area's case selection and
+evidence planning but does not authorize its source collection, evidence-record
+creation, fixture, or test work. Each execution area requires separate
+authorization before work begins:
 
 1. source and review a Mumbai non-DST reference fixture;
 2. source and review London standard, daylight, and transition cases;
@@ -185,7 +359,7 @@ implementation authority.
 
 ## Explicit exclusions
 
-Tasks 15.1 and 15.2 do not create or change:
+Tasks 15.1 through 15.3 do not create or change:
 
 - fixture data, canonical expected values, external evidence, or screenshots;
 - source records, source approvals, reference datasets, or tolerance values;
@@ -197,7 +371,7 @@ Tasks 15.1 and 15.2 do not create or change:
 
 ## Stop point
 
-Task 15.2 stops after the documentation commit. No later Sprint 15 task is
-approved. The next source-collection or fixture implementation area is only
-proposed and must not begin without a task contract, qualifying independent
-sources, and explicit authorization.
+Task 15.3 stops after the documentation commit. No source collection, evidence
+record, machine fixture, test activation, or later Sprint 15 task is approved.
+The Mumbai execution area remains proposed and must not begin without
+qualifying independent sources and separate explicit authorization.

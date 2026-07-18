@@ -5,6 +5,11 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Authorized the documentation-only Sprint 15.3 Mumbai reference-case contract,
+  defining the future provisional identity, narrow-scope and calculation-
+  configuration requirements, independent source-candidate plan, evidence-
+  record boundary, and promotion gates without selecting values, collecting
+  evidence, creating fixtures, changing tolerances, or activating tests.
 - Approved Golden Reference Source Framework defining the five canonical
   source categories, four scope-specific trust levels, material-independence
   rules, provenance and review requirements, conflict resolution, source
