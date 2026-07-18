@@ -4,6 +4,24 @@ This document is the Codex working brief for the BhaktiAstro repository. Use it
 to keep each task scoped, testable, and aligned with the deterministic-first
 project rules.
 
+## Documentation Navigation
+
+`MASTER.md` is the concise project navigation and current-status entry point.
+It does not own detailed astrology formulas, exhaustive validation rules, or
+permanent calculator contracts.
+
+- Milestone sequence and high-level scope: [ROADMAP.md](ROADMAP.md)
+- Cross-cutting decisions: [Architecture index](architecture/INDEX.md)
+- Permanent domain contracts and migration status:
+  [Specifications index](specifications/INDEX.md)
+- Reviewed examples and boundary cases:
+  [Test-vector index](test-vectors/INDEX.md)
+- Most recently completed Sprint execution record: [SPRINT-11.md](SPRINT-11.md)
+
+Current product status: Sprint 11 is complete. The Documentation Architecture
+Foundation gate is complete. Sprint 12 and Task 12.1 have not started; there is
+no active product Sprint task.
+
 ## Project Rules
 
 - Work on one task or milestone at a time.
@@ -238,6 +256,11 @@ Completed tasks:
 
 Sprint 11 is complete. The next roadmap milestone is Sprint 12 - Report Data
 Model Foundation; it is not begun by Task 11.15.
+
+Before Sprint 12 begins, the Documentation Architecture Foundation establishes
+ADRs, permanent-specification governance, and canonical test-vector standards.
+The next documentation task is migration of the completed Matchmaking contract
+to `docs/specifications/MATCHMAKING.md`; it does not start Sprint 12.
 
 ## Next Task Instructions
 

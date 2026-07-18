@@ -5,6 +5,10 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Documentation Architecture Foundation with accepted cross-cutting ADRs,
+  permanent domain-specification governance, canonical test-vector standards,
+  a source-of-truth hierarchy, conflict resolution, and gradual migration rules
+  established before Sprint 12.
 - Strict deterministic serialization for all Sprint 11 matchmaking result
   families, with exact contract validation, recursive JSON-safe copying,
   mutation isolation, cycle and alias rejection, additive public serializers,
