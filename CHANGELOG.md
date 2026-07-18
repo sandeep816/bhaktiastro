@@ -5,6 +5,12 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Approved API Versioning and Stability specification defining the public
+  contract boundary, compatibility categories, Python/model/serializer/schema
+  guarantees, vocabulary and identifier stability, conservative error and
+  ordering rules, deprecation and breaking-change policy, version
+  responsibilities, and future inventory and contract-test requirements for
+  Sprint 14.1 without runtime changes.
 - Immutable Interpretation Data Boundary runtime foundation with eight strict
   models, versioned rule and source-field evidence references, explicit
   technical and tendency vocabularies, defensive factories, strict validators,

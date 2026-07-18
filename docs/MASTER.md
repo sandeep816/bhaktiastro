@@ -20,16 +20,20 @@ permanent calculator contracts.
   [SPEC-REPORTING-001](specifications/REPORTING.md)
 - Approved Interpretation boundary contract:
   [SPEC-INTERPRETATION-001](specifications/INTERPRETATION.md)
+- Approved API versioning and stability contract:
+  [SPEC-API-STABILITY-001](specifications/API-STABILITY.md)
 - Reviewed examples and boundary cases:
   [Test-vector index](test-vectors/INDEX.md)
-- Active Sprint execution record: [SPRINT-13.md](SPRINT-13.md)
-- Most recently completed Sprint execution record: [SPRINT-12.md](SPRINT-12.md)
-- Previous completed Sprint execution record: [SPRINT-11.md](SPRINT-11.md)
+- Active Sprint execution record: [SPRINT-14.md](SPRINT-14.md)
+- Most recently completed Sprint execution record: [SPRINT-13.md](SPRINT-13.md)
+- Previous completed Sprint execution records: [SPRINT-12.md](SPRINT-12.md)
+  and [SPRINT-11.md](SPRINT-11.md)
 
 Current product status: Sprint 11, the Documentation Architecture Foundation
-gate, and Sprint 12 are complete. `SPEC-REPORTING-001` version 1.0 is approved
-and implemented. Sprint 13 Task 13.1 has an approved specification; runtime
-has not started.
+gate, Sprint 12, and Sprint 13 are complete. `SPEC-REPORTING-001` and
+`SPEC-INTERPRETATION-001` version 1.0 are approved and implemented. Sprint 14
+Task 14.1 has completed its documentation-only API stability foundation; no
+runtime enforcement task is approved.
 
 ## Project Rules
 
@@ -64,6 +68,7 @@ has not started.
 - Sprint 10B: Prediction Rules Foundation.
 - Sprint 11: Matchmaking Foundation.
 - Sprint 12: Report Data Model Foundation.
+- Sprint 13: Interpretation Data Boundary.
 
 Sprint 4 completed:
 
@@ -200,25 +205,24 @@ Sprint 10B completed:
 
 ## Current Sprint
 
-Current sprint: Sprint 13 - Interpretation Data Boundary.
-**Specification complete; runtime not started.**
+Current sprint: Sprint 14 - API Versioning and Stability.
+**Task 14.1 documentation foundation complete; no runtime task approved.**
 
-Primary sprint document: [SPRINT-13.md](SPRINT-13.md).
+Primary sprint document: [SPRINT-14.md](SPRINT-14.md).
 
 Permanent contract:
-[SPEC-INTERPRETATION-001](specifications/INTERPRETATION.md).
+[SPEC-API-STABILITY-001](specifications/API-STABILITY.md).
 
-Task 13.1 defines an approved domain-neutral immutable boundary for structured
-findings, evidence, sources, subjects, issues, metadata, and versioned rule
-references. It selects technical statuses and a separate limited tendency
-vocabulary, defers universal strength and confidence, and specifies strict
-JSON-safe serialization under schema `bhaktiastro.interpretation.document`
-version `1.0`.
+Task 14.1 defines the public/private boundary, exact compatibility categories,
+Python and model stability, strict serializer/schema evolution, vocabulary and
+identifier stability, conservative error and ordering commitments, minimum
+deprecation windows, breaking-change gates, and a future inventory and
+contract-test plan.
 
-No Interpretation runtime, test, public export, source adapter, rule evaluator,
-narrative, AI integration, Reporting adapter, or rendering work has started.
-No Task 13.2 is documented. The next incomplete task is Task 13.1 runtime
-implementation, which requires separate authorization.
+Task 14.1 changes no runtime code, tests, public exports, schemas,
+vocabularies, identifiers, serializers, or domain behavior. No Task 14.2 is
+documented. Any runtime inventory or contract-test enforcement requires a
+separately defined and authorized task.
 
 ## Previous Completed Sprint
 
@@ -292,9 +296,9 @@ before Sprint 12 began.
 
 The completed Matchmaking contract is now migrated to
 [`SPEC-MATCHMAKING-001`](specifications/MATCHMAKING.md), with reviewed examples
-in [the Matchmaking vector catalogue](test-vectors/matchmaking.md). Sprint 12
-is now active, and its Task 12.1 specification is approved without changing
-the completed Sprint 11 contracts.
+in [the Matchmaking vector catalogue](test-vectors/matchmaking.md). Sprints 12
+and 13 are complete. Sprint 14's documentation-only stability foundation does
+not change the completed Sprint 11 contracts.
 
 ## Next Task Instructions
 
