@@ -1,6 +1,6 @@
 # Sprint 12 - Report Data Model Foundation
 
-Status: Active
+Status: Complete
 
 Primary permanent contract:
 [SPEC-REPORTING-001](specifications/REPORTING.md)
@@ -32,7 +32,7 @@ with a narrow ownership note in that document rather than a broad rewrite.
 
 ## Task 12.1 - Report Data Model Foundation
 
-Status: Specification complete; runtime not started
+Status: Complete
 
 ### Documentation outcome
 
@@ -59,9 +59,9 @@ The detailed field order, block payload contracts, validation behavior,
 versioning rules, public signatures, test requirements, and exclusions live
 only in the permanent specification.
 
-### Runtime implementation requirements
+### Approved runtime implementation requirements
 
-The next implementation task must:
+The runtime implementation was required to:
 
 1. implement only the approved Reporting models, constants, factories,
    validators, and serializer;
@@ -73,6 +73,39 @@ The next implementation task must:
 5. update this execution record, `MASTER.md`, and `CHANGELOG.md` only after the
    runtime contract is complete; and
 6. stop without beginning any later Sprint task.
+
+### Runtime outcome
+
+Task 12.1 implements the approved contract in `backend/app/reporting/` with:
+
+- the eight frozen, slotted, deliberately unhashable model types;
+- immutable tuple and mapping-proxy nested ownership;
+- the exact seven closed block kinds and payload schemas;
+- eight keyword-only factories, three strict runtime-model validators, and one
+  canonical document serializer;
+- strict identifier, version, status, issue, duplicate, finite-number, cycle,
+  alias, and kind-specific payload validation;
+- fresh deterministic JSON-safe serialization with exact field order and deep
+  mutation isolation; and
+- explicit package exports without importing or changing Matchmaking.
+
+Focused coverage lives in:
+
+- `backend/tests/test_reporting_models.py`;
+- `backend/tests/test_reporting_validation.py`;
+- `backend/tests/test_reporting_serialization.py`; and
+- `backend/tests/test_reporting_public_api.py`.
+
+Verification at completion:
+
+- focused Reporting suite: `72 passed`;
+- complete Matchmaking regression suite: `2639 passed`;
+- complete project suite: `3679 passed, 13 skipped, 20 subtests passed`;
+- the 13 skips remain the documented manual astronomical-reference cases;
+- Reporting import, JSON serialization, and Python compilation smoke checks
+  passed;
+- Black formatting checks passed using the existing project environment; and
+- Ruff was unavailable and was not installed.
 
 ### Explicit exclusions
 
@@ -90,7 +123,7 @@ Task 12.1 does not include:
 
 ## Current stop point
 
-The Task 12.1 permanent specification is complete. Runtime code, tests, and
-public exports have not started. The next incomplete task is the Task 12.1
-runtime implementation against `SPEC-REPORTING-001`; no Task 12.2 scope is
-opened by this documentation commit.
+Task 12.1 and Sprint 12 are complete. No Task 12.2 is documented or opened by
+this implementation. The next incomplete roadmap milestone is Sprint 13 -
+Interpretation Data Boundary; its detailed task specification is not defined
+or implemented here.

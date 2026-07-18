@@ -20,12 +20,12 @@ permanent calculator contracts.
   [SPEC-REPORTING-001](specifications/REPORTING.md)
 - Reviewed examples and boundary cases:
   [Test-vector index](test-vectors/INDEX.md)
-- Active Sprint execution record: [SPRINT-12.md](SPRINT-12.md)
-- Most recently completed Sprint execution record: [SPRINT-11.md](SPRINT-11.md)
+- Most recently completed Sprint execution record: [SPRINT-12.md](SPRINT-12.md)
+- Previous completed Sprint execution record: [SPRINT-11.md](SPRINT-11.md)
 
-Current product status: Sprint 11 and the Documentation Architecture
-Foundation gate are complete. Sprint 12 is active. The Task 12.1 permanent
-specification is approved; runtime implementation has not started.
+Current product status: Sprint 11, the Documentation Architecture Foundation
+gate, and Sprint 12 are complete. `SPEC-REPORTING-001` version 1.0 is approved
+and implemented. Sprint 13 has not started.
 
 ## Project Rules
 
@@ -59,6 +59,7 @@ specification is approved; runtime implementation has not started.
 - Sprint 10A: Prediction Framework Architecture.
 - Sprint 10B: Prediction Rules Foundation.
 - Sprint 11: Matchmaking Foundation.
+- Sprint 12: Report Data Model Foundation.
 
 Sprint 4 completed:
 
@@ -195,24 +196,25 @@ Sprint 10B completed:
 
 ## Current Sprint
 
-Current sprint: Sprint 12 - Report Data Model Foundation. **Active.**
+Current sprint: Sprint 12 - Report Data Model Foundation. **Complete.**
 
 Primary sprint document: [SPRINT-12.md](SPRINT-12.md).
 
 Permanent contract:
 [SPEC-REPORTING-001](specifications/REPORTING.md).
 
-Task 12.1 documentation is complete. It defines the domain-neutral immutable
-model hierarchy, closed block architecture, technical statuses, explicit
-diagnostic partial-report policy, deterministic ordering, strict JSON-safe
-serialization, schema version `1.0`, and additive public API plan. Runtime
-code, tests, exports, adapters, rendering, interpretation, Sprint 11 migration,
-and later Sprint work have not started.
+Task 12.1 is complete. `backend/app/reporting/` implements the approved
+domain-neutral immutable model hierarchy, closed block architecture, technical
+statuses, explicit diagnostic partial-report policy, deterministic ordering,
+strict JSON-safe serialization, schema version `1.0`, and additive public API.
+Focused Reporting, Matchmaking regression, and full-suite verification passed.
+No adapter, rendering, interpretation, Sprint 11 migration, or later Sprint
+work was added.
 
-The next incomplete task is Task 12.1 runtime implementation against the
-approved specification.
+No Task 12.2 is documented. The next incomplete roadmap milestone is Sprint
+13 - Interpretation Data Boundary; its task specification has not started.
 
-## Most Recently Completed Sprint
+## Previous Completed Sprint
 
 Current sprint: Sprint 11 - Matchmaking Foundation. **Complete.**
 

@@ -5,6 +5,11 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Immutable domain-neutral Reporting runtime foundation with eight strict
+  models, seven discriminated block kinds, explicit diagnostic statuses,
+  defensive factories, strict validators, deterministic JSON-safe
+  serialization, mutation isolation, and additive public exports for Sprint
+  12.1.
 - Approved domain-neutral Report Data Model Foundation specification with a
   strict immutable model hierarchy, discriminated block contracts, technical
   status and diagnostic partial-report policies, deterministic JSON-safe

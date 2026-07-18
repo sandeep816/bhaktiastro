@@ -7,13 +7,14 @@
 | Owning domain | Reporting |
 | Related ADRs | [ADR-001](../architecture/ADR-001-Project-Principles.md), [ADR-002](../architecture/ADR-002-Astrology-Calculation-Standards.md), [ADR-003](../architecture/ADR-003-Validation-Standards.md), [ADR-004](../architecture/ADR-004-Public-API-Contracts.md), [ADR-005](../architecture/ADR-005-Testing-Standards.md) |
 | Related Sprint task | [Sprint 12, Task 12.1](../SPRINT-12.md#task-121---report-data-model-foundation) |
-| Implementation status | `not_started` |
+| Implementation status | `implemented` |
 | Test-vector status | `pending` |
 | Backward compatibility | Additive foundation; no existing public contract changes |
 
 This is the permanent source of truth for the Sprint 12.1 Report Data Model
-Foundation. It defines a future runtime contract; approval does not mean that
-runtime code, tests, adapters, renderers, or domain reports exist.
+Foundation. The approved runtime foundation and focused tests now implement
+this contract. Domain adapters, renderers, and concrete domain reports do not
+exist as part of Task 12.1.
 
 ## Scope
 
@@ -693,7 +694,14 @@ remain `pending`; no expected payload is fabricated here.
 
 ## Implementation references
 
-Planned runtime package: `backend/app/reporting/`.
+Canonical runtime package: `backend/app/reporting/`.
+
+Focused automated coverage:
+
+- `backend/tests/test_reporting_models.py`;
+- `backend/tests/test_reporting_validation.py`;
+- `backend/tests/test_reporting_serialization.py`; and
+- `backend/tests/test_reporting_public_api.py`.
 
 Architectural reference implementations inspected for this contract include:
 
@@ -711,7 +719,7 @@ the runtime task explicitly identifies a safe general helper.
 
 | Version | Change |
 | --- | --- |
-| `1.0` | Approved the Report Data Model Foundation contract before runtime implementation. |
+| `1.0` | Approved and implemented the Report Data Model Foundation contract without changing its schema. |
 
 A future specification may change this contract only through a focused task
 that identifies compatibility impact, updates this history, specifies a schema

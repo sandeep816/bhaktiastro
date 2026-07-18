@@ -22,12 +22,12 @@ while approved permanent specifications own migrated domain contracts.
 | `SPEC-YOGAS-001` | `YOGAS.md` | pending migration | Kundali and prediction Sprint records |
 | `SPEC-DOSHAS-001` | `DOSHAS.md` | pending migration | Domain implementations and completed Sprint records |
 | `SPEC-TRANSITS-001` | `TRANSITS.md` | planned; no approved migration task | [Roadmap](../ROADMAP.md) |
-| `SPEC-REPORTING-001` | [REPORTING.md](REPORTING.md) | approved version 1.0; runtime not started | [Sprint 12](../SPRINT-12.md) |
+| `SPEC-REPORTING-001` | [REPORTING.md](REPORTING.md) | approved version 1.0; runtime implemented | [Sprint 12](../SPRINT-12.md) |
 
 `pending migration` means no permanent specification is approved yet. It does
 not make this index a substitute for the current Sprint, runtime, or tests.
-The Matchmaking migration is complete. Reporting is approved as the first
-Sprint 12 contract; its runtime implementation has not started.
+The Matchmaking migration is complete. Reporting version 1.0 is approved and
+implemented as the Sprint 12 foundation.
 
 ## Initial Migration Inventory
 

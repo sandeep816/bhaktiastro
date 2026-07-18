@@ -10,7 +10,7 @@ replace formulas, Sprint progress, runtime tests, or implementation code.
 | Domain | Canonical vectors | Status | Owning specification |
 | --- | --- | --- | --- |
 | Matchmaking | [matchmaking.md](matchmaking.md) | verified structural/domain-contract vectors | [SPEC-MATCHMAKING-001](../specifications/MATCHMAKING.md) |
-| Reporting | not yet created | pending; planned by Task 12.1 runtime work | [SPEC-REPORTING-001](../specifications/REPORTING.md) |
+| Reporting | not yet created | pending; Task 12.1 uses repository-backed structural tests | [SPEC-REPORTING-001](../specifications/REPORTING.md) |
 
 No vector marked `verified` is thereby claimed to be independent astronomical
 ephemeris validation. Each vector's source, assumptions, and linked test define
