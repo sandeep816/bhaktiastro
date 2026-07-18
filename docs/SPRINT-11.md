@@ -7,7 +7,7 @@ layers.
 
 ## Sprint Status
 
-Status: **In Progress (Tasks 11.1-11.13 Complete)**
+Status: **In Progress (Tasks 11.1-11.14 Complete)**
 
 ## Architecture Boundary
 
@@ -4037,6 +4037,718 @@ Verification totals recorded for the implementation task:
 The skips remain the repository's pre-existing manual-reference validation
 placeholders. Task 11.14 does not enable or alter them. Work stops here before
 Task 11.15.
+
+## Task 11.15 - Serialization and Compatibility Hardening
+
+Status: **Specification Complete; Runtime Not Implemented**
+
+### Purpose and Scope
+
+Task 11.15 is the final Sprint 11 hardening task. It defines one stable,
+deterministic serialization boundary for every completed matchmaking result
+family so downstream API, UI, CLI, storage, and report consumers receive
+canonical JSON-safe data without learning private Python implementation
+details.
+
+The task covers only structural validation, recursive copying, stable schema
+identifiers, field ordering, mutation isolation, and compatibility regression.
+It does not calculate, reclassify, reinterpret, repair, or migrate astrology
+data. Every classification, matrix, direction, score, total, Mars house, and
+report fact remains owned by Tasks 11.1 through 11.14.
+
+The covered public families are:
+
+- matchmaking person, ordered pair, generic result envelope, person
+  validation, and pair validation;
+- Nakshatra identity and ordered pair context;
+- Varna, Vashya, Tara, Yoni, Graha Maitri, Gana, Bhakoot, and Nadi Koota
+  results;
+- Ashtakoota aggregate results;
+- Manglik classification and bride/groom comparison results; and
+- Compatibility / Report Composition results.
+
+Identity and relationship mappings nested inside these families are validated
+and copied as part of their owning result. This task does not expose a second
+public serializer for every private or nested helper mapping.
+
+### BhaktiAstro Project Decisions
+
+The source-of-truth hardening decisions are:
+
+- `MATCHMAKING_SCHEMA_VERSION` remains exactly `"1.0"`;
+- `COMPATIBILITY_REPORT_SCHEMA_VERSION` remains exactly `"1.0"` and equal to
+  `MATCHMAKING_SCHEMA_VERSION`;
+- all completed result families participate in the same Sprint 11 schema
+  generation, while each retains its existing calculation, component, Koota,
+  or report identifier;
+- canonical serialization is recursive, strict, validating, and copying; it
+  is not equivalent to shallow `dict(result)` conversion;
+- existing calculator and factory return values remain built-in mappings and
+  lists for backward compatibility, but are immutable after construction by
+  public ownership contract;
+- the serializer never mutates that runtime snapshot and returns a fresh,
+  caller-owned, mutable built-in `dict`/`list` tree;
+- no calculator is retrofitted to return `MappingProxyType`, frozen
+  dataclasses, tuples, Pydantic models, or another incompatible container;
+- unsupported Python values are rejected, not stringified, converted to
+  `None`, silently dropped, or repaired;
+- tuples, enums, dataclasses, sets, bytes, date/time objects, exceptions,
+  callables, and arbitrary objects are rejected;
+- ordinary `Mapping` inputs, including mapping proxies or subclasses, are
+  accepted only at mapping fields, strictly validated in iteration order, and
+  copied to plain built-in dictionaries; they never escape in output;
+- `NaN` and positive or negative infinity are rejected at every depth;
+- negative floating-point zero is serialized canonically as `0.0`;
+- finite integer fields remain integers, finite float fields are emitted as
+  floats, and booleans are never accepted as numeric values;
+- no numeric score, longitude, percentage, or total is rounded by Task 11.15;
+- aliases, deprecated field names, unknown fields, missing fields, reordered
+  contractual fields, shared mutable input paths, and cyclic input are rejected;
+- empty `errors` and `warnings` lists remain present when defined by the family;
+- `None` is permitted only at fields already declared optional by the existing
+  public typed contract and only in a state where that contract permits it;
+- no deserialization, hydration, schema migration, JSON text generation,
+  persistence, or golden-payload migration framework is included; and
+- serialization introduces no overall label, verdict, interpretation,
+  recommendation, prediction, remedy, or presentation data.
+
+The phrase "immutable runtime result" in this task means that a completed
+factory/calculator result is a read-only snapshot by public contract. Python
+callers can still mutate the returned built-in collections, as they could
+before Task 11.15, but doing so invalidates the snapshot. The strict serializer
+detects malformed mutation. Actual container freezing would break existing
+callers and is explicitly excluded.
+
+### Selected Serialization Architecture
+
+Runtime implementation adds one small module at the matchmaking serialization
+boundary. It contains one internal recursive JSON validator/copier and a small
+registry of exact family contracts. It must reuse current public constants,
+typed mappings, Koota manifest, strict Ashtakoota aggregation, Manglik
+comparison validation, and Compatibility Report serializer rather than copy
+astrology logic.
+
+The stable keyword-only public APIs are:
+
+```python
+def serialize_matchmaking_person(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+def serialize_matchmaking_pair(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+def serialize_matchmaking_result(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+def serialize_matchmaking_person_validation(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+def serialize_matchmaking_pair_validation(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+def serialize_matchmaking_nakshatra_identity(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+def serialize_matchmaking_nakshatra_pair_context(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+def serialize_koota_result(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+def serialize_ashtakoota_result(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+def serialize_manglik_classification_result(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+def serialize_manglik_compatibility_result(*, result: object) -> dict[str, MatchmakingJsonValue]: ...
+```
+
+`serialize_compatibility_report(*, report: object)` remains the sole report
+serializer and retains its exact Task 11.14 signature and complete-report-only
+semantics. It is hardened through shared internal primitives only when doing so
+does not alter its output or exceptions. Task 11.15 must not add an alias taking
+`result=` for that function.
+
+`serialize_koota_result` strictly dispatches only by the existing `koota`
+identifier and supports all eight exact values. It does not guess a family from
+field presence. No generic public `serialize_any`, mode flag, positional API,
+or implicit converter is added. Internal registry and recursive helpers remain
+private. The constants `MATCHMAKING_SERIALIZATION_SCHEMA_VERSION` and
+`MATCHMAKING_SERIALIZATION_FAMILIES` are public, additive exports; the former
+equals `MATCHMAKING_SCHEMA_VERSION`, and the latter is an immutable ordered
+tuple of the family identifiers documented below.
+
+Direct `json.dumps(runtime_result, allow_nan=False)` remains possible for
+unchanged valid calculator output, but it is not the canonical validation and
+copying API. Direct `dict(runtime_result)` is shallow and is explicitly not a
+supported substitute. These helpers return mappings only. Producing JSON text,
+choosing indentation or key sorting, encoding bytes, writing files, and
+selecting transport content types belong to callers or later layers.
+
+### Canonical Family Identifiers and Status Values
+
+The ordered `MATCHMAKING_SERIALIZATION_FAMILIES` value is exactly:
+
+```text
+matchmaking_person
+matchmaking_pair
+matchmaking_result
+matchmaking_person_validation
+matchmaking_pair_validation
+matchmaking_nakshatra_identity
+matchmaking_nakshatra_pair_context
+varna
+vashya
+tara
+yoni
+graha_maitri
+gana
+bhakoot
+nadi
+ashtakoota_aggregation
+manglik_classification
+manglik_compatibility
+matchmaking_compatibility_report
+```
+
+The serializer never renames identifiers. Stable category and status values
+are the exact existing exported values:
+
+- foundation result statuses: `not_evaluated`, `partial`, `complete`, and
+  `invalid`;
+- calculation result statuses: `complete` or `invalid` where the owning result
+  defines `status`;
+- validation and identity validity: JSON booleans in the existing `is_valid`
+  field, not an invented status;
+- Varna: `shudra`, `vaishya`, `kshatriya`, `brahmin`;
+- Vashya: `chatushpada`, `manava`, `jalachara`, `vanachara`, `keeta`;
+- Tara: `janma`, `sampat`, `vipat`, `kshema`, `pratyari`, `sadhaka`, `vadha`,
+  `mitra`, `ati_mitra`;
+- Yoni categories: `horse`, `elephant`, `sheep`, `serpent`, `dog`, `cat`,
+  `rat`, `cow`, `buffalo`, `tiger`, `deer`, `monkey`, `mongoose`, `lion`;
+- Yoni sexes: `male`, `female`; Yoni relationships: `same`, `friendly`,
+  `neutral`, `enemy`, `sworn_enemy`;
+- Graha Maitri lords: `sun`, `moon`, `mars`, `mercury`, `jupiter`, `venus`,
+  `saturn`; permanent directional relationships remain `friend`, `neutral`, or
+  `enemy`; combined identifiers are `same_lord`, `mutual_friend`,
+  `friend_neutral`, `mutual_neutral`, `friend_enemy`, `neutral_enemy`, and
+  `mutual_enemy`;
+- Gana: `deva`, `manushya`, `rakshasa`; relationships: `same_gana` or
+  `mixed_gana`;
+- Bhakoot relationship: `compatible` or `dosha`, with existing pair and
+  position identifiers unchanged;
+- Nadi: `adi`, `madhya`, `antya`; relationships: `same_nadi` or
+  `different_nadi`;
+- Manglik classification: `manglik`, `non_manglik`; pair classification:
+  `both_manglik`, `both_non_manglik`,
+  `bride_manglik_groom_non_manglik`, or
+  `bride_non_manglik_groom_manglik`; comparison status: `same_status` or
+  `mixed_status`; and
+- report status: `complete` or `invalid` as a technical status, although the
+  existing strict report serializer accepts only `complete`.
+
+Empty-string category placeholders are permitted only in existing invalid
+result states. A complete result containing an empty, aliased, differently
+cased, or unknown category is malformed. The hardening layer never casefolds,
+trims, aliases, translates, or guesses a category or status.
+
+Compatibility-domain identifiers also remain exact: Vashya `attraction`, Tara
+`destiny`, Yoni `intimacy`, Graha Maitri `mental_compatibility`, Gana
+`temperament`, Bhakoot `family_welfare`, and Nadi
+`physiological_compatibility`. Varna retains its existing result shape without
+an added compatibility-domain field.
+
+### Canonical Foundation and Context Contracts
+
+The following exact field order is contractual:
+
+| Family | Exact top-level fields in order |
+|---|---|
+| `matchmaking_person` | `person_id`, `name`, `birth_date`, `birth_time`, `latitude`, `longitude`, `timezone`, `rashi`, `nakshatra`, `nakshatra_pada`, `lagna`, `metadata` |
+| `matchmaking_pair` | `person_a`, `person_b`, `metadata` |
+| `matchmaking_result` | `matchmaking_id`, `status`, `score`, `maximum_score`, `percentage`, `factors`, `warnings`, `references`, `notes`, `metadata` |
+| `matchmaking_person_validation` | `is_valid`, `errors`, `warnings`, `normalized_value`, `metadata` |
+| `matchmaking_pair_validation` | `is_valid`, `errors`, `warnings`, `normalized_value`, `metadata` |
+| `matchmaking_nakshatra_identity` | `is_valid`, `name`, `index`, `pada`, `source_person_id`, `errors`, `warnings`, `metadata` |
+| `matchmaking_nakshatra_pair_context` | `is_valid`, `person_a`, `person_b`, `forward_distance`, `reverse_distance`, `same_nakshatra`, `same_pada`, `errors`, `warnings`, `metadata` |
+
+Nested `person_a`, `person_b`, `normalized_value`, and Nakshatra identity values
+must have their own exact owning-family field order. Person and pair metadata
+fields remain `component`, `schema_version`, `deterministic`,
+`calculation_complete`, `source_components`. Validation metadata remains
+`component`, `schema_version`, `deterministic`, `issue_count`. Nakshatra
+metadata remains `component`, `schema_version`, `deterministic`,
+`nakshatra_count`, `index_base`, `calculation_scope`.
+
+Foundation optional `latitude`, `longitude`, and `nakshatra_pada` may be
+`None`. Generic result `score`, `maximum_score`, and `percentage` may be `None`
+for unevaluated or partial states. Nakshatra `index` and `pada`, pair distances,
+and same-value flags may be `None` only in the invalid/unknown states already
+emitted by Task 11.3. Empty factors, warnings, references, notes, errors, and
+source-component collections remain arrays rather than `None`.
+
+Task 11.15 does not tighten the permissive Task 11.1 factory normalization or
+change its signatures. The serializers validate the resulting canonical
+snapshot; they do not rerun factories to repair caller mutations.
+
+### Canonical Individual Koota Contracts
+
+All individual Koota mappings begin with their exact current fields and retain
+their existing nested identity, direction, factor, issue, reference, and
+metadata structures. Exact top-level field order is:
+
+| Koota | Exact top-level fields in order |
+|---|---|
+| Varna | `koota`, `status`, `score`, `maximum_score`, `person_a_varna`, `person_b_varna`, `direction`, `factors`, `errors`, `warnings`, `references`, `metadata` |
+| Vashya | `koota`, `compatibility_domain`, `status`, `score`, `maximum_score`, `bride_vashya`, `groom_vashya`, `direction`, `factors`, `errors`, `warnings`, `references`, `metadata` |
+| Tara | `koota`, `compatibility_domain`, `status`, `score`, `maximum_score`, `person_a_nakshatra`, `person_b_nakshatra`, `direction`, `bride_to_groom`, `groom_to_bride`, `same_nakshatra`, `same_pada`, `factors`, `errors`, `warnings`, `references`, `metadata` |
+| Yoni | `koota`, `compatibility_domain`, `status`, `score`, `maximum_score`, `person_a_nakshatra`, `person_b_nakshatra`, `direction`, `bride_yoni`, `groom_yoni`, `relationship`, `same_nakshatra`, `same_pada`, `same_yoni`, `factors`, `errors`, `warnings`, `references`, `metadata` |
+| Graha Maitri | `koota`, `compatibility_domain`, `status`, `score`, `maximum_score`, `bride_moon_rashi`, `groom_moon_rashi`, `direction`, `bride_to_groom_relationship`, `groom_to_bride_relationship`, `combined_relationship`, `same_lord`, `factors`, `errors`, `warnings`, `references`, `metadata` |
+| Gana | `koota`, `compatibility_domain`, `status`, `score`, `maximum_score`, `person_a_nakshatra`, `person_b_nakshatra`, `direction`, `bride_gana`, `groom_gana`, `relationship`, `same_nakshatra`, `same_pada`, `same_gana`, `factors`, `errors`, `warnings`, `references`, `metadata` |
+| Bhakoot | `koota`, `compatibility_domain`, `status`, `score`, `maximum_score`, `bride_moon_rashi`, `groom_moon_rashi`, `direction`, `bride_to_groom_distance`, `groom_to_bride_distance`, `pair_identifier`, `position_pair`, `relationship`, `same_rashi`, `bhakoot_dosha`, `factors`, `errors`, `warnings`, `references`, `metadata` |
+| Nadi | `koota`, `compatibility_domain`, `status`, `score`, `maximum_score`, `person_a_nakshatra`, `person_b_nakshatra`, `direction`, `bride_nadi`, `groom_nadi`, `relationship`, `same_nakshatra`, `same_pada`, `same_nadi`, `nadi_dosha`, `factors`, `errors`, `warnings`, `references`, `metadata` |
+
+The `koota` identifiers and exact maximums remain:
+
+```text
+varna=1.0, vashya=2.0, tara=3.0, yoni=4.0,
+graha_maitri=5.0, gana=6.0, bhakoot=7.0, nadi=8.0
+```
+
+For `status="complete"`, `score` must be a finite float from `0.0` through the
+exact maximum, errors must be empty, categories must be canonical, direction
+must match the owning result contract, and duplicated summary fields must be
+internally consistent. For `status="invalid"`, `score` must be `None`, at least
+one deterministic error must be present, and existing empty-string/`None`
+placeholders are retained. No partial individual Koota score is serialized.
+
+Koota metadata has exact common prefix `component`, `schema_version`,
+`deterministic`, `calculation`, `maximum_score`. Remaining exact fields are:
+
+- Varna: `directional`;
+- Vashya: `compatibility_domain`, `directional`;
+- Tara: `compatibility_domain`, `directional`, `nakshatra_count`, `index_base`;
+- Yoni: Tara fields plus `symmetric` before Nakshatra count/index;
+- Graha Maitri: `compatibility_domain`, `directional`, `symmetric`,
+  `relationship_type`, `rashi_count`, `index_base`;
+- Gana: `compatibility_domain`, `directional`, `symmetric`,
+  `nakshatra_count`, `index_base`;
+- Bhakoot: `compatibility_domain`, `directional`, `symmetric`,
+  `relationship_type`, `rashi_count`, `index_base`; and
+- Nadi: `compatibility_domain`, `directional`, `symmetric`,
+  `nakshatra_count`, `index_base`.
+
+Nested identity and relationship field order remains exactly the order declared
+by the existing public TypedDict. The hardening implementation must derive
+these contracts from the current public types or centralized structural
+constants rather than create alternate astrology-facing models. Factors,
+errors, warnings, and references are always fresh arrays; direction and
+metadata are fresh mappings.
+
+### Canonical Ashtakoota Aggregate Contract
+
+`serialize_ashtakoota_result` accepts one exact `MatchmakingAshtakootaResult`
+mapping with fields in this order:
+
+```text
+calculation
+status
+bride_moon_longitude
+groom_moon_longitude
+koota_results
+score_by_koota
+maximum_score_by_koota
+total_score
+total_maximum_score
+errors
+warnings
+references
+metadata
+```
+
+`calculation` remains `ashtakoota_aggregation`. A complete result contains
+exactly eight complete Koota results in canonical order `varna`, `vashya`,
+`tara`, `yoni`, `graha_maitri`, `gana`, `bhakoot`, `nadi`. Score, maximum, and
+status-derived mappings preserve that order. Each Koota appears once. The
+serializer must reuse `aggregate_ashtakoota_results` for complete component
+revalidation and compare the authoritative aggregate to the supplied mapping;
+it must preserve a valid source execution mode of `raw_calculators` or
+`precomputed_results`.
+
+`total_maximum_score` remains exactly `36.0`. A complete `total_score` is the
+exact existing `math.fsum` component total without new rounding. It must equal
+the canonical-order component sum and lie in `0.0..36.0`. An invalid raw
+aggregate retains its existing zero-or-eight audit components, `None` total,
+errors, and validation count; hardening validates structure without inventing
+missing components or a partial total.
+
+Aggregate metadata remains exactly `component`, `schema_version`,
+`deterministic`, `execution_mode`, `koota_order`, `expected_koota_count`,
+`validated_koota_count`, `total_maximum_score`, `aggregation_method`,
+`percentage_included`, `interpretation_included`, `cancellation_included`.
+`percentage_included` remains false. Serialization does not introduce a
+percentage or independently sum or score Kootas.
+
+### Canonical Manglik Contracts
+
+`serialize_manglik_classification_result` accepts fields in this exact order:
+
+```text
+calculation, status, classification, reference_point,
+lagna_sidereal_longitude, mars_sidereal_longitude,
+lagna_rashi_index, mars_rashi_index, mars_house,
+applicable_manglik_houses, reason, errors, warnings, references, metadata
+```
+
+`calculation` remains `manglik_classification`; reference point remains
+`lagna`; applicable houses remain `[1, 4, 7, 8, 12]`; classification remains
+binary. Complete classification fields must exactly match a public
+`classify_manglik` revalidation from the audited finite longitudes. Invalid
+classification retains the exact existing safe placeholders and issues.
+
+`serialize_manglik_compatibility_result` accepts fields in this exact order:
+
+```text
+calculation, status, bride_manglik, groom_manglik,
+bride_classification, groom_classification,
+bride_reference_point, groom_reference_point,
+bride_mars_house, groom_mars_house, applicable_manglik_houses,
+pair_classification, comparison_status, reasons,
+errors, warnings, references, metadata
+```
+
+`calculation` remains `manglik_compatibility`. A complete comparison is
+revalidated through `compare_manglik_classifications`; all duplicated category,
+reference-point, house, applicable-house, pair, comparison-status, reason, and
+role fields must equal the authoritative result. An invalid comparison retains
+the public safe result shape and does not become complete during serialization.
+
+Classification metadata remains exactly `component`, `schema_version`,
+`deterministic`, `calculation`, `house_system`, `house_numbering`,
+`reference_points`, `applicable_manglik_houses`, `classification_mode`,
+`comparison_mode`, `scoring_included`, `severity_included`,
+`cancellation_rules_included`, `divisional_charts_included`,
+`ashtakoota_recalculated`. Compatibility metadata adds `role_order` then
+`same_mixed_comparison_symmetric`. No score, cancellation, severity, or
+interpretation field is added.
+
+### Canonical Compatibility Report Contract
+
+The existing `serialize_compatibility_report` and Task 11.14 contract remain
+authoritative. The exact report field order remains:
+
+```text
+schema_version, report_type, status, bride, groom, ashtakoota,
+koota_results, manglik, validation, errors, warnings, notes, sections, metadata
+```
+
+The report type remains `matchmaking_compatibility_report`; schema version
+remains `1.0`; accepted serialization status remains `complete`; sections
+remain, in order, `report_metadata`, `input_summary`, `ashtakoota_summary`,
+`koota_breakdown`, `manglik_summary`, `validation_status`, `errors`, `warnings`,
+`notes`. The canonical eight-Koota order, five notes, two component order, all
+summaries, metadata, empty errors, and exclusion flags remain unchanged.
+
+Task 11.15 may route its recursive JSON checks and fresh-copy construction
+through the shared internal helper only if byte-for-byte-equivalent JSON data,
+mapping order, exception types, and Task 11.14 public behavior remain
+unchanged. It must not loosen complete-only report serialization, add a second
+report schema, or introduce compatibility interpretation.
+
+### Validation Issue, Warning, and Metadata Contract
+
+Every issue mapping has exact fields in order:
+
+```text
+field, code, message_key, severity, value, metadata
+```
+
+`severity` is `error` or `warning`; `field`, `code`, and `message_key` are
+strings; `value` is a recursively validated JSON-safe value or `None`; and
+`metadata` is a fresh string-keyed JSON-safe mapping. Existing issue codes,
+message keys, prefixes, source ordering, and severity are preserved. The
+serializer does not localize messages, turn issues into strings, deduplicate
+them, sort them, or discard them.
+
+Errors precede warnings only where their owning contract already places the
+arrays that way. Within each list, existing deterministic order is stable.
+Empty issue arrays remain `[]`; neither missing arrays nor `None` substitutes
+are accepted.
+
+All metadata mappings require exact current fields and order, current
+`schema_version`, canonical `component`/`calculation` identifiers, and
+`deterministic=true`. Metadata is structural and factual only. Unknown metadata
+keys are rejected in schema `1.0`; additive metadata is not silently accepted
+under the same family contract merely because a consumer might ignore it.
+
+### Recursive JSON-Safe Copying Rules
+
+Canonical serialized output permits only:
+
+- `None` at explicitly optional fields;
+- strings;
+- JSON booleans at boolean fields;
+- finite built-in integers at integer fields;
+- finite built-in floats at float fields;
+- newly allocated built-in lists; and
+- newly allocated built-in dictionaries with string keys.
+
+Validation occurs before output construction in deterministic depth-first,
+field-order traversal. At every depth:
+
+- `NaN`, positive infinity, and negative infinity raise `ValueError`;
+- a boolean in an integer or float field raises `TypeError`;
+- a non-string mapping key raises `ValueError`;
+- tuple, set, frozenset, bytes, bytearray, memoryview, enum instance,
+  dataclass instance, date/time/datetime, exception, callable, non-mapping
+  custom container, and arbitrary object raise `TypeError`;
+- a shared mutable list or mapping reachable by two semantic paths raises
+  `ValueError` identifying both deterministic paths;
+- a direct or indirect cycle raises `ValueError` identifying the first and
+  repeated paths; and
+- no `str(value)`, `list(value)`, `dict(value)`, enum `.value`, dataclass
+  conversion, or fallback coercion is attempted.
+
+Plain tuples are rejected rather than converted because canonical array fields
+are already emitted as lists. Imported immutable tuple constants are never
+embedded directly; serializers allocate lists where the result contract uses
+arrays. Values implementing `Mapping`, including a mapping proxy or custom
+mapping, are accepted only where a mapping is required, must expose the exact
+contractual key order, and are copied recursively into plain dictionaries.
+Iteration/access exceptions propagate unchanged. List subclasses are accepted
+only at list fields and copied to plain lists. Neither custom container type is
+preserved in output.
+
+Every call allocates a fresh root and fresh nested collection at every path.
+No output path shares a mutable object with the runtime result, another path in
+the same output, a previous/future serialization, another calculator result,
+or a module-level constant. `json.dumps(serialized, allow_nan=False)` must
+succeed without a custom encoder, `default=`, key sorting, or non-standard
+number support.
+
+### Numeric, Optional, and Score Rules
+
+Numeric validation is field-specific:
+
+- indexes, counts, ranks, houses, Pada, and distance fields require built-in
+  integers and reject booleans;
+- longitude, degree, score, maximum, percentage, and total fields require a
+  finite real number matching the owning public contract and serialize as
+  built-in floats;
+- an exact integer supplied at a float field may be normalized to the
+  equivalent float only when the existing public result type already accepts
+  real numbers; this is the sole numeric type normalization;
+- `-0.0` becomes `0.0` recursively, including scores and normalized
+  longitudes;
+- fractional values are preserved exactly as the finite Python float already
+  stored; and
+- no decimal quantization, display rounding, percentage calculation, score
+  clamping, tolerance comparison, or independently recalculated total is
+  introduced.
+
+A complete individual Koota score must be within its exact maximum. Maximums
+must equal the imported Koota constants. Ashtakoota totals must equal the
+strict aggregate. Manglik has no score. The compatibility report has no
+combined score. Foundation percentage retains its existing `0.0..100.0`
+factory contract; no other percentage is invented.
+
+Optional fields are neither omitted nor filled with defaults. `None` is
+accepted only where the typed family and status allow it; an unexpected null is
+malformed. Empty strings retain their documented invalid-placeholder or
+optional-text meaning but cannot substitute for a complete identifier.
+
+### Strict Failure and Hardening Behavior
+
+All public serializers are strict and fail before returning any partial copy:
+
+- wrong outer result type, wrong nested collection type, unsupported Python
+  object, or boolean-as-number raises `TypeError`;
+- missing, unexpected, aliased, deprecated, or reordered fields; wrong
+  identifiers, schema version, status, category, score, maximum, total,
+  direction, role, metadata, or internal duplicate; non-finite number; cycle;
+  or inconsistent result raises `ValueError`;
+- deterministic error text identifies the family and first failing field/path;
+- no error is returned inside a new serialization result;
+- no field is ignored, defaulted, renamed, repaired, or dropped;
+- no alias such as `max_score`, `total`, `person1`, or camelCase is supported;
+  and
+- no deprecated field registry exists in schema `1.0`.
+
+Duplicate Koota identifiers, missing Kootas, unexpected Kootas, or wrong Koota
+order are invalid. Invalid categories/statuses are not guessed. Scores below
+zero, above maximum, non-finite, boolean, or inconsistent with duplicated
+fields are invalid. Incorrect maxima, aggregate total mismatch, altered
+Manglik comparison facts, malformed report sections/notes/metadata, and
+incorrect validation counts are invalid.
+
+The hardening layer may call existing strict public validators to establish
+structural authority. Such calls must be fail-fast and exceptions propagate
+unchanged unless this specification assigns `TypeError` or `ValueError` at the
+serializer boundary. It must not catch broad `Exception`, invoke a raw
+calculator as a fallback, infer a missing score, suppress component failures,
+or return partial serialized output.
+
+### Schema Versioning and Backward Compatibility
+
+Every current family uses schema generation `1.0`. Individual Koota mappings
+do not add a new top-level schema field in Task 11.15; their exact existing
+`metadata.schema_version` remains authoritative. Foundation, context,
+validation, aggregate, and Manglik results likewise retain metadata-level
+versioning. Only the Compatibility Report continues to expose both top-level
+`schema_version` and matching metadata version.
+
+Consumers may rely on exact field names, field order, identifier values,
+collection order, issue order, metadata order, and numeric semantics for a
+given family/schema version. Stable ordering is intentional even though JSON
+objects are semantically unordered in the JSON standard.
+
+Backward-compatible maintenance within `1.0` includes only:
+
+- bug fixes that restore already documented behavior without changing valid
+  output;
+- additive public Python exports that do not alter prior imports; and
+- internal refactoring with identical serialized data, exceptions, and order.
+
+Adding a field to a strict serialized family, changing field order, changing a
+field type or nullability, renaming/removing a field, changing an identifier,
+category, enum-like value, status, maximum, score meaning, role direction,
+section/Koota order, or validation semantics is breaking and requires a
+documented schema-version increment. An additive metadata field is also
+breaking for this strict `1.0` contract and requires a version increment.
+
+Removal or renaming of existing public exports and calculator parameters is
+prohibited. Existing calculator signatures, all eight Koota mappings and
+scores, `ASHTAKOOTA_TOTAL_MAXIMUM_SCORE=36.0`, Manglik binary five-house rules,
+and Compatibility Report composition semantics remain unchanged. Public
+serializer exports are additive only.
+
+Task 11.15 does not read or hydrate stored payloads, so it provides no promise
+that an arbitrary historical or future payload can be upgraded. Payloads
+produced by the current `1.0` serializers remain deterministic and suitable for
+storage, but schema migration and compatibility readers are deferred to a
+separately specified future task.
+
+### Explicit Implementation Selections
+
+Task 11.15 includes:
+
+- one small centralized internal recursive JSON validator/copier;
+- one centralized internal family-contract registry;
+- the family-specific public serializers listed above;
+- strict structural and cross-field validation per result family;
+- reuse of the existing report serializer and strict component validators;
+- additive public schema constants and serializer exports;
+- focused contract regression tests with explicit expected mappings; and
+- full Sprint 11 backward-compatibility regression.
+
+Task 11.15 does not include:
+
+- a broad rewrite of completed modules;
+- stored golden JSON fixture files or snapshot-update tooling;
+- a new dependency or schema framework;
+- public deserializers, hydrators, generic object converters, migration
+  registries, or version negotiation;
+- JSON strings, file output, persistence, API/Pydantic schemas, database
+  models, UI/PDF rendering, or transport formatting; or
+- changes to calculator result construction unless a focused test exposes a
+  structural bug that violates an already documented contract.
+
+If implementation reveals such a structural bug, the fix must be minimal,
+documented in the changelog and Sprint verification notes, limited to the
+affected structural field/copy behavior, and covered by a regression proving
+all astrology classifications and scores are unchanged.
+
+### Explicitly Excluded Behavior
+
+Task 11.15 explicitly excludes:
+
+- every astrology formula, classification, table, matrix, boundary, mapping,
+  direction, score, maximum, total, cancellation, and exception-rule change;
+- Manglik reference-point, house, category, comparison, severity, or
+  cancellation changes;
+- Ashtakoota execution, Koota order, total, maximum, percentage, or partial
+  aggregation changes;
+- Compatibility Report sections, composition workflow, score semantics, or
+  technical-status changes;
+- compatibility labels, pass/fail or suitability judgements, marriage advice,
+  recommendations, remedies, predictions, Dasha/Navamsha interpretation, or
+  AI narrative;
+- API endpoints, authentication, authorization, telemetry, timestamps, UUIDs,
+  random values, caches, environment data, database persistence, files,
+  network calls, UI, HTML, or PDF generation;
+- localization formatting, locale-specific number/text behavior, and
+  platform-specific serialization; and
+- Sprint 12 Report Data Model work or any later sprint.
+
+### Required Runtime Tests
+
+Task 11.15 runtime implementation is not complete until focused tests cover:
+
+- every listed public serializer and every family identifier;
+- all eight Koota serializers through `serialize_koota_result`;
+- exact top-level and nested field order for every family;
+- exact calculation, component, Koota, report, category, relationship, role,
+  status, and schema identifiers;
+- canonical eight-Koota order and exact nine-section report order;
+- exact Koota maximums `1.0..8.0` and Ashtakoota maximum `36.0`;
+- complete and existing invalid result states for each supported family;
+- `json.dumps(..., allow_nan=False)` without a custom encoder for every output;
+- deterministic equality for repeated equivalent calculations and repeated
+  serialization of one unchanged runtime result;
+- a fresh root and fresh nested mappings/lists on every serialization call;
+- deep mutation isolation from the runtime result, prior/future payloads,
+  sibling paths, calculator outputs, and module constants;
+- no shared mutable defaults across factory, calculator, invalid-result, and
+  serializer calls;
+- exact empty error/warning/reference/factor/note collection behavior;
+- every permitted optional null and rejection of null at required fields;
+- finite integers/floats, integer-to-float normalization only where selected,
+  boolean-as-number rejection, fractional score preservation, no new rounding,
+  and recursive `-0.0` to `0.0` normalization;
+- rejection of `NaN`, both infinities, tuples, sets, frozensets, enums,
+  dataclasses, bytes, bytearrays, memoryviews, date/time/datetime, exceptions,
+  callables, non-mapping custom containers, and arbitrary objects;
+- deterministic conversion of valid mapping proxies, mapping subclasses, and
+  list subclasses into independently allocated built-in dictionaries/lists,
+  plus rejection when their shape, key order, keys, or nested values are
+  malformed;
+- rejection of non-string keys, shared mutable paths, direct cycles, indirect
+  cycles, and cross-component aliasing with deterministic first-failure paths;
+- wrong outer/nested result types, missing fields, unexpected fields, reordered
+  fields, unsupported aliases, and deprecated-field attempts;
+- invalid statuses, categories, classifications, relationships, roles,
+  directions, metadata identifiers, and schema versions;
+- invalid score types, negative scores, above-maximum scores, incorrect maxima,
+  missing complete scores, and scores present on invalid Kootas;
+- duplicate, missing, unexpected, and reordered Kootas; mismatched score/
+  maximum mappings; and inconsistent aggregate totals;
+- malformed Manglik classification, reference point, houses, binary category,
+  pair classification, comparison status, role order, reasons, and exclusion
+  metadata;
+- malformed report type, version, summaries, sections, notes, Koota breakdown,
+  validation counts, errors, warnings, or exclusion metadata;
+- proof that serializers do not mutate inputs, invoke astrology tables,
+  calculate scores, repair results, suppress failures, or produce JSON text;
+- exact public exports, keyword-only signatures, import smoke, and no removed or
+  renamed Task 11.1-11.14 export;
+- unchanged direct outputs from matchmaking foundation, validation,
+  Nakshatra context, all eight Kootas, Ashtakoota, Manglik, and report modules;
+- unchanged directional behavior and bride/groom or person_a/person_b role
+  ordering;
+- unchanged `36.0` Ashtakoota maximum, binary Manglik classification, and
+  structured-only Compatibility Report semantics;
+- focused serialization tests followed by all matchmaking regressions;
+- Kundali, Rashi, Nakshatra, longitude normalization, and placement dependency
+  regressions; and
+- the complete project suite.
+
+Stored golden JSON files are not required. Tests use explicit expected
+field/key tuples and representative complete/invalid mappings so review does
+not depend on opaque snapshot regeneration.
+
+### Completion Criteria and Documentation Progress
+
+Task 11.15 runtime completion requires:
+
+- all focused serialization/hardening tests pass;
+- the complete matchmaking suite passes;
+- Kundali, Rashi, Nakshatra, longitude, and placement regressions pass;
+- the complete project suite passes;
+- configured formatting and Python compilation checks pass;
+- public import smoke and `json.dumps(..., allow_nan=False)` smoke pass;
+- `git diff --check` passes;
+- no duplicated astrology logic or public-contract regression is introduced;
+  and
+- runtime verification totals and any narrowly fixed structural bug are
+  recorded.
+
+This documentation commit completes only the Task 11.15 specification. It must
+not change runtime code, tests, public exports, or `docs/MASTER.md`; it must not
+mark Task 11.15 or Sprint 11 runtime-complete. Runtime implementation may mark
+Task 11.15 `Complete`, mark Sprint 11 complete in `docs/MASTER.md`, and record
+final totals only after every criterion above passes. Work then stops without
+beginning Sprint 12.
 
 ## Deterministic and Compatibility Principles
 

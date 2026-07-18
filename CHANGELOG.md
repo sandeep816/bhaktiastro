@@ -5,6 +5,10 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Source-of-truth Sprint 11 serialization and compatibility-hardening contract
+  covering every matchmaking result family, exact schema and field ordering,
+  strict recursive JSON safety, mutation isolation, versioning, additive
+  compatibility guarantees, and exhaustive runtime-test requirements.
 - Deterministic structured Compatibility / Report Composition over completed
   Ashtakoota and Manglik results, with separated raw, strict precomputed, and
   serialization APIs, canonical ordering, strict JSON-safe validation, and no
