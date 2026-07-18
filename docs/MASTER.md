@@ -36,8 +36,9 @@ permanent calculator contracts.
 Current product status: Sprint 11, the Documentation Architecture Foundation
 gate, and Sprints 12 through 14 are complete. `SPEC-REPORTING-001` and
 `SPEC-INTERPRETATION-001` version 1.0 are approved and implemented. Sprint 15
-Tasks 15.1 and 15.2 have completed Golden Fixture and Golden Reference Source
-governance; source data, fixture data, and tests have not started.
+Tasks 15.1 through 15.3 have completed Golden Fixture governance, Golden
+Reference Source governance, and the Mumbai provisional-case task contract;
+source data, evidence records, fixture data, and tests have not started.
 
 ## Project Rules
 
@@ -211,8 +212,8 @@ Sprint 10B completed:
 ## Current Sprint
 
 Current sprint: Sprint 15 - Golden Fixture Expansion.
-**Tasks 15.1 and 15.2 documentation complete; source and fixture data and tests
-not started.**
+**Tasks 15.1 through 15.3 documentation complete; source, evidence-record,
+fixture, and test work not started.**
 
 Primary sprint document: [SPRINT-15.md](SPRINT-15.md).
 
@@ -230,10 +231,18 @@ Task 15.2 defines canonical reference-source categories, scope-specific trust,
 material independence, provenance, review and conflict resolution, source
 lifecycle, and schema `bhaktiastro.golden-reference-source` version `1.0`.
 
+Task 15.3 is the latest approved Sprint 15 task. It defines the pre-runtime and
+pre-Golden contract for selecting one exact Mumbai case and planning a future
+evidence record with `proposed` fixture lifecycle, `pending` vector
+verification, and `provisional_reference` only as the intended classification
+after externally sourced candidate values exist. It assigns no final case
+values, collects no source evidence, and creates no evidence record or fixture.
+
 These tasks change no runtime code, tests, fixtures, skipped-test state, public
 exports, calculations, or API behavior. Existing Jodhpur and Delhi JSON files
-remain structural and pending. No later Sprint 15 task is approved; future
-source collection and fixture work require separate authorization.
+remain structural and pending. No source collection, Mumbai evidence-record
+creation, fixture work, or later Sprint 15 task is approved; each requires
+separate authorization under the permanent contracts.
 
 ## Completed Matchmaking Reference
 
