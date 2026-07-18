@@ -1,6 +1,6 @@
 # Sprint 13 - Interpretation Data Boundary
 
-Status: Specification complete; runtime not started
+Status: Complete
 
 Primary permanent contract:
 [SPEC-INTERPRETATION-001](specifications/INTERPRETATION.md)
@@ -45,7 +45,7 @@ authorized by this document.
 
 ## Task 13.1 - Interpretation Data Boundary Foundation
 
-Status: Specification complete; runtime not started
+Status: Complete
 
 ### Documentation outcome
 
@@ -72,28 +72,52 @@ and exclusions live only in the permanent specification.
 
 ### Runtime status
 
-No Interpretation runtime model, factory, validator, serializer, public
-export, or automated test is implemented by this documentation task. The
-existing empty `backend/app/interpretation/__init__.py` package marker remains
-unchanged.
+The approved foundation is implemented under `backend/app/interpretation/`
+with the exact eight immutable models, six vocabularies/constants, eight
+keyword-only factories, three strict validators, one root serializer, and the
+documented additive public exports. Runtime values use tuples and mapping
+proxies; serialization returns deterministic, deeply independent built-in
+dictionary/list trees compatible with `json.dumps(..., allow_nan=False)`.
 
-### Completion criteria for a future runtime task
+Focused coverage lives in:
 
-A separately authorized runtime task must:
+- `backend/tests/test_interpretation_models.py`;
+- `backend/tests/test_interpretation_validation.py`;
+- `backend/tests/test_interpretation_serialization.py`; and
+- `backend/tests/test_interpretation_public_api.py`.
 
-1. implement only the approved models, constants, factories, validators, and
+Verification at completion:
+
+- focused Interpretation suite: `83 passed`;
+- Reporting regression suite: `72 passed`;
+- Prediction regression suite: `111 passed`;
+- Matchmaking regression suite: `2639 passed`;
+- complete project suite: `3762 passed, 13 skipped, 20 subtests passed`;
+- the 13 skips remain the documented manual astronomical-reference cases;
+- Python compilation, public import, and strict JSON serialization smoke checks
+  passed;
+- Black formatting checks passed using the existing project environment; and
+- Ruff was unavailable and was not installed.
+
+### Runtime completion criteria
+
+The completed runtime task:
+
+1. implemented only the approved models, constants, factories, validators, and
    root serializer;
-2. preserve every Sprint 10, Sprint 11, Sprint 12, domain, serializer, API,
+2. preserved every Sprint 10, Sprint 11, Sprint 12, domain, serializer, API,
    and public import contract;
-3. add all focused model, validation, serialization, mutation, ordering,
+3. added the focused model, validation, serialization, mutation, ordering,
    import, and dependency-regression tests required by the specification;
-4. run focused tests, Sprint 10, Reporting, Matchmaking, and full regressions,
+4. passed focused tests, Sprint 10, Reporting, Matchmaking, and full regressions,
    plus configured formatting, compilation, import, and diff checks; and
-5. update execution status only after the implementation contract is complete.
+5. updated this execution status only after the implementation contract was
+   complete.
 
 ## Stop point
 
-Stop after the Task 13.1 source-of-truth documentation is committed. Do not
-implement runtime code or tests, create domain adapters or rule libraries,
-generate interpretation or prediction text, adapt findings to Reporting,
-render content, or assign a later task number without a new approved request.
+Task 13.1 and Sprint 13 are complete. No Task 13.2 is documented or opened by
+this implementation. Stop without creating domain adapters or rule libraries,
+generating interpretation or prediction text, adapting findings to Reporting,
+rendering content, or assigning a later task number without a new approved
+request. The next roadmap milestone is Sprint 14 - API Versioning and Stability.
