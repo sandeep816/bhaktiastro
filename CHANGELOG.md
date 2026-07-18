@@ -5,6 +5,11 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Approved domain-neutral Report Data Model Foundation specification with a
+  strict immutable model hierarchy, discriminated block contracts, technical
+  status and diagnostic partial-report policies, deterministic JSON-safe
+  serialization, schema versioning, and an additive public API plan for Sprint
+  12.1 without runtime changes.
 - Approved permanent Matchmaking specification and canonical test-vector
   catalogue, migrating the completed Sprint 11 foundation, all eight Kootas,
   aggregation, Manglik, report composition, public result families, and strict

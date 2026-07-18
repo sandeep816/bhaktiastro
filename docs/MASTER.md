@@ -16,13 +16,16 @@ permanent calculator contracts.
   [Specifications index](specifications/INDEX.md)
 - Canonical completed Matchmaking contract:
   [SPEC-MATCHMAKING-001](specifications/MATCHMAKING.md)
+- Approved Reporting foundation contract:
+  [SPEC-REPORTING-001](specifications/REPORTING.md)
 - Reviewed examples and boundary cases:
   [Test-vector index](test-vectors/INDEX.md)
+- Active Sprint execution record: [SPRINT-12.md](SPRINT-12.md)
 - Most recently completed Sprint execution record: [SPRINT-11.md](SPRINT-11.md)
 
-Current product status: Sprint 11 is complete. The Documentation Architecture
-Foundation gate is complete. Sprint 12 and Task 12.1 have not started; there is
-no active product Sprint task.
+Current product status: Sprint 11 and the Documentation Architecture
+Foundation gate are complete. Sprint 12 is active. The Task 12.1 permanent
+specification is approved; runtime implementation has not started.
 
 ## Project Rules
 
@@ -192,6 +195,25 @@ Sprint 10B completed:
 
 ## Current Sprint
 
+Current sprint: Sprint 12 - Report Data Model Foundation. **Active.**
+
+Primary sprint document: [SPRINT-12.md](SPRINT-12.md).
+
+Permanent contract:
+[SPEC-REPORTING-001](specifications/REPORTING.md).
+
+Task 12.1 documentation is complete. It defines the domain-neutral immutable
+model hierarchy, closed block architecture, technical statuses, explicit
+diagnostic partial-report policy, deterministic ordering, strict JSON-safe
+serialization, schema version `1.0`, and additive public API plan. Runtime
+code, tests, exports, adapters, rendering, interpretation, Sprint 11 migration,
+and later Sprint work have not started.
+
+The next incomplete task is Task 12.1 runtime implementation against the
+approved specification.
+
+## Most Recently Completed Sprint
+
 Current sprint: Sprint 11 - Matchmaking Foundation. **Complete.**
 
 Primary sprint document: `docs/SPRINT-11.md`.
@@ -256,16 +278,15 @@ Completed tasks:
   field-order enforcement, mutation isolation, additive public serializers,
   and full compatibility regression coverage.
 
-Sprint 11 is complete. The next roadmap milestone is Sprint 12 - Report Data
-Model Foundation; it is not begun by Task 11.15.
+Sprint 11 is complete. The Documentation Architecture Foundation established
+ADRs, permanent-specification governance, and canonical test-vector standards
+before Sprint 12 began.
 
-Before Sprint 12 begins, the Documentation Architecture Foundation establishes
-ADRs, permanent-specification governance, and canonical test-vector standards.
 The completed Matchmaking contract is now migrated to
 [`SPEC-MATCHMAKING-001`](specifications/MATCHMAKING.md), with reviewed examples
-in [the Matchmaking vector catalogue](test-vectors/matchmaking.md). No product
-Sprint is active. The next incomplete roadmap task is the Sprint 12.1
-specification; this migration does not begin it.
+in [the Matchmaking vector catalogue](test-vectors/matchmaking.md). Sprint 12
+is now active, and its Task 12.1 specification is approved without changing
+the completed Sprint 11 contracts.
 
 ## Next Task Instructions
 

@@ -22,12 +22,12 @@ while approved permanent specifications own migrated domain contracts.
 | `SPEC-YOGAS-001` | `YOGAS.md` | pending migration | Kundali and prediction Sprint records |
 | `SPEC-DOSHAS-001` | `DOSHAS.md` | pending migration | Domain implementations and completed Sprint records |
 | `SPEC-TRANSITS-001` | `TRANSITS.md` | planned; no approved migration task | [Roadmap](../ROADMAP.md) |
-| `SPEC-REPORTING-001` | `REPORTING.md` | deferred until Sprint 12 starts | [Roadmap](../ROADMAP.md) |
+| `SPEC-REPORTING-001` | [REPORTING.md](REPORTING.md) | approved version 1.0; runtime not started | [Sprint 12](../SPRINT-12.md) |
 
 `pending migration` means no permanent specification is approved yet. It does
 not make this index a substitute for the current Sprint, runtime, or tests.
-The Matchmaking migration is complete. Reporting remains deferred; this
-migration does not start Sprint 12.
+The Matchmaking migration is complete. Reporting is approved as the first
+Sprint 12 contract; its runtime implementation has not started.
 
 ## Initial Migration Inventory
 
@@ -126,8 +126,9 @@ The initial order is:
 8. Transits.
 
 This order starts with the recently completed, fully documented Matchmaking
-contract, then follows its main chart dependencies. Reporting is added only
-when Sprint 12 explicitly begins and approves its contract.
+contract, then follows its main chart dependencies. Reporting is now an
+approved, independently governed Sprint 12 foundation and does not alter that
+domain-migration order.
 
 Each migration is one focused task that must:
 
