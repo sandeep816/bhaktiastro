@@ -5,6 +5,12 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Approved Interpretation Data Boundary Foundation specification with eight
+  immutable domain-neutral model contracts, traceable source-field evidence,
+  versioned rule references, technical status and semantic tendency
+  separation, explicit strength/confidence deferral, deterministic JSON-safe
+  serialization, and an additive public API plan for Sprint 13.1 without
+  runtime changes.
 - Immutable domain-neutral Reporting runtime foundation with eight strict
   models, seven discriminated block kinds, explicit diagnostic statuses,
   defensive factories, strict validators, deterministic JSON-safe

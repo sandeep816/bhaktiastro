@@ -18,14 +18,18 @@ permanent calculator contracts.
   [SPEC-MATCHMAKING-001](specifications/MATCHMAKING.md)
 - Approved Reporting foundation contract:
   [SPEC-REPORTING-001](specifications/REPORTING.md)
+- Approved Interpretation boundary contract:
+  [SPEC-INTERPRETATION-001](specifications/INTERPRETATION.md)
 - Reviewed examples and boundary cases:
   [Test-vector index](test-vectors/INDEX.md)
+- Active Sprint execution record: [SPRINT-13.md](SPRINT-13.md)
 - Most recently completed Sprint execution record: [SPRINT-12.md](SPRINT-12.md)
 - Previous completed Sprint execution record: [SPRINT-11.md](SPRINT-11.md)
 
 Current product status: Sprint 11, the Documentation Architecture Foundation
 gate, and Sprint 12 are complete. `SPEC-REPORTING-001` version 1.0 is approved
-and implemented. Sprint 13 has not started.
+and implemented. Sprint 13 Task 13.1 has an approved specification; runtime
+has not started.
 
 ## Project Rules
 
@@ -196,23 +200,25 @@ Sprint 10B completed:
 
 ## Current Sprint
 
-Current sprint: Sprint 12 - Report Data Model Foundation. **Complete.**
+Current sprint: Sprint 13 - Interpretation Data Boundary.
+**Specification complete; runtime not started.**
 
-Primary sprint document: [SPRINT-12.md](SPRINT-12.md).
+Primary sprint document: [SPRINT-13.md](SPRINT-13.md).
 
 Permanent contract:
-[SPEC-REPORTING-001](specifications/REPORTING.md).
+[SPEC-INTERPRETATION-001](specifications/INTERPRETATION.md).
 
-Task 12.1 is complete. `backend/app/reporting/` implements the approved
-domain-neutral immutable model hierarchy, closed block architecture, technical
-statuses, explicit diagnostic partial-report policy, deterministic ordering,
-strict JSON-safe serialization, schema version `1.0`, and additive public API.
-Focused Reporting, Matchmaking regression, and full-suite verification passed.
-No adapter, rendering, interpretation, Sprint 11 migration, or later Sprint
-work was added.
+Task 13.1 defines an approved domain-neutral immutable boundary for structured
+findings, evidence, sources, subjects, issues, metadata, and versioned rule
+references. It selects technical statuses and a separate limited tendency
+vocabulary, defers universal strength and confidence, and specifies strict
+JSON-safe serialization under schema `bhaktiastro.interpretation.document`
+version `1.0`.
 
-No Task 12.2 is documented. The next incomplete roadmap milestone is Sprint
-13 - Interpretation Data Boundary; its task specification has not started.
+No Interpretation runtime, test, public export, source adapter, rule evaluator,
+narrative, AI integration, Reporting adapter, or rendering work has started.
+No Task 13.2 is documented. The next incomplete task is Task 13.1 runtime
+implementation, which requires separate authorization.
 
 ## Previous Completed Sprint
 
