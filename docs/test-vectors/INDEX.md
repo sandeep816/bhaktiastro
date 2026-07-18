@@ -5,8 +5,15 @@ boundaries, invalid inputs, regression cases, and externally verified
 astronomical values. Vectors demonstrate an approved specification; they do not
 replace formulas, Sprint progress, runtime tests, or implementation code.
 
-No domain vector file or astronomical expected value is added by the
-Documentation Architecture Foundation.
+## Domain Catalogue
+
+| Domain | Canonical vectors | Status | Owning specification |
+| --- | --- | --- | --- |
+| Matchmaking | [matchmaking.md](matchmaking.md) | verified structural/domain-contract vectors | [SPEC-MATCHMAKING-001](../specifications/MATCHMAKING.md) |
+
+No vector marked `verified` is thereby claimed to be independent astronomical
+ephemeris validation. Each vector's source, assumptions, and linked test define
+the scope of verification.
 
 ## Vector Categories
 

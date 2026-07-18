@@ -14,6 +14,8 @@ permanent calculator contracts.
 - Cross-cutting decisions: [Architecture index](architecture/INDEX.md)
 - Permanent domain contracts and migration status:
   [Specifications index](specifications/INDEX.md)
+- Canonical completed Matchmaking contract:
+  [SPEC-MATCHMAKING-001](specifications/MATCHMAKING.md)
 - Reviewed examples and boundary cases:
   [Test-vector index](test-vectors/INDEX.md)
 - Most recently completed Sprint execution record: [SPRINT-11.md](SPRINT-11.md)
@@ -259,8 +261,11 @@ Model Foundation; it is not begun by Task 11.15.
 
 Before Sprint 12 begins, the Documentation Architecture Foundation establishes
 ADRs, permanent-specification governance, and canonical test-vector standards.
-The next documentation task is migration of the completed Matchmaking contract
-to `docs/specifications/MATCHMAKING.md`; it does not start Sprint 12.
+The completed Matchmaking contract is now migrated to
+[`SPEC-MATCHMAKING-001`](specifications/MATCHMAKING.md), with reviewed examples
+in [the Matchmaking vector catalogue](test-vectors/matchmaking.md). No product
+Sprint is active. The next incomplete roadmap task is the Sprint 12.1
+specification; this migration does not begin it.
 
 ## Next Task Instructions
 

@@ -5,6 +5,15 @@ reusable birth and Kundali data. It keeps matchmaking calculations separate
 from astrology calculation engines and from future API, reporting, and UI
 layers.
 
+> **Historical ownership note:** This document preserves Sprint 11 planning,
+> task decisions, implementation chronology, and verification records. The
+> approved permanent domain contract is now
+> [SPEC-MATCHMAKING-001](specifications/MATCHMAKING.md), with canonical examples
+> in the [Matchmaking test-vector catalogue](test-vectors/matchmaking.md). If
+> historical wording conflicts with that approved specification, use the
+> [source-of-truth hierarchy](architecture/INDEX.md#source-of-truth-and-conflict-resolution)
+> rather than silently rewriting history.
+
 ## Sprint Status
 
 Status: **Complete (Tasks 11.1-11.15 Complete)**

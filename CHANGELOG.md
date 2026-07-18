@@ -5,6 +5,10 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Approved permanent Matchmaking specification and canonical test-vector
+  catalogue, migrating the completed Sprint 11 foundation, all eight Kootas,
+  aggregation, Manglik, report composition, public result families, and strict
+  serialization contracts without runtime changes.
 - Documentation Architecture Foundation with accepted cross-cutting ADRs,
   permanent domain-specification governance, canonical test-vector standards,
   a source-of-truth hierarchy, conflict resolution, and gradual migration rules

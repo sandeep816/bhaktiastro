@@ -7,14 +7,14 @@ serialization, compatibility, and explicit exclusions. They do not own Sprint
 progress, branch instructions, implementation chronology, or broad
 cross-cutting architecture decisions.
 
-No full domain specification is created by the Documentation Architecture
-Foundation. Completed Sprint documents remain preserved while migration occurs.
+Completed Sprint documents remain preserved as historical execution records
+while approved permanent specifications own migrated domain contracts.
 
 ## Planned Specification Register
 
 | Identifier | Planned document | Migration state | Current source material |
 | --- | --- | --- | --- |
-| `SPEC-MATCHMAKING-001` | `MATCHMAKING.md` | pending migration; next documentation task | [Sprint 11](../SPRINT-11.md) |
+| `SPEC-MATCHMAKING-001` | [MATCHMAKING.md](MATCHMAKING.md) | migrated; approved version 1.0 | [Sprint 11](../SPRINT-11.md) and completed runtime/tests |
 | `SPEC-KUNDALI-001` | `KUNDALI.md` | pending migration | [Sprint 4](../KUNDALI_SPRINT_4.md) and later Kundali integrations |
 | `SPEC-DASHA-001` | `DASHA.md` | pending migration | [Sprint 6](../SPRINT-06.md) |
 | `SPEC-PANCHANG-001` | `PANCHANG.md` | pending migration | Sprints 1-3, [API](../API.md), and [accuracy notes](../ACCURACY.md) |
@@ -26,7 +26,8 @@ Foundation. Completed Sprint documents remain preserved while migration occurs.
 
 `pending migration` means no permanent specification is approved yet. It does
 not make this index a substitute for the current Sprint, runtime, or tests.
-Reporting remains deferred; this foundation does not start Sprint 12.
+The Matchmaking migration is complete. Reporting remains deferred; this
+migration does not start Sprint 12.
 
 ## Initial Migration Inventory
 
