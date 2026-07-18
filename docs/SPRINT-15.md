@@ -1,7 +1,8 @@
 # Sprint 15 - Golden Fixture Expansion
 
-Status: In progress - Tasks 15.1 through 15.3 documentation complete; source
-and fixture data and tests not started
+Status: In progress - Tasks 15.1 through 15.4 documentation complete; one
+proposed Mumbai evidence plan exists; sources, expected values, fixture data,
+and tests not started
 
 Primary permanent contracts:
 
@@ -27,6 +28,14 @@ Task 15.3 authorizes the exact contract for selecting one future Mumbai case
 and preparing its provisional human evidence record. It selects no date,
 coordinates, calculation values, source values, or tolerances and creates no
 record or fixture.
+
+A separately authorized Task 15.3 execution created the `proposed` and
+`pending` [Mumbai TIME_JD evidence plan](test-vectors/golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md)
+without sources, expected values, tolerances, machine data, or tests.
+
+Task 15.4 authorizes selection and lineage review of real reference-source
+products for that record. It remains separate from source approval,
+expected-value acquisition, comparison, tolerance, fixture, and test work.
 
 ## Source-of-truth and sequencing decision
 
@@ -74,9 +83,11 @@ Task 15.1 governs these areas but implements none of them.
 
 ## Approved task sequence
 
-Tasks 15.1 through 15.3 are the only approved tasks, and all are documentation-
-only and complete. No source-collection, fixture, runtime, test-activation, or
-Task 15.4 work is authorized by this document.
+Tasks 15.1 through 15.4 are the only approved tasks, and all are documentation-
+only and complete. No expected-value collection, fixture, runtime,
+test-activation, or Task 15.5 work is authorized by this document. Task 15.4
+source-selection execution requires separate explicit authorization under the
+boundary below.
 
 ## Task 15.1 - Golden Fixture Governance and Reference Specification
 
@@ -339,13 +350,203 @@ Task 15.3 documentation is complete when:
    and
 7. one focused documentation commit leaves a clean working tree.
 
+## Task 15.4 - Mumbai Independent Reference Source Selection
+
+Status: Complete - documentation authorization only
+
+### Purpose and scope
+
+Task 15.4 defines and authorizes the source-selection contract for the
+[Mumbai TIME_JD evidence plan](test-vectors/golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md).
+It selects qualifying products for civil-time/timezone and UTC-conversion
+evidence and for Julian Day methodology or independently generated reference
+output. Source selection identifies reproducible products and their lineage;
+it does not acquire an expected value, approve a source, compare output, or
+promote the fixture.
+
+Every source selection must satisfy
+[SPEC-GOLDEN-REFERENCE-SOURCES-001](specifications/GOLDEN-REFERENCE-SOURCES.md).
+Task 15.4 does not change either canonical Golden specification.
+
+### Required source set and canonical routes
+
+The standard selection route requires:
+
+1. one `trusted_public_standard` source intended as `primary` for IANA
+   timezone, civil-time, offset, DST, fold, and UTC-conversion evidence;
+2. one materially independent corroborating `primary` or `secondary` source
+   for that civil-time evidence when canonical policy requires corroboration;
+3. one scope-qualified source intended as `primary` for Julian Day methodology
+   or reference output, normally `authoritative_ephemeris`; and
+4. one materially independent Julian Day corroborating source intended as
+   `primary` or `secondary`, using `published_astronomical_table`,
+   `independent_manual_calculation`, or `independent_reference_software` only
+   when its scope, reproducibility, precision, and lineage qualify.
+
+The canonical Primary-unavailable route may instead use two materially
+independent Secondary sources with a reviewer-approved explanation. The
+unique-authority route may use one Primary only with the required reviewed
+single-source exception. Neither exception is presumed or approved by Task
+15.4. `supporting` and `informational` sources never satisfy the qualifying
+minimum.
+
+### Independence requirements
+
+For each output family, the future execution must assess independence across:
+
+- publisher or maintainer;
+- underlying timezone database, ephemeris, table, or other dataset;
+- calculation engine or formula implementation;
+- configuration, operator, transcription, and interface path; and
+- relationship to BhaktiAstro, its Python datetime/numeric-offset path,
+  `pyswisseph`/Swiss Ephemeris use, repository calculation utilities, and
+  existing structural snapshots.
+
+Two web interfaces over the same engine or upstream service count as one
+lineage. A Swiss-Ephemeris-derived source is not independent verification of a
+BhaktiAstro value derived through the same material Swiss Ephemeris lineage
+unless the shared lineage is disclosed and the canonical exception process is
+fully satisfied. BhaktiAstro output and the Jodhpur or Delhi snapshots cannot
+qualify as source evidence.
+
+### Source-selection record requirements
+
+Each selected product must receive a provisional identifier matching
+`GRS-<SOURCE_TOKEN>-V1`, where the token identifies the real product or
+publication rather than a planning slot or mutable URL. The Mumbai record must
+capture, for every selection:
+
+- source name and publisher or maintainer;
+- canonical source category and intended scope-specific trust level;
+- exact product, edition, build, database, or engine version;
+- publication date when the source publishes one, actual access date, and a
+  stable URL or bibliographic citation;
+- inspectable methodology, calculation engine or formula, configuration
+  options, supported precision, and available outputs;
+- upstream data and engine lineage, relationship to BhaktiAstro, and a written
+  independence assessment;
+- compatibility with the selected case's time, calendar, scale, precision, and
+  output meaning;
+- known limitations and reproducibility constraints;
+- source lifecycle/approval state; and
+- reviewer assignment and review state.
+
+Unknown mandatory metadata remains an explicit blocker. It is not replaced by
+guessed values, brand reputation, popularity, or public availability.
+
+### Timezone and UTC-conversion evidence
+
+The selected source set must be capable of establishing, for local civil
+instant `2024-07-01 12:00:00`:
+
+- IANA identifier `Asia/Kolkata` and the responsible timezone-data product;
+- exact tzdata or equivalent ruleset version;
+- UTC offset, DST status, fold/ambiguity status, and applicable modern rule;
+- consistent conversion from that local instant to UTC; and
+- evidence that the selected modern instant is a non-seasonal-DST baseline,
+  without generalizing the result to historical dates.
+
+Task 15.4 authorization records neither the final offset nor converted UTC
+instant. Those values require separately authorized acquisition from the
+selected, versioned sources.
+
+### Julian Day source requirements
+
+Every proposed Julian Day source must explicitly document:
+
+- Gregorian calendar interpretation and reform/proleptic assumptions where
+  applicable;
+- input time scale and the distinction among local civil time, UTC, UT/UT1,
+  TT, and any other scale exposed by the product;
+- Julian Date epoch and start-of-day convention, including the noon boundary
+  rather than silently assuming a midnight boundary;
+- leap-second, DUT1, delta-T, or equivalent handling where relevant;
+- numeric precision, source-native rounding, and display rounding;
+- conversion formula, table provenance, or engine methodology;
+- exact product, engine, table, kernel, or publication version; and
+- reproducible inputs, settings, and output extraction.
+
+A label such as “Julian Day” without these semantics is insufficient for
+selection.
+
+### Acceptance and rejection criteria
+
+A source may be selected only when its canonical category and intended trust
+level are valid for the declared scope; its citation is stable; its methodology
+and relevant configuration are inspectable; its version, precision, outputs,
+and limitations can be recorded; its lineage is documented; its independence
+is acceptable or explicitly routed through a canonical exception; its result
+is reproducible; and reviewer status is recorded.
+
+Reject or defer a candidate that:
+
+- exposes no inspectable methodology or hides engine, version, data, or
+  configuration;
+- supplies only localized Panchang display values without reproducible source
+  semantics;
+- cannot distinguish local time, UTC, UT/UT1, TT, or its Julian day boundary;
+- has unexamined shared lineage with BhaktiAstro or another candidate;
+- rounds below the precision required for later comparison;
+- cannot be reproduced from recorded inputs and settings; or
+- is preferred because its output is closest to BhaktiAstro.
+
+Disagreement is retained for later review; it is never resolved by averaging,
+majority vote, convenient source selection, or tolerance widening.
+
+### Future execution boundary
+
+A separately authorized Task 15.4 execution may update only:
+
+- `docs/test-vectors/golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md`; and
+- `docs/test-vectors/INDEX.md` when source-status metadata is indexed.
+
+That execution may name real products, assign canonical provisional `GRS-...-V1`
+identifiers, document methodology, lineage, compatibility, limitations, and
+review state, and resolve source-selection blockers. It may not collect or add
+expected Julian Day values, insert final UTC-conversion values without separate
+authorization, assign tolerances, mark a source approved without canonical
+review, create runtime code or machine fixture data, or alter skipped tests.
+
+### Promotion boundary and explicit exclusions
+
+Completing source selection does not permit classification as `golden`, fixture
+approval, vector verification, or regression use. Later separately authorized
+tasks remain required for reference-value acquisition, source comparison and
+discrepancy review, tolerance justification, named reviewer approval,
+lifecycle promotion, machine fixture creation, and regression activation.
+
+Task 15.4 includes no runtime, test, schema, loader, validator, comparison
+helper, machine JSON, expected astronomical value, calculated BhaktiAstro
+value, final offset or UTC instant, numeric tolerance, fixture promotion,
+source approval, skipped-test change, Jodhpur/Delhi change, ROADMAP change, or
+Sprint 16 work. The only authorization-task file updates are
+`docs/SPRINT-15.md`, `docs/MASTER.md`, and `CHANGELOG.md`.
+
+### Completion criteria
+
+Task 15.4 authorization is complete when:
+
+1. purpose, required source set, canonical verification routes, source-record
+   fields, and time/Julian methodology requirements are explicit;
+2. independence, acceptance, rejection, and conflict rules are documented;
+3. future source-selection execution files and exclusions are exact;
+4. `MASTER.md` identifies Task 15.4 as the next and latest approved Sprint 15
+   task while keeping Sprint 15 in progress;
+5. the changelog records authorization without claiming source selection or
+   value acquisition;
+6. no runtime, test, fixture JSON, source record, expected value, tolerance, or
+   lifecycle change exists;
+7. Markdown links and anchors, changed-file scope, and `git diff --check` pass;
+   and
+8. one focused documentation commit leaves a clean working tree.
+
 ## Proposed future sequence - not approved
 
 The following unnumbered order mirrors the ROADMAP and is planning context
-only. Task 15.3 defines the contract for the first area's case selection and
-evidence planning but does not authorize its source collection, evidence-record
-creation, fixture, or test work. Each execution area requires separate
-authorization before work begins:
+only. Tasks 15.3 and 15.4 define the first area's case and source-selection
+contracts but do not authorize expected-value collection, machine-fixture, or
+test work. Task 15.4 source-selection execution and every later execution area
+require separate authorization before work begins:
 
 1. source and review a Mumbai non-DST reference fixture;
 2. source and review London standard, daylight, and transition cases;
@@ -359,7 +560,7 @@ implementation authority.
 
 ## Explicit exclusions
 
-Tasks 15.1 through 15.3 do not create or change:
+Tasks 15.1 through 15.4 do not create or change:
 
 - fixture data, canonical expected values, external evidence, or screenshots;
 - source records, source approvals, reference datasets, or tolerance values;
@@ -371,7 +572,7 @@ Tasks 15.1 through 15.3 do not create or change:
 
 ## Stop point
 
-Task 15.3 stops after the documentation commit. No source collection, evidence
-record, machine fixture, test activation, or later Sprint 15 task is approved.
-The Mumbai execution area remains proposed and must not begin without
-qualifying independent sources and separate explicit authorization.
+Task 15.4 stops after the documentation commit. No source-selection execution,
+expected-value collection, machine fixture, test activation, or later Sprint
+15 task is approved. Mumbai source selection remains separately gated by the
+future execution boundary above.

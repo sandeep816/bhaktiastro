@@ -36,9 +36,11 @@ permanent calculator contracts.
 Current product status: Sprint 11, the Documentation Architecture Foundation
 gate, and Sprints 12 through 14 are complete. `SPEC-REPORTING-001` and
 `SPEC-INTERPRETATION-001` version 1.0 are approved and implemented. Sprint 15
-Tasks 15.1 through 15.3 have completed Golden Fixture governance, Golden
-Reference Source governance, and the Mumbai provisional-case task contract;
-source data, evidence records, fixture data, and tests have not started.
+Tasks 15.1 through 15.4 have completed Golden Fixture governance, Golden
+Reference Source governance, the Mumbai provisional-case contract, and the
+Mumbai independent-source-selection contract. One proposed/pending human
+evidence plan exists; sources, expected values, fixture data, and tests have
+not started.
 
 ## Project Rules
 
@@ -212,8 +214,9 @@ Sprint 10B completed:
 ## Current Sprint
 
 Current sprint: Sprint 15 - Golden Fixture Expansion.
-**Tasks 15.1 through 15.3 documentation complete; source, evidence-record,
-fixture, and test work not started.**
+**Tasks 15.1 through 15.4 documentation complete; one proposed/pending Mumbai
+evidence plan exists; source selection, expected values, fixtures, and tests
+not started.**
 
 Primary sprint document: [SPRINT-15.md](SPRINT-15.md).
 
@@ -231,18 +234,29 @@ Task 15.2 defines canonical reference-source categories, scope-specific trust,
 material independence, provenance, review and conflict resolution, source
 lifecycle, and schema `bhaktiastro.golden-reference-source` version `1.0`.
 
-Task 15.3 is the latest approved Sprint 15 task. It defines the pre-runtime and
+Task 15.3 defines the pre-runtime and
 pre-Golden contract for selecting one exact Mumbai case and planning a future
 evidence record with `proposed` fixture lifecycle, `pending` vector
 verification, and `provisional_reference` only as the intended classification
 after externally sourced candidate values exist. It assigns no final case
 values, collects no source evidence, and creates no evidence record or fixture.
 
+A separately authorized execution created the
+[Mumbai TIME_JD evidence plan](test-vectors/golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md)
+without expected values, sources, tolerances, fixture data, or tests.
+
+Task 15.4 is the next and latest approved Sprint 15 task. It authorizes a
+pre-value source-selection contract for timezone/UTC and Julian Day evidence,
+with canonical categories, material independence, reproducibility, acceptance
+and rejection criteria, and a two-file future execution boundary. It selects
+or approves no product and acquires no value.
+
 These tasks change no runtime code, tests, fixtures, skipped-test state, public
 exports, calculations, or API behavior. Existing Jodhpur and Delhi JSON files
-remain structural and pending. No source collection, Mumbai evidence-record
-creation, fixture work, or later Sprint 15 task is approved; each requires
-separate authorization under the permanent contracts.
+remain structural and pending. No Task 15.4 source-selection execution,
+expected-value collection, machine fixture, test activation, or later Sprint
+15 task is approved; each requires separate authorization under the permanent
+contracts.
 
 ## Completed Matchmaking Reference
 
