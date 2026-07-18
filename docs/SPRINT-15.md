@@ -1,10 +1,12 @@
 # Sprint 15 - Golden Fixture Expansion
 
-Status: In progress - Task 15.1 documentation complete; fixture data and tests
-not started
+Status: In progress - Tasks 15.1 and 15.2 documentation complete; source and
+fixture data and tests not started
 
-Primary permanent contract:
-[SPEC-GOLDEN-FIXTURES-001](specifications/GOLDEN-FIXTURES.md)
+Primary permanent contracts:
+
+- [SPEC-GOLDEN-FIXTURES-001](specifications/GOLDEN-FIXTURES.md)
+- [SPEC-GOLDEN-REFERENCE-SOURCES-001](specifications/GOLDEN-REFERENCE-SOURCES.md)
 
 ## Sprint purpose
 
@@ -16,6 +18,10 @@ test vectors and pytest artifacts.
 
 Task 15.1 creates no fixture value, test, validator, runtime behavior, or
 calculation change.
+
+Task 15.2 defines the canonical source categories, trust and independence
+model, provenance, review, conflict, lifecycle, and source-record schema that
+all future Golden Fixture work must use. It collects no source or fixture data.
 
 ## Source-of-truth and sequencing decision
 
@@ -63,8 +69,9 @@ Task 15.1 governs these areas but implements none of them.
 
 ## Approved task sequence
 
-Only Task 15.1 is approved. No runtime fixture task or Task 15.2 number is
-authorized by this document.
+Tasks 15.1 and 15.2 are the only approved tasks, and both are documentation-
+only and complete. No runtime fixture task or Task 15.3 number is authorized by
+this document.
 
 ## Task 15.1 - Golden Fixture Governance and Reference Specification
 
@@ -119,6 +126,47 @@ Task 15.1 is complete when:
 5. cross-document links, anchors, Markdown scope, and diff checks pass; and
 6. one focused documentation commit leaves a clean working tree.
 
+## Task 15.2 - Golden Reference Source Framework
+
+Status: Complete - documentation only
+
+### Documentation outcome
+
+Task 15.2 approves
+[SPEC-GOLDEN-REFERENCE-SOURCES-001](specifications/GOLDEN-REFERENCE-SOURCES.md)
+version `1.0` as the permanent source of truth for:
+
+- the distinction between repository-owned Golden Fixtures and the external or
+  independently prepared Golden References that support them;
+- the existing five closed fixture provenance source types, with exact
+  acceptance requirements and evaluation of official ephemerides, JPL/NASA,
+  Swiss Ephemeris, government observatories, published tables, independent
+  software, manual observations, and academic publications;
+- four scope-specific trust levels: `primary`, `secondary`, `supporting`, and
+  `informational`;
+- material independence across publisher, data lineage, engine, operator, and
+  the BhaktiAstro implementation under test;
+- standard and narrowly reviewed exception routes for minimum independent
+  verification;
+- complete source provenance, review, disagreement, supersession, and archive
+  rules; and
+- schema `bhaktiastro.golden-reference-source` version `1.0` without changing
+  Golden Fixture schema `1.0`.
+
+### Completion criteria
+
+Task 15.2 is complete when:
+
+1. source categories and trust levels are closed, scope-specific, and not
+   assigned automatically by brand;
+2. source provenance maps into the existing fixture provenance and review
+   fields without changing that schema;
+3. independent verification and unresolved-source conflict behavior are exact;
+4. no source record, evidence, fixture, expected value, tolerance, test, skip
+   state, runtime, public API, or calculation changes;
+5. cross-document links, anchors, Markdown scope, and diff checks pass; and
+6. one focused documentation commit leaves a clean working tree.
+
 ## Proposed future sequence - not approved
 
 The following unnumbered order mirrors the ROADMAP and is planning context
@@ -137,9 +185,10 @@ implementation authority.
 
 ## Explicit exclusions
 
-Task 15.1 does not create or change:
+Tasks 15.1 and 15.2 do not create or change:
 
 - fixture data, canonical expected values, external evidence, or screenshots;
+- source records, source approvals, reference datasets, or tolerance values;
 - runtime code, tests, skipped tests, pytest helpers, or public exports;
 - astronomical, Panchang, timezone, DST, Kundali, or API behavior;
 - approved numerical tolerances;
@@ -148,6 +197,7 @@ Task 15.1 does not create or change:
 
 ## Stop point
 
-Task 15.1 stops after the documentation commit. No later Sprint 15 task is
-approved. The next implementation area is only proposed and must not begin
-without a task contract, independent sources, and explicit authorization.
+Task 15.2 stops after the documentation commit. No later Sprint 15 task is
+approved. The next source-collection or fixture implementation area is only
+proposed and must not begin without a task contract, qualifying independent
+sources, and explicit authorization.

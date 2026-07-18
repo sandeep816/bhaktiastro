@@ -26,6 +26,7 @@ while approved permanent specifications own migrated domain contracts.
 | `SPEC-INTERPRETATION-001` | [INTERPRETATION.md](INTERPRETATION.md) | approved version 1.0; runtime implemented | [Sprint 13](../SPRINT-13.md) |
 | `SPEC-API-STABILITY-001` | [API-STABILITY.md](API-STABILITY.md) | approved version 1.0; documentation foundation complete | [Sprint 14](../SPRINT-14.md) |
 | `SPEC-GOLDEN-FIXTURES-001` | [GOLDEN-FIXTURES.md](GOLDEN-FIXTURES.md) | approved version 1.0; governance complete; fixture data not started | [Sprint 15](../SPRINT-15.md) |
+| `SPEC-GOLDEN-REFERENCE-SOURCES-001` | [GOLDEN-REFERENCE-SOURCES.md](GOLDEN-REFERENCE-SOURCES.md) | approved version 1.0; source framework complete; source records not started | [Sprint 15](../SPRINT-15.md) |
 
 `pending migration` means no permanent specification is approved yet. It does
 not make this index a substitute for the current Sprint, runtime, or tests.
@@ -36,6 +37,9 @@ approved and implemented as the Sprint 13 foundation. API Stability version
 separately authorized future inventory and contract-test enforcement are not
 started. Golden Fixture Governance version 1.0 is the approved Sprint 15
 documentation foundation; no golden fixture data exists yet.
+Golden Reference Source Framework version 1.0 defines the approved source,
+trust, independence, provenance, and review contract; no source record or
+reference dataset exists yet.
 
 ## Initial Migration Inventory
 
@@ -137,8 +141,8 @@ This order starts with the recently completed, fully documented Matchmaking
 contract, then follows its main chart dependencies. Reporting is now an
 approved, independently governed Sprint 12 foundation and does not alter that
 domain-migration order. API Stability is a cross-cutting approved Sprint 14
-contract and Golden Fixture Governance is a cross-domain approved Sprint 15
-contract; neither alters the migration order.
+contract. Golden Fixture Governance and Golden Reference Source Governance are
+cross-domain approved Sprint 15 contracts. None alters the migration order.
 
 Each migration is one focused task that must:
 

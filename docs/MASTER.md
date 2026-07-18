@@ -24,6 +24,8 @@ permanent calculator contracts.
   [SPEC-API-STABILITY-001](specifications/API-STABILITY.md)
 - Approved Golden Fixture governance contract:
   [SPEC-GOLDEN-FIXTURES-001](specifications/GOLDEN-FIXTURES.md)
+- Approved Golden Reference Source contract:
+  [SPEC-GOLDEN-REFERENCE-SOURCES-001](specifications/GOLDEN-REFERENCE-SOURCES.md)
 - Reviewed examples and boundary cases:
   [Test-vector index](test-vectors/INDEX.md)
 - Active Sprint execution record: [SPRINT-15.md](SPRINT-15.md)
@@ -34,8 +36,8 @@ permanent calculator contracts.
 Current product status: Sprint 11, the Documentation Architecture Foundation
 gate, and Sprints 12 through 14 are complete. `SPEC-REPORTING-001` and
 `SPEC-INTERPRETATION-001` version 1.0 are approved and implemented. Sprint 15
-Task 15.1 has completed its documentation-only Golden Fixture governance;
-fixture data and tests have not started.
+Tasks 15.1 and 15.2 have completed Golden Fixture and Golden Reference Source
+governance; source data, fixture data, and tests have not started.
 
 ## Project Rules
 
@@ -209,22 +211,29 @@ Sprint 10B completed:
 ## Current Sprint
 
 Current sprint: Sprint 15 - Golden Fixture Expansion.
-**Task 15.1 documentation complete; fixture data and tests not started.**
+**Tasks 15.1 and 15.2 documentation complete; source and fixture data and tests
+not started.**
 
 Primary sprint document: [SPRINT-15.md](SPRINT-15.md).
 
-Permanent contract:
-[SPEC-GOLDEN-FIXTURES-001](specifications/GOLDEN-FIXTURES.md).
+Permanent contracts:
+
+- [SPEC-GOLDEN-FIXTURES-001](specifications/GOLDEN-FIXTURES.md)
+- [SPEC-GOLDEN-REFERENCE-SOURCES-001](specifications/GOLDEN-REFERENCE-SOURCES.md)
 
 Task 15.1 defines fixture classifications and lifecycle, golden qualification,
 schema and identifiers, provenance and manual review, exact time/DST context,
 per-scope tolerance governance, storage boundaries, failure policy, and the
 future Mumbai, London, New York, and Kundali fixture boundaries.
 
-Task 15.1 changes no runtime code, tests, fixtures, skipped-test state, public
+Task 15.2 defines canonical reference-source categories, scope-specific trust,
+material independence, provenance, review and conflict resolution, source
+lifecycle, and schema `bhaktiastro.golden-reference-source` version `1.0`.
+
+These tasks change no runtime code, tests, fixtures, skipped-test state, public
 exports, calculations, or API behavior. Existing Jodhpur and Delhi JSON files
 remain structural and pending. No later Sprint 15 task is approved; future
-fixture work requires independent sources and separate authorization.
+source collection and fixture work require separate authorization.
 
 ## Completed Matchmaking Reference
 

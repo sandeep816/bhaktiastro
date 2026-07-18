@@ -5,6 +5,11 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Approved Golden Reference Source Framework defining the five canonical
+  source categories, four scope-specific trust levels, material-independence
+  rules, provenance and review requirements, conflict resolution, source
+  lifecycle, and schema versioning for Sprint 15.2 without collecting source
+  records, reference datasets, or fixture data.
 - Approved Golden Fixture Governance and Reference specification defining
   structural, regression, provisional-reference, and golden classifications;
   strict qualification, provenance, time/DST, tolerance, schema, identifier,
