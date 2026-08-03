@@ -7,8 +7,9 @@
 | Provisional fixture ID | `GF-MUMBAI-20240701-TIME_JD-V1` |
 | Record title | Mumbai Time and Julian Day Evidence Plan |
 | Owning task | [Sprint 15, Task 15.3](../../SPRINT-15.md#task-153---mumbai-reference-case-selection-and-provisional-evidence-record) |
+| Source-selection task | [Sprint 15, Task 15.4](../../SPRINT-15.md#task-154---mumbai-independent-reference-source-selection) |
 | Fixture schema relationship | Human planning record aligned with `bhaktiastro.golden-fixture` version `1.0`; not a machine-schema instance |
-| Source schema relationship | Candidate-source plan aligned with `bhaktiastro.golden-reference-source` version `1.0`; no source record exists |
+| Source schema relationship | Three selected provisional source products aligned with `bhaktiastro.golden-reference-source` version `1.0`; no canonical source record exists and no source is approved |
 | Artifact type | Provisional case-selection and evidence-planning record |
 | Current fixture classification | Not assigned; `provisional_reference` is only the intended later classification after externally sourced candidate values exist |
 | Fixture lifecycle | `proposed` |
@@ -32,6 +33,7 @@ case; it is not the evidence that performs that review.
 This record:
 
 - contains no approved or candidate expected astronomical values;
+- identifies provisional reference-source products but does not approve them;
 - is not a regression fixture and cannot be consumed by runtime tests;
 - is not evidence of BhaktiAstro accuracy;
 - does not qualify as fixture classification `provisional_reference` until
@@ -152,103 +154,137 @@ lineage observations, not reference truth.
 | Serialization precision | `unresolved` | Must be derived from qualifying source precision and the owning runtime contract without truncating evidence |
 | Language/localization policy | `selected` | Stable English machine identifiers; preserve source-native labels in evidence, with no localized expected output in scope |
 
-## Reference-source candidate plan
+## Selected provisional reference-source products
 
-No qualifying source has been selected. Canonical source IDs cannot yet be
-allocated because `GRS-<SOURCE_TOKEN>-V1` must identify a real product or
-publication, not an invented planning label. Each slot below therefore records
-the required ID pattern and selection criteria without pretending that a
-source exists.
+Task 15.4 selects the following real products as **provisional candidates**.
+Selection assigns a stable proposed identity and a scope-specific category and
+trust intention; it is not source-schema approval, source lifecycle promotion,
+expected-value acquisition, or fixture verification. Every source lifecycle
+remains `proposed`, every review decision remains `pending`, and the reviewer
+is unassigned.
 
-### Primary candidate slot - timezone context
+| Provisional source ID | Product | Canonical category | Intended trust | Declared scope | Independence status |
+| --- | --- | --- | --- | --- | --- |
+| `GRS-IANA_TZDB_2024B-V1` | IANA Time Zone Database release 2024b | `trusted_public_standard` | `primary` | `timezone_validation` | Confirmed relative to BhaktiAstro's numeric-offset implementation; it is the upstream data lineage for any 2024b-based `zoneinfo` check and does not independently corroborate itself |
+| `GRS-IAU_SOFA_CALENDAR-V1` | IAU SOFA Time Scale and Calendar Tools, software version 18, document revision 1.63 | `authoritative_ephemeris` | `primary` | `julian_day` | Provisionally acceptable relative to BhaktiAstro; reviewer confirmation of implementation lineage remains required |
+| `GRS-USNO_JULIAN_DATE-V1` | USNO Julian Date Converter with official conversion-method FAQ | `independent_reference_software` | `secondary` | `julian_day` | Unresolved relative to both SOFA and BhaktiAstro because the live converter's exact backend version and implementation lineage are not published on the cited pages |
 
-| Field | Requirement or status |
+`authoritative_ephemeris` is used for the SOFA selection only in the canonical
+category's scope-bounded sense of a direct, versioned official astronomical
+product from its responsible institution. SOFA supplies authoritative
+astronomical standards, algorithms, and time/calendar procedures, not a
+celestial-position ephemeris for this case. The assignment does not extend
+Primary trust beyond Gregorian-calendar, time-scale, and Julian Date
+methodology.
+
+`independent_reference_software` is a better fit than
+`published_astronomical_table` for the USNO selection because the proposed
+product is an interactive converter. Its official FAQ and the cited 1990
+*Almanac for Computers* formula provide method evidence, but they do not turn
+the live converter into a versioned table or disclose its exact backend.
+
+### `GRS-IANA_TZDB_2024B-V1` - IANA Time Zone Database 2024b
+
+| Field | Selected evidence or status |
 | --- | --- |
-| Provisional source identifier | Unassigned; must become `GRS-<TIMEZONE_PRODUCT>-V1` after product selection |
-| Source category | Required `trusted_public_standard` |
-| Intended trust level | Proposed `primary` for timezone context only |
-| Source name | Unresolved; select the direct responsible timezone database or official standard product |
-| Publisher or maintainer | Unresolved with source selection |
-| Version | Unresolved; an exact database release is mandatory |
-| Publication date | Unresolved; must come from the selected source record |
-| Access date | Unresolved; must record the actual later evidence-collection date |
-| Citation | Unresolved; stable product/version citation required |
-| Engine or methodology | Versioned timezone rules for `Asia/Kolkata` |
-| Configuration compatibility | Must establish the selected local instant, offset, DST state, fold, calendar, and UTC conversion |
-| Expected outputs available | Not assessed; no values collected |
-| Lineage relationship to BhaktiAstro | Must be direct standard evidence rather than BhaktiAstro or host-environment output |
-| Independence assessment | Not performed |
-| Approval state | Candidate slot only; not approved |
+| Source name | Time Zone Database release 2024b |
+| Publisher or maintainer | Internet Assigned Numbers Authority (IANA); the maintenance procedure is described by IETF BCP 175 / RFC 6557 |
+| Canonical category | `trusted_public_standard` |
+| Intended trust level | `primary` for `timezone_validation` only |
+| Product/version | `tzdb-2024b` |
+| Publication date | `2024-09-04`, from the official IANA release history |
+| Access date | `2026-08-03` |
+| Stable citations | [IANA Time Zone Database](https://www.iana.org/time-zones); [IANA 2024b release directory](https://data.iana.org/time-zones/tzdb-2024b/); [IANA release history](https://www.iana.org/time-zones/releases); [RFC 6557](https://datatracker.ietf.org/doc/html/rfc6557) |
+| Applicable data files | Release-pinned `asia`, `tzdata.zi`, `zone1970.tab`, `backward`, `version`, and `NEWS`; the 2024b `asia` source contains the `Asia/Kolkata` zone |
+| Calculation engine | TZDB 2024b reference code and compiled zone data; no implementation was executed in this task |
+| Timezone database version | `2024b` |
+| Methodology | Machine-readable zone and rule records used with the TZDB reference implementation to determine local-time rules and offsets; RFC 6557 describes maintenance governance but is not the offset dataset |
+| Relevant configuration | Exact release 2024b, zone `Asia/Kolkata`, Gregorian local civil instant selected by this record; later acquisition must record the tool and command used to evaluate the release |
+| Precision | Rule data can represent offsets and transitions at its source resolution; no offset, instant, or comparison precision is extracted or approved here |
+| Available outputs | Zone identity and versioned civil-time rules capable of supporting later offset, DST, fold, and UTC-conversion evidence |
+| Source lineage | Direct IANA release data maintained under the TZDB process; not derived from BhaktiAstro |
+| Relationship to BhaktiAstro | BhaktiAstro currently accepts a caller-supplied numeric offset and does not perform an IANA-zone conversion. Python `zoneinfo` loaded from TZDB 2024b would be an execution path over this same source, not an independent source |
+| Independence assessment | **Confirmed** as external primary standard evidence relative to BhaktiAstro's current numeric-offset calculation path; **unresolved** for the required second timezone source because no independent corroborating product is selected |
+| Compatibility assessment | Compatible in identity and modern-date scope: release 2024b explicitly contains `Asia/Kolkata`; exact offset, DST, fold, and UTC conversion remain unacquired |
+| Limitations | The selected release is pinned rather than current; this record does not generalize its modern rule to historical Mumbai; RFC 6557 supplies governance only; no second independent timezone source is selected |
+| Selection status | Selected provisional candidate |
+| Source lifecycle / approval | `proposed`; not approved |
+| Reviewer status | Unassigned; review decision `pending` |
 
-### Independent secondary candidate slot - timezone context
+### Unfilled independent timezone corroboration slot
 
-| Field | Requirement or status |
+The standard verification route still requires a materially independent
+`primary` or `secondary` corroborator for the selected instant unless a
+canonical exception is later reviewed and approved. Python `zoneinfo` using
+TZDB 2024b, another packaging of the same TZDB release, or a web interface
+backed only by TZDB 2024b would share the IANA data lineage and cannot fill this
+slot merely by producing the same conversion. No product is selected for this
+slot, and `MUM-TIME-003` remains open.
+
+### `GRS-IAU_SOFA_CALENDAR-V1` - IAU SOFA Time Scale and Calendar Tools
+
+| Field | Selected evidence or status |
 | --- | --- |
-| Provisional source identifier | Unassigned; must become `GRS-<INDEPENDENT_TIME_PRODUCT>-V1` after selection |
-| Source category | Required `independent_reference_software` or `published_astronomical_table`, as applicable |
-| Intended trust level | Proposed `secondary` |
-| Source name | Unresolved; must be reproducible and materially independent of BhaktiAstro's conversion path |
-| Publisher or maintainer | Unresolved with source selection |
-| Version | Unresolved and mandatory |
-| Publication date | Unresolved and mandatory |
-| Access date | Unresolved until evidence is collected |
-| Citation | Unresolved; stable citation required |
-| Engine or methodology | Must expose timezone-data lineage and local/UTC conversion method |
-| Configuration compatibility | Must use the same selected instant and declared timezone database or explain version differences |
-| Expected outputs available | Not assessed; no values collected |
-| Lineage relationship to BhaktiAstro | Shared host timezone output alone is insufficient |
-| Independence assessment | Not performed |
-| Approval state | Candidate slot only; not approved |
+| Source name | SOFA Time Scale and Calendar Tools, Fortran edition |
+| Publisher or maintainer | International Astronomical Union Standards of Fundamental Astronomy (IAU SOFA) Board; distributed through the IAU SOFA Center |
+| Canonical category | `authoritative_ephemeris`, scope-bounded to the canonical category's official astronomical-product route |
+| Intended trust level | `primary` for `julian_day` methodology only |
+| Product/version | Cookbook software version 18, document revision 1.63 |
+| Publication date | `2023-05-31`, printed in the selected official cookbook |
+| Access date | `2026-08-03` |
+| Stable citations | [IAU SOFA service](https://www.iausofa.org/); [SOFA cookbooks](https://www.iausofa.org/cookbooks); [SOFA Time Scale and Calendar Tools, Fortran PDF](https://www.iausofa.org/s/sofa_ts_f.pdf) |
+| Calculation engine | IAU SOFA Fortran calendar and time-scale routine set, software version 18 |
+| Timezone database version | `not_applicable`; SOFA is selected for Julian/calendar methodology, not civil-zone rules |
+| Methodology | Documented SOFA calendar and time-scale routines, including Gregorian calendar conversion, two-part Julian Date representation, UTC leap-second treatment, and explicit transformations among UTC, UT1, TAI, TT, TCG, TDB, and TCB |
+| Relevant configuration | Gregorian calendar; exact future input time scale must be declared; two-part date representation must be preserved until any separately authorized output extraction; DUT1 or delta-T inputs are caller responsibilities where the selected transformation requires them |
+| Precision | Two-part Julian Date representation is designed to preserve time resolution; the cookbook documents precision and warning behavior by routine, but this task assigns no comparison tolerance |
+| Available outputs | Reproducible methodology and routines for calendar-to-Julian conversion and supported time-scale transformations; no Mumbai output is acquired here |
+| Source lineage | Official IAU SOFA algorithms and code; the selected cookbook is tied to SOFA software version 18 and is separate from the later SOFA library issue advertised by the website |
+| Relationship to BhaktiAstro | BhaktiAstro calls `swisseph.julday`; no repository code calls SOFA. The products have different publishers and implementations, but final reviewer evidence must confirm there is no material copied implementation path |
+| Independence assessment | **Provisionally acceptable** relative to BhaktiAstro; not yet reviewer-confirmed. SOFA does not depend on Swiss Ephemeris in the cited product materials |
+| Compatibility assessment | Methodologically compatible with the selected modern Gregorian case, subject to later exact alignment of UTC versus UT1 semantics, leap-second handling, date representation, and retained precision |
+| Limitations | The selected cookbook is version 18/revision 1.63 while the SOFA site separately identifies library issue 2023-10-11 as the nineteenth release; future execution must pin the code release used for any generated value and must not conflate UTC quasi-JD with UT1 JD |
+| Selection status | Selected provisional candidate |
+| Source lifecycle / approval | `proposed`; not approved |
+| Reviewer status | Unassigned; review decision `pending` |
 
-### Primary candidate slot - Julian Day
+### `GRS-USNO_JULIAN_DATE-V1` - USNO Julian Date resources
 
-| Field | Requirement or status |
+| Field | Selected evidence or status |
 | --- | --- |
-| Provisional source identifier | Unassigned; must become `GRS-<JULIAN_PRODUCT>-V1` after selection |
-| Source category | Required `authoritative_ephemeris` or another category shown by review to be Primary for this scope |
-| Intended trust level | Proposed `primary` for Julian Day only |
-| Source name | Unresolved; select a direct versioned authoritative product with a reproducible case |
-| Publisher or maintainer | Unresolved with source selection |
-| Version | Unresolved and mandatory |
-| Publication date | Unresolved and mandatory |
-| Access date | Unresolved until evidence is collected |
-| Citation | Unresolved; direct product or publication citation required |
-| Engine or methodology | Must define calendar, time scale, epoch/day-start convention, and precision |
-| Configuration compatibility | Must accept or publish the exact independently established UTC instant under compatible UTC/UT semantics |
-| Expected outputs available | Not assessed; no values collected |
-| Lineage relationship to BhaktiAstro | Must not derive the expected value from BhaktiAstro output |
-| Independence assessment | Not performed |
-| Approval state | Candidate slot only; not approved |
+| Source name | U.S. Naval Observatory Julian Date Converter, supported by the FAQ “Converting Between Julian Dates and Gregorian Calendar Dates” |
+| Publisher or maintainer | U.S. Naval Observatory, Astronomical Applications Department |
+| Canonical category | `independent_reference_software` |
+| Intended trust level | `secondary` for `julian_day` |
+| Product/version | **Unresolved:** the official pages expose no converter release/build or backend version |
+| Publication date | **Unresolved:** the official pages expose no page or converter publication date; the FAQ attributes one formula to the 1990 edition of the discontinued *Almanac for Computers*, which is method provenance rather than the live converter's publication date |
+| Access date | `2026-08-03` |
+| Stable citations | [USNO Julian Date Converter](https://aa.usno.navy.mil/data/JulianDate); [USNO Julian/Gregorian conversion FAQ](https://aa.usno.navy.mil/faq/JD_formula) |
+| Calculation engine | **Unresolved:** the live converter backend and build are not disclosed on the cited pages |
+| Timezone database version | `not_applicable`; the selected product accepts UT1 and is not a local-civil timezone converter |
+| Methodology | The converter accepts Gregorian calendar input with UT1. The FAQ defines Julian Date from Greenwich mean noon, gives a Gregorian-to-JD formula for 1801-2099, attributes it to the 1990 *Almanac for Computers*, and supplies separate sample code based on Fliegel and van Flandern algorithms |
+| Relevant configuration | Gregorian calendar, UT1 input, noon-based Julian day convention; later use must establish which documented method the live converter executes and align the exact independently established instant |
+| Precision | The converter accepts fractional seconds and displays a finite decimal result; the page discusses approximate double-precision capability, but the backend precision and output-rounding contract are not versioned and no tolerance is assigned |
+| Available outputs | Interactive calendar-to-Julian and Julian-to-calendar conversion plus published definitions and formula documentation; no Mumbai output is acquired here |
+| Source lineage | Official USNO web product and documentation; exact live backend, software version, and relationship between the converter and published formulas are unresolved |
+| Relationship to SOFA | Different published product and interface, but possible shared standard formula heritage is not enough to establish material algorithm independence; the live backend is undisclosed |
+| Relationship to BhaktiAstro | Different publisher and no stated Swiss Ephemeris dependency, but the undisclosed converter implementation prevents confirmed implementation independence from `swisseph.julday` |
+| Independence assessment | **Unresolved** relative to both IAU SOFA and BhaktiAstro |
+| Compatibility assessment | Definitions align at a high level with Gregorian calendar, UT1, and the noon boundary; exact UTC-to-UT1 treatment, backend method, retained precision, and rounding compatibility remain unresolved |
+| Limitations | No product version, publication date, backend implementation, API contract, or independent lineage evidence is published on the cited pages; the FAQ formula has a stated date range and must not be generalized outside it |
+| Selection status | Selected provisional candidate; not yet qualifying as the independent corroborator |
+| Source lifecycle / approval | `proposed`; not approved |
+| Reviewer status | Unassigned; review decision `pending` |
 
-### Independent secondary candidate slot - Julian Day
-
-| Field | Requirement or status |
-| --- | --- |
-| Provisional source identifier | Unassigned; must become `GRS-<INDEPENDENT_JULIAN_PRODUCT>-V1` after selection |
-| Source category | Required `published_astronomical_table`, `independent_manual_calculation`, or qualifying `independent_reference_software` |
-| Intended trust level | Proposed `secondary` |
-| Source name | Unresolved; select only after its engine/data lineage is known |
-| Publisher or maintainer | Unresolved with source selection |
-| Version | Unresolved and mandatory |
-| Publication date | Unresolved and mandatory |
-| Access date | Unresolved until evidence is collected |
-| Citation | Unresolved; stable citation or reproducible worksheet reference required |
-| Engine or methodology | Must independently reproduce Julian Day from documented inputs and intermediate steps |
-| Configuration compatibility | Must match calendar, time scale, instant, day-start convention, and precision |
-| Expected outputs available | Not assessed; no values collected |
-| Lineage relationship to BhaktiAstro | A Swiss Ephemeris frontend may share BhaktiAstro's material lineage and must not be presumed independent |
-| Independence assessment | Not performed |
-| Approval state | Candidate slot only; not approved |
-
-A candidate is not approved merely because it is popular, public, or easy to
-access. Shared Swiss Ephemeris lineage may fail the independence requirement,
-and two interfaces over one underlying engine do not constitute independent
-verification.
+A candidate is not approved merely because it is official, public, or easy to
+access. Selection retains unknown metadata explicitly, and no source may enter
+a qualifying fixture `source_ids` list until its source record and canonical
+review are complete.
 
 ## Source-lineage analysis
 
-The following observations come only from repository code and dependency
-declarations; they are not accuracy evidence:
+The following repository observations and official product descriptions are
+lineage evidence only; they are not expected-value or accuracy evidence:
 
 - `requirements.txt` pins `pyswisseph==2.10.3.2`.
 - `backend/app/astronomy/julian.py` converts a caller-supplied numeric UTC
@@ -272,6 +308,37 @@ declarations; they are not accuracy evidence:
   while other astronomy outputs apply their own rounding. Source precision and
   serialization precision therefore require separate review.
 
+### Required pairwise lineage decisions
+
+1. **IANA TZDB versus Python `zoneinfo`:** IANA TZDB 2024b is the selected
+   upstream standard. A Python `zoneinfo` execution loaded from that release is
+   a reproducible consumer path, not a materially independent second source.
+   Python's library code may independently exercise parsing and conversion, but
+   it cannot independently verify a defect shared in the 2024b rule data.
+2. **SOFA versus BhaktiAstro Julian Date:** the selected SOFA product is
+   maintained by IAU SOFA and documents its own calendar/time-scale routines;
+   BhaktiAstro calls Swiss Ephemeris through `pyswisseph`. Publisher and
+   implementation paths differ, so independence is provisionally acceptable,
+   but reviewer confirmation of the exact executed SOFA and Swiss code lineage
+   remains required.
+3. **USNO versus SOFA:** the organizations and interfaces differ. The USNO FAQ
+   publishes definitions and algorithms, while SOFA publishes its own routines,
+   but the live USNO converter does not disclose its backend or version.
+   Material algorithm independence is therefore unresolved.
+4. **USNO versus BhaktiAstro:** USNO does not state that its converter uses
+   Swiss Ephemeris, and BhaktiAstro does not call USNO. The absence of a
+   disclosed USNO backend nevertheless prevents confirmed implementation
+   independence, so this relationship remains unresolved.
+5. **Swiss Ephemeris dependency:** BhaktiAstro depends on `pyswisseph` and
+   `swisseph.julday`. The cited IANA, SOFA, and USNO materials state no Swiss
+   Ephemeris dependency. This supports separation for IANA and SOFA; it is not
+   enough to resolve USNO's undisclosed backend.
+6. **Two-source verification:** the current timezone set does not satisfy the
+   standard route because it has no independent corroborator. The Julian set
+   names two products, but it also does not yet satisfy the route because USNO
+   independence, version, reproducibility, and source approval remain
+   unresolved. Product count alone is not independent verification.
+
 Before any source is approved, review must establish the exact timezone-data
 lineage, active Swiss wrapper/library build, UTC/UT semantics, Gregorian
 calendar convention, Julian Day methodology and precision, shared engine/data
@@ -285,7 +352,9 @@ No expected astronomical value is authorized or present in this task. In
 particular, this record contains no Julian Day, planetary longitude, ayanamsha,
 Panchang identity, boundary time, or rise/set value.
 
+- No UTC conversion value or final UTC instant has been acquired or approved.
 - No value may be copied from current BhaktiAstro output.
+- No BhaktiAstro output has been copied into this record.
 - No placeholder number may be treated as a reference value.
 - Expected values must be acquired in a later separately approved task.
 - Acquisition must preserve each source's original units, precision,
@@ -318,7 +387,8 @@ output. This record assigns no numeric tolerance.
 | Reviewer | Unassigned; no approved reviewer is named by repository evidence |
 | Review date | Not scheduled |
 | Fixture approval | Not approved |
-| Source approval | Not approved; no source selected |
+| Source selection | Three provisional candidates selected; independent timezone corroboration remains unfilled |
+| Source approval | Not approved; all selected source lifecycles remain `proposed` and review decisions remain `pending` |
 | Expected values | Not collected |
 | Regression eligibility | Prohibited |
 | Machine fixture eligibility | Blocked |
@@ -352,12 +422,12 @@ complete.
 | --- | --- | --- | --- | --- | --- | --- |
 | `MUM-TIME-001` | Country-code standard and exact code are not confirmed | Country code | Versioned country-code standard | `trusted_public_standard` | Unassigned | Open |
 | `MUM-GEO-001` | Reference latitude, longitude, precision, datum, and source are absent | Location identity | Direct geospatial standard or reproducible published coordinates | `trusted_public_standard` or `published_astronomical_table` | Unassigned | Open |
-| `MUM-TIME-002` | Timezone database version, offset, DST status, fold, and UTC instant are unverified | `timezone_validation` and case instant | Versioned timezone authority for the exact local instant | `trusted_public_standard` | Unassigned | Open |
+| `MUM-TIME-002` | IANA TZDB 2024b is selected, but offset, DST status, fold, and UTC instant remain unacquired and unverified | `timezone_validation` and case instant | Source-native evaluation of the exact local instant plus canonical review | `trusted_public_standard` | Reviewer unassigned; source approval pending | Open; product/version selection alone does not resolve the value and review blocker |
 | `MUM-TIME-003` | Independent timezone corroboration is not selected | `timezone_validation` | Reproducible independent conversion with disclosed lineage | `independent_reference_software` or `published_astronomical_table` | Unassigned | Open |
-| `MUM-JD-001` | Primary Julian Day source is not selected | `julian_day` | Direct versioned authoritative product defining calendar, time scale, and precision | `authoritative_ephemeris` | Unassigned | Open |
-| `MUM-JD-002` | Independent Julian Day corroboration is not selected | `julian_day` | Independent reproducible publication, worksheet, or software path | `published_astronomical_table`, `independent_manual_calculation`, or `independent_reference_software` | Unassigned | Open |
-| `MUM-LINEAGE-001` | Source independence and shared Swiss/data lineage are not assessed | All candidate outputs | Written publisher, dataset, engine, operator, and BhaktiAstro lineage analysis | Any qualifying category after selection | Reviewer unassigned | Open |
-| `MUM-CONFIG-001` | Exact UTC/UT treatment and Julian Day convention are not aligned | `julian_day` | Configuration comparison across both qualifying sources and BhaktiAstro | Qualifying source records plus review | Reviewer unassigned | Open |
+| `MUM-JD-001` | A scope-bounded Primary Julian methodology product is selected | `julian_day` | IAU SOFA Time Scale and Calendar Tools version 18, document revision 1.63 | `authoritative_ephemeris` | Reviewer unassigned; source approval pending | Resolved for product selection by `GRS-IAU_SOFA_CALENDAR-V1`; canonical source-record verification and approval remain required |
+| `MUM-JD-002` | USNO is selected provisionally, but its version, backend lineage, reproducibility, and material independence are unresolved | `julian_day` | Product/version and backend evidence sufficient to establish an independent reproducible path | `independent_reference_software` | Reviewer unassigned; source approval pending | Open; `GRS-USNO_JULIAN_DATE-V1` does not yet qualify as independent corroboration |
+| `MUM-LINEAGE-001` | Pairwise lineage is documented, but timezone corroboration is absent and USNO independence remains unresolved | All candidate outputs | Reviewer-confirmed publisher, dataset, engine, operator, and BhaktiAstro lineage analysis | Any qualifying category after selection | Reviewer unassigned | Open; SOFA/BhaktiAstro is only provisionally acceptable |
+| `MUM-CONFIG-001` | SOFA and USNO conventions are documented, but exact UTC/UT1 treatment and executed-method alignment are incomplete | `julian_day` | Configuration comparison across both qualifying sources and BhaktiAstro | Qualifying source records plus review | Reviewer unassigned | Open |
 | `MUM-CONFIG-002` | Active Swiss build and serialization precision are not captured | Comparison-side configuration | Reproducible environment record and owning-contract review | Supporting implementation evidence; not a qualifying expected-value source | Reviewer unassigned | Open |
 | `MUM-VALUE-001` | No independently sourced timezone or Julian expected values exist | All candidate outputs | Original source observations with versions, settings, units, and precision | Approved `primary` and materially independent `secondary` sources | Unassigned | Open |
 | `MUM-COMPARE-001` | Differences and per-output comparison policies are absent | All candidate outputs | Side-by-side observation record and reviewer-justified comparison policy | Qualifying source records plus review | Reviewer unassigned | Open |
@@ -376,5 +446,9 @@ configuration, API, public export, or existing fixture.
 ## Current disposition
 
 Fixture lifecycle remains `proposed`; vector verification remains `pending`.
-No source, expected value, tolerance, reviewer, machine fixture, or automated
-test is approved by this record.
+Three source products are selected as provisional candidates, but every source
+lifecycle remains `proposed`, every review decision remains `pending`, and no
+source is approved. No UTC-conversion value or Julian Date value has been
+acquired or approved, no BhaktiAstro output has been copied, no numeric
+tolerance has been assigned, and no regression assertion is permitted. No
+fixture, reviewer, machine data, or automated test is approved by this record.

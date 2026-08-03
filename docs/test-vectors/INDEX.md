@@ -11,7 +11,7 @@ replace formulas, Sprint progress, runtime tests, or implementation code.
 | --- | --- | --- | --- |
 | Matchmaking | [matchmaking.md](matchmaking.md) | verified structural/domain-contract vectors | [SPEC-MATCHMAKING-001](../specifications/MATCHMAKING.md) |
 | Reporting | not yet created | pending; Task 12.1 uses repository-backed structural tests | [SPEC-REPORTING-001](../specifications/REPORTING.md) |
-| Golden astronomical fixtures | [Mumbai TIME_JD provisional plan](golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md) | one proposed/pending human evidence plan; no expected values or qualifying fixture data | [SPEC-GOLDEN-FIXTURES-001](../specifications/GOLDEN-FIXTURES.md) |
+| Golden astronomical fixtures | [Mumbai TIME_JD provisional plan](golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md) | one proposed/pending human evidence plan with three selected provisional source candidates; source approval, expected values, and qualifying fixture data remain absent | [SPEC-GOLDEN-FIXTURES-001](../specifications/GOLDEN-FIXTURES.md) |
 
 No vector marked `verified` is thereby claimed to be independent astronomical
 ephemeris validation. Each vector's source, assumptions, and linked test define
@@ -47,11 +47,12 @@ fixtures and do not appear as populated vectors in this catalogue.
 
 | Record ID | Record | Current classification | Fixture lifecycle | Vector verification | Warning |
 | --- | --- | --- | --- | --- | --- |
-| `GF-MUMBAI-20240701-TIME_JD-V1` | [Mumbai Time and Julian Day Evidence Plan](golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md) | Not assigned; `provisional_reference` is intended only after externally sourced candidate values exist | `proposed` | `pending` | Contains no expected values, is not a machine fixture, and is not regression-ready |
+| `GF-MUMBAI-20240701-TIME_JD-V1` | [Mumbai Time and Julian Day Evidence Plan](golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md) | Not assigned; `provisional_reference` is intended only after externally sourced candidate values exist | `proposed` | `pending` | IANA, IAU SOFA, and USNO products are selected provisionally; all source approvals and expected values remain pending, and the record is not regression-ready |
 
-This catalogue entry records case selection and promotion blockers only. It
-does not classify the Mumbai record as `golden`, verify a value, approve a
-source or tolerance, or alter the status of any automated test.
+This catalogue entry records case and provisional source-product selection plus
+promotion blockers only. It does not classify the Mumbai record as
+`provisional_reference` or `golden`, verify a value, approve a source or
+tolerance, or alter the status of any automated test.
 
 ## Verification Status Vocabulary
 
