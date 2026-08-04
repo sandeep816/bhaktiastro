@@ -10,6 +10,8 @@ from pydantic import BaseModel, ConfigDict, Field
 class PanchangRequest(BaseModel):
     """Request schema for basic Panchang calculation."""
 
+    model_config = ConfigDict(extra="forbid")
+
     year: int = Field(
         ...,
         ge=1900,
@@ -66,7 +68,11 @@ class PanchangRequest(BaseModel):
     )
     language: Literal["hi", "en"] = Field(
         "hi",
-        description="Response language preference for MVP.",
+        description=(
+            "Deprecated compatibility field. Responses expose fixed multilingual "
+            "name fields; consumers select presentation language."
+        ),
+        json_schema_extra={"deprecated": True},
     )
     ayanamsa: Literal["lahiri"] = Field(
         "lahiri",
@@ -77,7 +83,7 @@ class PanchangRequest(BaseModel):
 class StrictResponseModel(BaseModel):
     """Base model for response sections with stable, explicit keys."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
 
 
 class JulianDayInfo(StrictResponseModel):

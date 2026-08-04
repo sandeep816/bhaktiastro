@@ -37,6 +37,8 @@ def calculate_basic_panchang(
     timezone_offset: float,
     latitude: float,
     longitude: float,
+    *,
+    ayanamsa_mode: str | None = None,
 ) -> BasicPanchangResult:
     """Calculate the basic deterministic Panchang for a local date and time.
 
@@ -50,6 +52,7 @@ def calculate_basic_panchang(
         timezone_offset: Local UTC offset in decimal hours.
         latitude: Geographic latitude in degrees.
         longitude: Geographic longitude in degrees.
+        ayanamsa_mode: Optional configured Ayanamsa mode.
 
     Returns:
         A structured dictionary with Julian Day, ayanamsa, Sun, Moon,
@@ -71,7 +74,13 @@ def calculate_basic_panchang(
         second,
         timezone_offset,
     )
-    ayanamsa_value = ayanamsa.get_ayanamsa(julian_day_result.julian_day_ut)
+    if ayanamsa_mode is None:
+        ayanamsa_value = ayanamsa.get_ayanamsa(julian_day_result.julian_day_ut)
+    else:
+        ayanamsa_value = ayanamsa.get_ayanamsa(
+            julian_day_result.julian_day_ut,
+            ayanamsa_mode,
+        )
     positions = planet_positions.get_planet_positions(
         julian_day_result.julian_day_ut,
         ayanamsa_value,
@@ -99,6 +108,7 @@ def calculate_basic_panchang(
             minute,
             second,
             timezone_offset,
+            **_ayanamsa_keyword(ayanamsa_mode),
         ),
         "nakshatra": nakshatra.get_nakshatra_with_boundary(
             year,
@@ -108,6 +118,7 @@ def calculate_basic_panchang(
             minute,
             second,
             timezone_offset,
+            **_ayanamsa_keyword(ayanamsa_mode),
         ),
         "yoga": yoga.get_panchang_yoga_with_boundary(
             year,
@@ -117,6 +128,7 @@ def calculate_basic_panchang(
             minute,
             second,
             timezone_offset,
+            **_ayanamsa_keyword(ayanamsa_mode),
         ),
         "karana": karana.get_karana_with_boundary(
             year,
@@ -126,6 +138,7 @@ def calculate_basic_panchang(
             minute,
             second,
             timezone_offset,
+            **_ayanamsa_keyword(ayanamsa_mode),
         ),
         "vara": vara.get_vara(local_date),
         "sunrise": rise_set.get_sunrise(
@@ -163,6 +176,14 @@ def calculate_basic_panchang(
     }
 
 
+def _ayanamsa_keyword(ayanamsa_mode: str | None) -> dict[str, str]:
+    """Preserve legacy call shapes unless an explicit mode is supplied."""
+
+    if ayanamsa_mode is None:
+        return {}
+    return {"ayanamsa_mode": ayanamsa_mode}
+
+
 def _build_local_date(year: int, month: int, day: int) -> date:
     """Build a local civil date from date components."""
 
@@ -182,7 +203,9 @@ def _find_planet_position(
         if position.get("planet") == planet_name:
             return dict(position)
 
-    raise RuntimeError(f"Planet positions did not include required planet: {planet_name}")
+    raise RuntimeError(
+        f"Planet positions did not include required planet: {planet_name}"
+    )
 
 
 def _get_sidereal_longitude(position: dict[str, Any], planet_name: str) -> float:

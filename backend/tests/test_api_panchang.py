@@ -90,6 +90,7 @@ class PanchangApiTest(unittest.TestCase):
             timezone_offset=5.5,
             latitude=26.2389,
             longitude=73.0243,
+            ayanamsa_mode="lahiri",
         )
 
     def test_response_contains_panchang_sections(self) -> None:
@@ -243,7 +244,15 @@ class PanchangApiTest(unittest.TestCase):
                 )
 
         self.assertEqual(exc_info.exception.status_code, 400)
-        self.assertEqual(exc_info.exception.detail, "Invalid local date components")
+        self.assertEqual(
+            exc_info.exception.detail,
+            {
+                "schema_version": "1.0",
+                "error": "panchang_input_invalid",
+                "message": "Panchang calculation input was invalid.",
+                "details": [],
+            },
+        )
 
     def test_jodhpur_example_response_matches_current_route_output(self) -> None:
         request_data = _read_json("docs/examples/panchang_request_jodhpur.json")

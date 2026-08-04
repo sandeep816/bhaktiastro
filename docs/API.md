@@ -1,8 +1,8 @@
 # Engine HTTP API
 
 This is the concise route guide for the current FastAPI application. The
-authoritative contract, exact nested schemas, known gaps, and conditional
-Playground handoff are in
+authoritative contract, exact nested schemas, known gaps, and Playground
+handoff are in
 [SPEC-HTTP-API-001](specifications/HTTP-API.md).
 
 Application entry point: `backend.app.main:app`
@@ -15,8 +15,10 @@ Application entry point: `backend.app.main:app`
 | Swagger OAuth redirect helper | `/docs/oauth2-redirect` |
 | ReDoc | `/redoc` |
 
-The current API has no authentication and no CORS middleware. It accepts
-numeric UTC offsets, not IANA timezone identifiers or DST rules.
+The current API has no authentication and no CORS middleware. The approved
+Playground boundary is a Next.js server-side proxy; direct browser-to-Engine
+calls are unsupported. The API accepts numeric UTC offsets, not IANA timezone
+identifiers or DST rules.
 
 ## Routes
 
@@ -78,10 +80,11 @@ version information only, not calculation readiness or dependency health.
 | `language` | no | `"hi"` | `"hi"` or `"en"` |
 | `ayanamsa` | no | `"lahiri"` | `"lahiri"` |
 
-`date` and `time` are not schema fields. Unknown fields are currently ignored.
-`language` and `ayanamsa` are accepted but not forwarded to the calculation;
-the current calculation follows its default Lahiri path and returns fixed
-multilingual fields.
+`date`, `time`, and every other unknown field produce framework `422`.
+`ayanamsa="lahiri"` is forwarded through the main and boundary calculations.
+`language` remains accepted for compatibility but is OpenAPI-deprecated because
+the response always returns fixed multilingual fields; consumers should omit
+it and select presentation labels from the response.
 
 A successful response has these required top-level fields:
 
@@ -92,7 +95,8 @@ karana, vara, sunrise, sunset, moonrise, moonset
 
 Rise/set local and UTC values may be `null` when an event is not found. The
 Jodhpur files under `docs/examples/` are current Engine snapshots, not
-independently verified Golden references.
+independently verified Golden references. All response floats must be finite;
+invalid calculation output is rejected rather than converted.
 
 ## Kundali
 
@@ -153,15 +157,28 @@ dependency. A successful response contains `birth_datetime`,
 | `400` | caught calculation `TypeError` or `ValueError` |
 | `500` | caught calculation `RuntimeError` or other server failure |
 
-Calculation errors currently use `{"detail": "<exception text>"}`. There is no
-stable Engine-owned error envelope or machine-readable error code. Request
-models are coercive and currently ignore unknown properties; response models
-for declared sections reject unknown properties.
+Panchang application failures use this exact versioned root envelope:
+
+```json
+{
+  "schema_version": "1.0",
+  "error": "panchang_input_invalid",
+  "message": "Panchang calculation input was invalid.",
+  "details": []
+}
+```
+
+Panchang error identifiers are `panchang_input_invalid`,
+`panchang_calculation_failed`, `panchang_response_invalid`, and
+`internal_server_error`. Details contain only stable `code` and `path` fields;
+internal exception text and request values are not returned. Framework `422`
+keeps its standard `detail` list. Kundali and Dasha retain their legacy
+calculation error bodies until separate tasks.
 
 ## Playground use
 
-Health is safe only as a liveness check. Panchang is the first conditional
-real-data candidate, but browser access, request strictness and forwarding,
-finite serialization, and a stable error contract must be aligned first.
-Kundali and Dasha are not approved for Playground v0. See the
+Health is safe only as a liveness check. Fixed-offset Lahiri Panchang is
+approved as the first real-data candidate through a Next.js server-side proxy;
+direct browser calls remain unsupported. Kundali and Dasha are not approved
+for Playground v0. See the
 [readiness matrix and handoff](specifications/HTTP-API.md#playground-integration-readiness).

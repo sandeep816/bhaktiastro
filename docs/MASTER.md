@@ -22,7 +22,7 @@ permanent calculator contracts.
   [SPEC-INTERPRETATION-001](specifications/INTERPRETATION.md)
 - Approved API versioning and stability contract:
   [SPEC-API-STABILITY-001](specifications/API-STABILITY.md)
-- Approved Engine HTTP contract and conditional Playground handoff:
+- Approved Engine HTTP contract and Playground server-proxy handoff:
   [SPEC-HTTP-API-001](specifications/HTTP-API.md)
 - Approved Golden Fixture governance contract:
   [SPEC-GOLDEN-FIXTURES-001](specifications/GOLDEN-FIXTURES.md)
@@ -42,9 +42,12 @@ Tasks 15.1 through 15.4 have completed Golden Fixture governance, Golden
 Reference Source governance, the Mumbai provisional-case contract, and the
 Mumbai independent-source-selection contract. One proposed/pending human
 evidence plan exists; sources, expected values, fixture data, and tests have
-not started. `SPEC-HTTP-API-001` version 1.0 now audits the current health,
-Panchang, Kundali, and Dasha routes and defines the conditional Playground v0
-Panchang gate; no runtime alignment or Playground integration has started.
+not started. `SPEC-HTTP-API-001` version 1.1 now records the completed
+Panchang v0 HTTP alignment: strict unknown-field rejection, effective Lahiri
+forwarding, deprecated language compatibility, stable technical errors,
+finite JSON enforcement, and a Next.js server-proxy boundary. Playground
+integration has not started; its next safe task is health/Panchang server-side
+integration only.
 
 ## Project Rules
 

@@ -5,6 +5,9 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Versioned Panchang technical HTTP error schema `1.0` with stable
+  machine-readable identifiers, safe messages, deterministic details, focused
+  route/OpenAPI/health/proxy-boundary tests, and no sensitive exception echo.
 - Approved the Engine HTTP API Contract specification, documenting the exact
   current health, Panchang, Kundali, and Dasha routes; request, response,
   forwarding, error, timezone, localization, CORS, privacy, and version
@@ -189,6 +192,11 @@ All notable changes to BhaktiAstro will be documented in this file.
 - Project README.
 
 ### Changed
+- Aligned the Panchang HTTP contract by rejecting unknown request fields,
+  forwarding Lahiri through all sidereal boundary paths, OpenAPI-deprecating
+  the ineffective language preference while preserving accepted values,
+  rejecting non-finite response numbers, and selecting a Next.js server proxy
+  instead of Engine CORS for the first future Playground integration.
 - Closed Sprint 14 after its sole approved documentation task, advanced project
   navigation to Sprint 15, and corrected stale Interpretation runtime-status
   metadata without changing runtime behavior.

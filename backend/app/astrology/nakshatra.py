@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from functools import partial
 import math
 from numbers import Real
 from typing import TypedDict
@@ -109,6 +110,8 @@ def get_nakshatra_with_boundary(
     minute: int,
     second: int,
     timezone_offset: float,
+    *,
+    ayanamsa_mode: str | None = None,
 ) -> NakshatraWithBoundaryResult:
     """Return current Nakshatra with its next boundary end time.
 
@@ -120,6 +123,7 @@ def get_nakshatra_with_boundary(
         minute: Local minute.
         second: Local second.
         timezone_offset: Local UTC offset in decimal hours.
+        ayanamsa_mode: Optional configured Ayanamsa mode.
 
     Returns:
         NakshatraWithBoundaryResult containing current Nakshatra and Pada
@@ -140,7 +144,10 @@ def get_nakshatra_with_boundary(
         second,
         timezone_offset,
     )
-    moon_longitude = _get_moon_sidereal_longitude(julian_day_result.julian_day_ut)
+    moon_longitude = _get_moon_sidereal_longitude(
+        julian_day_result.julian_day_ut,
+        ayanamsa_mode,
+    )
     current_nakshatra = get_nakshatra(moon_longitude)
     current_degree = _normalize_longitude(moon_longitude)
     target_boundary = current_nakshatra["end_degree"]
@@ -153,7 +160,7 @@ def get_nakshatra_with_boundary(
 
     end_datetime_utc = search.find_next_longitude_boundary(
         julian_day_result.utc_datetime,
-        _calculate_moon_longitude_at_utc,
+        partial(_calculate_moon_longitude_at_utc, ayanamsa_mode=ayanamsa_mode),
         target_boundary,
     )
     end_datetime_local = end_datetime_utc.astimezone(
@@ -170,7 +177,11 @@ def get_nakshatra_with_boundary(
     return result
 
 
-def _calculate_moon_longitude_at_utc(utc_datetime: datetime) -> float:
+def _calculate_moon_longitude_at_utc(
+    utc_datetime: datetime,
+    *,
+    ayanamsa_mode: str | None = None,
+) -> float:
     """Calculate Moon sidereal longitude for a UTC datetime."""
 
     normalized_datetime = utc_datetime.astimezone(timezone.utc).replace(microsecond=0)
@@ -183,13 +194,22 @@ def _calculate_moon_longitude_at_utc(utc_datetime: datetime) -> float:
         normalized_datetime.second,
         0.0,
     )
-    return _get_moon_sidereal_longitude(julian_day_result.julian_day_ut)
+    return _get_moon_sidereal_longitude(
+        julian_day_result.julian_day_ut,
+        ayanamsa_mode,
+    )
 
 
-def _get_moon_sidereal_longitude(julian_day_ut: float) -> float:
+def _get_moon_sidereal_longitude(
+    julian_day_ut: float,
+    ayanamsa_mode: str | None = None,
+) -> float:
     """Return Moon sidereal longitude for a Julian Day UT."""
 
-    ayanamsa_value = ayanamsa.get_ayanamsa(julian_day_ut)
+    if ayanamsa_mode is None:
+        ayanamsa_value = ayanamsa.get_ayanamsa(julian_day_ut)
+    else:
+        ayanamsa_value = ayanamsa.get_ayanamsa(julian_day_ut, ayanamsa_mode)
     positions = planet_positions.get_planet_positions(julian_day_ut, ayanamsa_value)
     moon = _find_planet_position(positions, "moon")
     return _get_sidereal_longitude(moon, "moon")
@@ -205,7 +225,9 @@ def _find_planet_position(
         if position.get("planet") == planet_name:
             return position
 
-    raise RuntimeError(f"Planet positions did not include required planet: {planet_name}")
+    raise RuntimeError(
+        f"Planet positions did not include required planet: {planet_name}"
+    )
 
 
 def _get_sidereal_longitude(

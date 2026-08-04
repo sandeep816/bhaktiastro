@@ -143,6 +143,35 @@ class BasicPanchangTest(unittest.TestCase):
         )
         self.assertEqual(result["ayanamsa"], {"value": 24.1234})
 
+    def test_explicit_ayanamsa_mode_is_forwarded_to_all_sidereal_paths(
+        self,
+    ) -> None:
+        with self._patched_dependencies() as mocks:
+            panchang.calculate_basic_panchang(
+                2026,
+                6,
+                29,
+                12,
+                0,
+                0,
+                5.5,
+                26.2389,
+                73.0243,
+                ayanamsa_mode="lahiri",
+            )
+
+        mocks["get_ayanamsa"].assert_called_once_with(2460123.5, "lahiri")
+        for name in (
+            "get_tithi_with_boundary",
+            "get_nakshatra_with_boundary",
+            "get_panchang_yoga_with_boundary",
+            "get_karana_with_boundary",
+        ):
+            self.assertEqual(
+                mocks[name].call_args.kwargs,
+                {"ayanamsa_mode": "lahiri"},
+            )
+
     def test_sunrise_and_sunset_are_calculated_from_local_date_and_location(
         self,
     ) -> None:

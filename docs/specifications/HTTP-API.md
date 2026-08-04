@@ -3,14 +3,14 @@
 | Metadata | Value |
 | --- | --- |
 | Status | approved |
-| Specification version | 1.0 |
+| Specification version | 1.1 |
 | Owning domain | Engine HTTP transport |
-| Implementation status | current routes documented; Playground prerequisites and runtime gaps remain |
+| Implementation status | Panchang v0 alignment implemented; server-proxy boundary selected; Playground integration not started |
 | Route version | `v1`, expressed by the `/api/v1` path prefix |
 | Governing ADRs | [ADR-001](../architecture/ADR-001-Project-Principles.md), [ADR-002](../architecture/ADR-002-Astrology-Calculation-Standards.md), [ADR-003](../architecture/ADR-003-Validation-Standards.md), [ADR-004](../architecture/ADR-004-Public-API-Contracts.md), [ADR-005](../architecture/ADR-005-Testing-Standards.md) |
 | Related specification | [SPEC-API-STABILITY-001](API-STABILITY.md) |
-| Consumer | BhaktiAstro Playground, after the blocking prerequisites in this specification |
-| Compatibility impact | documentation-only audit; no runtime or consumer behavior changed |
+| Consumer | BhaktiAstro Playground through the approved server-proxy boundary |
+| Compatibility impact | Panchang now rejects unknown fields, forwards Lahiri, rejects non-finite output, and uses versioned technical errors; routes and successful response shape are unchanged |
 
 ## Purpose and authority
 
@@ -62,7 +62,7 @@ Interpretation, or Prediction modules does not expose those domains over HTTP.
 | Method | Exact route | Request model | Response model | Calculation dependency | Playground status |
 | --- | --- | --- | --- | --- | --- |
 | `GET` | `/api/v1/health` | none | unversioned `dict[str, str]` | none | available for liveness inspection; not readiness |
-| `POST` | `/api/v1/panchang` | `PanchangRequest` | `PanchangResponse` | `calculate_basic_panchang` | partially available; blocked for approved browser integration |
+| `POST` | `/api/v1/panchang` | `PanchangRequest` | `PanchangResponse` | `calculate_basic_panchang` | approved for the next fixed-offset Playground v0 server-proxy integration |
 | `POST` | `/api/v1/kundali` | `KundaliRequest` | `KundaliResponse` | `assemble_kundali_chart` | implemented but excluded from Playground v0 |
 | `POST` | `/api/v1/dasha` | `DashaRequest` | `DashaResponse` | Panchang plus `build_dasha_timeline` | implemented but excluded from Playground v0 |
 
@@ -72,12 +72,14 @@ routes are framework surfaces, not Engine calculation endpoints.
 ## Common transport and validation behavior
 
 Requests are JSON and successful calculation responses are JSON with status
-`200`. The three request models use Pydantic's non-strict defaults:
+`200`. The three request models retain Pydantic's documented compatible scalar
+coercions. Panchang now declares `extra="forbid"`; Kundali and Dasha retain
+their earlier extra-ignore behavior:
 
 - compatible input coercion is currently allowed, including ISO strings for
   Dasha dates/times and ordinary Pydantic numeric/boolean coercions;
-- no request model declares `extra="forbid"`, so unknown request properties are
-  currently ignored rather than rejected;
+- unknown Panchang properties produce the standard framework `422` validation
+  failure, while unknown Kundali and Dasha properties are still ignored;
 - declared bounds and literal values are validated before route execution; and
 - calendar component ranges do not prove a real date. For example, a
   schema-valid impossible date can reach the calculation layer and become
@@ -95,10 +97,11 @@ serialization, but consumers must identify object fields by name. Array order
 is calculation-defined where noted; no general sorting or canonical transport
 ordering layer exists.
 
-The response schemas use ordinary `float` fields and do not declare
-finite-number constraints. Underlying calculators validate many inputs and are
-expected to emit finite values, but the HTTP schema itself provides no complete
-finite-number guarantee and there is no dedicated finite-JSON contract test.
+Panchang response models reject `NaN` and positive or negative infinity, and
+the route verifies the validated tree with `json.dumps(..., allow_nan=False)`
+before returning it. Invalid calculation output produces the stable Panchang
+technical error contract rather than null/string repair. Kundali and Dasha do
+not gain this HTTP-wide guarantee from the Panchang-only task.
 
 No Panchang, Kundali, or Dasha response body contains a domain schema
 identifier or schema-version field. OpenAPI component names such as
@@ -147,16 +150,23 @@ Panchang calculations can succeed.
 | `timezone_offset` | number | no | `5.5` | `-12..14` decimal UTC hours | yes |
 | `latitude` | number | yes | — | `-90..90`, north positive | yes |
 | `longitude` | number | yes | — | `-180..180`, east positive | yes |
-| `language` | `"hi"` or `"en"` | no | `"hi"` | literal | **no** |
-| `ayanamsa` | `"lahiri"` | no | `"lahiri"` | only current literal | **no** |
+| `language` | `"hi"` or `"en"` | no | `"hi"` | deprecated compatibility literal | not a calculation input |
+| `ayanamsa` | `"lahiri"` | no | `"lahiri"` | only current literal | **yes**, as `ayanamsa_mode` |
 
-`date` and `time` are not request fields. Because extras are ignored, old
-examples containing them may appear to work while those properties are
-discarded.
+`date` and `time` are not request fields. They and every other unknown property
+now fail with framework `422`; they are not discarded.
 
-The ignored `ayanamsa` currently happens to agree with the calculation layer's
-configured/default Lahiri path. That coincidence must not be treated as
-effective forwarding. The ignored `language` has no effect.
+The route forwards Lahiri through the Panchang assembly, initial positions, and
+all Tithi, Nakshatra, Yoga, and Karana boundary calculations. The successful
+response shape is unchanged.
+
+`language` remains accepted for backward compatibility but is deprecated in
+OpenAPI because calculation and response projection do not support it. The
+replacement is to omit the field and select from the fixed multilingual
+response fields in presentation code. Deprecation begins with application
+version `0.1.0`; removal requires a separate breaking-change task after at
+least two subsequent published releases and 90 days. With no qualifying
+release cadence, removal is not eligible.
 
 ### Response: `PanchangResponse`
 
@@ -179,21 +189,23 @@ not found. Other Panchang sections are required and non-null. The response
 always exposes its currently implemented multilingual name fields; it does not
 select or filter them according to `language`.
 
-The route returns `200`, framework `422`, mapped `400`, or mapped `500` as
-described in the error contract. Its documented structural fixture is a
-current Engine snapshot, not an independently verified Golden reference.
+The route returns `200`, framework `422`, stable application `400`, or stable
+application `500` as described in the error contract. Its documented
+structural fixture is a current Engine snapshot, not an independently verified
+Golden reference.
 
-**Suitability:** this is the smallest useful Playground result, but real-data
-integration remains blocked until the minimum gate in this specification is
-implemented.
+**Suitability:** this is the approved smallest Playground result through the
+selected server-side proxy boundary, subject to the fixed-offset and
+non-Golden limitations below.
 
 ## Kundali contract
 
 ### Request: `KundaliRequest`
 
 The date/time, numeric offset, latitude, longitude, and `ayanamsa` fields have
-the same types, requiredness, defaults, bounds, and current coercive/extra-ignore
-behavior as Panchang, except there is no `language`.
+the same types, requiredness, defaults, bounds, and scalar coercion behavior as
+Panchang, except there is no `language`. Kundali still ignores unknown fields;
+the Panchang-only strict-extra change does not apply to it.
 
 | Additional field | JSON type | Required | Default | Forwarded result |
 | --- | --- | --- | --- | --- |
@@ -291,27 +303,35 @@ timezone and ignored-Ayanamsha limitations compound Panchang dependency risk.
 | Condition | Status | Current body |
 | --- | --- | --- |
 | Pydantic/FastAPI request validation | `422` | framework-generated `{"detail": [validation issue objects...]}` |
-| calculation `TypeError` or `ValueError` caught by a route | `400` | `{"detail": "<exception text>"}` |
-| calculation `RuntimeError` caught by a route | `500` | `{"detail": "<exception text>"}` |
+| Panchang calculation `TypeError` or `ValueError` | `400` | stable `TechnicalErrorResponse` with `error="panchang_input_invalid"` |
+| Panchang calculation `RuntimeError` | `500` | stable envelope with `error="panchang_calculation_failed"` |
+| invalid/non-finite Panchang calculation output | `500` | stable envelope with `error="panchang_response_invalid"` and safe field details |
+| unexpected Panchang route failure | `500` | stable envelope with `error="internal_server_error"` |
+| Kundali/Dasha caught calculation failures | `400` / `500` | legacy `{"detail": "<exception text>"}` |
 | missing route / unsupported method | `404` / `405` | framework default detail response |
-| unhandled exception or response-validation failure | normally `500` | framework/server behavior; no Engine envelope |
+| other unhandled failure | normally `500` | framework/server behavior |
 
-Health has no domain error behavior. There are no stable machine-readable
-Engine error codes, correlation identifiers, documented issue ordering, or one
-uniform envelope. Exception text can expose implementation details and is not
-a compatibility-safe discriminator. Only the broad route mappings above are
-implemented; the exact framework validation issue shape is dependency-version
-behavior, not an approved BhaktiAstro error schema.
+The Panchang application envelope is:
 
-### Minimum required future contract
+```json
+{
+  "schema_version": "1.0",
+  "error": "panchang_input_invalid",
+  "message": "Panchang calculation input was invalid.",
+  "details": []
+}
+```
 
-Before Playground real-data integration, a focused runtime task must define
-and test an Engine-owned JSON error model with a stable code, safe message, and
-field issues where relevant; map validation and calculation failures
-consistently; and prevent the consumer from depending on raw exception text.
-The first Panchang integration may support a deliberately small error-code
-vocabulary, but it must distinguish invalid input, calculation/dependency
-failure, and unexpected server failure.
+`schema_version`, `error`, `message`, and `details` are exact root fields.
+Details are ordered objects containing `code` and a string/integer `path`.
+Current detail codes are `invalid_response_value` and `non_finite_number`.
+Messages are safe fixed text; exception text, request values, stack traces, and
+environment paths are not emitted. Framework `422` remains deliberately
+unwrapped.
+
+Health has no domain error behavior. This envelope is currently guaranteed for
+Panchang application failures only; there is no uniform Engine-wide envelope,
+correlation identifier, or stable Kundali/Dasha error code.
 
 Production concerns such as correlation IDs, observability linkage,
 rate-limit errors, authentication errors, and a wider domain-code catalogue
@@ -354,23 +374,22 @@ the existing field identifier.
 
 | Endpoint | Accepts field | Runtime applies request value |
 | --- | --- | --- |
-| Panchang | yes, only `"lahiri"` | no; calculation uses its configured/default path |
+| Panchang | yes, only `"lahiri"` | yes; forwarded through all Panchang sidereal and boundary paths |
 | Kundali | yes, only `"lahiri"` | yes, forwarded as `ayanamsa_mode` |
 | Dasha | yes, only `"lahiri"` | no; dependent Panchang calculation uses its default |
 
-Because only Lahiri is schema-valid today, ignored fields normally yield the
-same current mode. This is still a forwarding defect: future literal expansion
-or a changed default would make identical-looking requests produce
-incompatible results.
+Panchang's former accepted-but-unused mismatch is resolved without widening the
+HTTP literal. Dasha still accepts but does not forward its own field; no Dasha
+behavior changed in this task.
 
 ## Language and localization
 
 Only Panchang accepts `language`, with `"hi"` default and `"hi"`/`"en"`
-allowed. The route does not forward it and the calculation has no language
-parameter. Responses expose the schema's fixed multilingual name fields,
-generally `name_en`, `name_hi`, and `name_sa`, while the planet summary exposes
-`rashi_name_hi`. No locale negotiation, translated error contract, or
-language-specific response projection exists.
+allowed. The field is retained but OpenAPI-deprecated under the compatibility
+plan above because the calculation has no language parameter. Responses expose
+fixed multilingual name fields, generally `name_en`, `name_hi`, and `name_sa`,
+while the planet summary exposes `rashi_name_hi`. No locale negotiation,
+translated error contract, or language-specific response projection exists.
 
 The Playground must select among explicitly returned fields and provide its
 own presentation labels. It must not assume that sending `language` changes
@@ -383,13 +402,12 @@ are not subject to browser CORS enforcement. A browser Playground served from
 a different origin cannot rely on direct calls succeeding; local development
 on separate ports is also cross-origin.
 
-Before a direct-browser integration, the Engine needs an explicit,
-environment-specific allowlist of Playground origins, methods, and headers.
-Production must not use an unrestricted credentialed policy. Alternatively,
-the Playground can make server-side calls through its own same-origin backend;
-that architecture avoids browser-to-Engine CORS but does not remove the need
-to define the trusted server boundary. This task does not choose or implement
-either deployment architecture.
+The approved first-integration boundary is **server proxy**: the Playground
+must call the Engine from a Next.js server-side route and expose only its own
+same-origin consumer endpoint to the browser. Direct browser-to-Engine access
+remains unsupported. No CORS middleware, wildcard origin, credential policy,
+or Engine CORS environment variable is added. A future direct-browser design
+would require a separate approved allowlist task.
 
 ## API base URL policy
 
@@ -398,8 +416,8 @@ deployment environment configuration and must never be hardcoded to a
 production hostname in Playground source. No such consumer environment
 variable is added by this documentation task.
 
-- local development expects an explicitly configured Engine origin and either
-  an Engine CORS allowlist or a Playground server-side proxy;
+- local development expects an explicitly configured server-only Engine origin
+  used by the Playground server proxy;
 - production expects HTTPS, an environment-specific origin, and the same
   chosen server-side/browser boundary;
 - browser-visible configuration is appropriate only for a deliberately public
@@ -413,7 +431,7 @@ variable is added by this documentation task.
 | Capability | Classification | Reason |
 | --- | --- | --- |
 | Health | available | liveness/version response exists; not readiness |
-| Panchang | partially available | route and strict response model exist; forwarding, errors, CORS, timezone and accuracy caveats remain |
+| Panchang | available for fixed-offset v0 server integration | strict request, Lahiri forwarding, finite response, and stable technical errors are implemented |
 | Kundali | partially available | route exists; broad optional/open sections and v0 exclusions remain |
 | Dasha | partially available | route exists; ignored Ayanamsha and fixed-offset dependency remain |
 | Matchmaking | unavailable | no HTTP route |
@@ -421,8 +439,9 @@ variable is added by this documentation task.
 | Interpretation | unavailable | no HTTP route |
 | Prediction | partially available internally, unavailable as standalone HTTP | only optional Kundali projection exists; no dedicated route or populated public rule contract |
 | IANA timezone/DST | unavailable | numeric fixed offsets only |
-| Stable error contract | unavailable | framework details and exception strings only |
-| Browser CORS | blocked | no middleware/policy |
+| Stable Panchang error contract | available | version `1.0`; framework `422` remains separate |
+| Engine-wide stable errors | unavailable | Kundali and Dasha retain legacy errors |
+| Browser CORS | intentionally unsupported | selected Playground boundary is a Next.js server proxy |
 | Authentication | deferred | no authentication implemented or required for v0 documentation |
 | Route version guarantee | available | existing calculation routes use `/api/v1`; evolution governed here and by API Stability |
 | Body schema version guarantee | unavailable | calculation bodies contain no schema ID/version |
@@ -437,24 +456,21 @@ The smallest safe first real-data slice is:
 1. `GET /api/v1/health` for liveness display only; and
 2. `POST /api/v1/panchang` for one fixed-offset Lahiri Panchang result.
 
-Approval to begin that slice is conditional on completing the blocking runtime
-alignment task below. The Panchang request must use only `year`, `month`,
-`day`, `hour`, `minute`, `second`, `timezone_offset`, `latitude`, and
-`longitude`. Until forwarding is fixed, the consumer must not use
-`language` or treat `ayanamsa` as effective input.
+The Engine alignment gate for this slice is complete. The Panchang request uses
+`year`, `month`, `day`, `hour`, `minute`, `second`, `timezone_offset`,
+`latitude`, `longitude`, and effective `ayanamsa="lahiri"`. Playground should
+omit the deprecated `language` field and select returned multilingual labels.
 
 The consumed response is limited to the required Panchang top-level fields
 listed above. The UI must tolerate `null` rise/set times, treat health as
 liveness only, and surface API failure rather than manufacture a successful
 result.
 
-Before integration:
+The next Playground integration must:
 
-- configure the Engine origin outside source and use `/api/v1`;
-- choose and implement either explicit CORS for the Playground origin or a
-  server-side same-origin proxy;
-- implement the minimum stable error model and client handling;
-- reject unknown request fields and verify exact forwarding;
+- configure a server-only Engine origin outside source and use `/api/v1`;
+- implement a Next.js same-origin server proxy, not direct browser calls;
+- handle framework `422` separately from technical error schema `1.0`;
 - state fixed-offset-only behavior, initially `5.5`/India, with no London,
   New York, IANA-zone, or DST claim; and
 - label structural snapshots as non-Golden until governed independent
@@ -468,41 +484,32 @@ data, client-side astrology calculations, and fake successful fallback data.
 
 | ID | Severity | Affected surface | Current behavior | Required decision | Playground impact | Blocking |
 | --- | --- | --- | --- | --- | --- | --- |
-| `HTTP-GAP-001` | high | Panchang docs/request | old guide included non-fields `date`/`time`; extras are ignored | keep split fields and reject unknowns | misleading requests can appear accepted | yes |
-| `HTTP-GAP-002` | high | all POST requests | request extras ignored; coercive validation | define strictness and implement unknown-field rejection | typos can silently change meaning | yes |
-| `HTTP-GAP-003` | high | Panchang | `language` accepted but unused | forward with defined semantics or remove/deprecate field | locale request is ineffective | yes for use of field |
-| `HTTP-GAP-004` | high | Panchang, Dasha | `ayanamsa` accepted but not forwarded | forward and test, or remove/deprecate field | future mode/default drift | yes |
-| `HTTP-GAP-005` | critical | browser boundary | no CORS policy | choose direct-browser allowlist or server proxy | cross-origin calls fail | yes |
-| `HTTP-GAP-006` | high | all routes | no stable error envelope/codes | define minimum Engine error schema and mapping | reliable client error handling impossible | yes |
+| `HTTP-GAP-001` | high | Panchang docs/request | split fields retained; `date`/`time` now rejected | resolved by strict request and corrected example | no silent discard | resolved |
+| `HTTP-GAP-002` | high | POST requests | Panchang rejects extras; Kundali/Dasha still ignore | align other routes only in their own tasks | no Panchang impact | resolved for v0 |
+| `HTTP-GAP-003` | high | Panchang | field retained and OpenAPI-deprecated; fixed multilingual output remains | follow deprecation window; consumer omits field | no silent localization claim | resolved for v0 |
+| `HTTP-GAP-004` | high | Panchang, Dasha | Panchang forwards Lahiri; Dasha remains unchanged | align Dasha in a separate task | no Panchang impact | resolved for v0 |
+| `HTTP-GAP-005` | critical | browser boundary | no CORS by design; server proxy selected | Playground implements proxy | direct browser remains unsupported | resolved for v0 |
+| `HTTP-GAP-006` | high | application errors | Panchang has schema `1.0`; Kundali/Dasha remain legacy | expand only in domain tasks | reliable Panchang handling available | resolved for v0 |
 | `HTTP-GAP-007` | high | all calculations | numeric offsets only; no IANA/DST resolution | define future zone/disambiguation policy | London/New York unsafe | yes for international support |
 | `HTTP-GAP-008` | medium | health | liveness only | add separate readiness/dependency contract if needed | health may be green while calculations fail | no for local v0 if represented honestly |
 | `HTTP-GAP-009` | medium | response bodies | no schema ID/version | decide body-version strategy under API Stability | compatibility detection is limited | no for narrow v0 |
-| `HTTP-GAP-010` | medium | float responses | no complete finite-number schema/transport test | constrain and test finite JSON output | rare serialization failure is not contractually excluded | yes |
+| `HTTP-GAP-010` | medium | float responses | Panchang rejects and tests non-finite output; other routes unchanged | expand only in domain tasks | safe Panchang JSON | resolved for v0 |
 | `HTTP-GAP-011` | medium | Kundali optional sections | several nested sections are `dict[str, Any]` | define strict versioned models before consumer approval | unstable broad payload | yes for Kundali |
 | `HTTP-GAP-012` | high | Matchmaking/Reporting/Interpretation | implemented Python domains have no HTTP routes | design only through future authorized tasks | unavailable to Playground | yes for those capabilities |
 | `HTTP-GAP-013` | medium | API guide | Dasha and health were omitted; Panchang example drifted | keep guide synchronized with this canonical spec | discovery and usage errors | resolved by this documentation task |
 | `HTTP-GAP-014` | medium | readiness/accuracy | route fixtures are structural/regression evidence, not Golden references | complete governed independent evidence before accuracy claims | UI must avoid verified-accuracy claims | yes for such claims |
 | `HTTP-GAP-015` | low | localization | mixed fixed multilingual fields; language has no projection contract | define transport versus presentation localization ownership | client cannot rely on locale-shaped data | no for fixed-field v0 |
 
-## Smallest future runtime sequence
+## Next safe integration sequence
 
-The next Engine task should be one focused **Panchang HTTP contract alignment**
-change:
+The next task is the Playground's narrow server-side integration of health
+liveness and fixed-offset Panchang. It must configure the Engine origin on the
+server, proxy only the approved routes, distinguish framework `422` from the
+technical envelope, and surface failure without mock fallback. No further
+Engine runtime change is required for that narrow slice.
 
-1. make request-extra behavior explicit and reject unknown fields;
-2. decide and implement effective `language` and `ayanamsa` semantics (forward
-   or deliberately deprecate/remove through the compatibility process);
-3. introduce the minimum Engine-owned error response and mappings;
-4. add finite-number response validation/serialization tests;
-5. add route, OpenAPI, forwarding, and backward-compatibility contract tests;
-6. choose either a narrow configured CORS allowlist or document and verify the
-   Playground server-proxy deployment boundary; and
-7. keep the first supported time contract fixed-offset and explicit.
-
-These belong together only insofar as they gate one narrow Panchang consumer.
-IANA timezone support, readiness probes, and body schema-version fields can be
-separate follow-up decisions. Playground Panchang integration follows the gate;
-other domain endpoints do not.
+IANA timezone support, readiness probes, body schema-version fields, direct
+browser CORS, and other domain endpoints remain separate future decisions.
 
 ## Mock-data policy
 
@@ -585,37 +592,39 @@ Future runtime tasks must cover:
 
 ## Explicit exclusions
 
-This specification makes no runtime or test change. It adds no endpoint, CORS
-middleware, authentication, rate limiting, API key, environment variable,
-database, cache, fake API data, Playground code, public Python export, or
-calculation behavior.
+Version 1.1 changes only the existing Panchang transport alignment and
+Ayanamsha parameter propagation; it changes no astrology formula. It adds no
+endpoint, CORS middleware, authentication, rate limiting, API key, environment
+variable, database, cache, fake API data, Playground code, or public package
+export.
 
 ## Playground handoff
 
 | Consumer question | Answer |
 | --- | --- |
 | Base path | configured Engine origin plus `/api/v1`; never hardcode production origin |
-| Safe now | health for liveness inspection only |
-| First conditional result | Panchang, after the blocking alignment gate |
+| Safe now | health liveness and fixed-offset Panchang through a server proxy |
+| First result | Panchang with effective `ayanamsa="lahiri"` and deprecated language omitted |
 | Blocked/excluded | Kundali, Dasha, Matchmaking, Reporting, Interpretation, Prediction |
 | Request/response source | this specification, then generated OpenAPI/runtime schemas; escalate discrepancies |
 | Environment expectation | consumer-owned, deployment-specific Engine origin; no variable is created here |
-| CORS dependency | absent; direct browser requires allowlist, otherwise use an approved server proxy |
-| Error limitation | no stable Engine envelope or machine-readable codes |
+| Browser boundary | direct Engine access unsupported; Next.js server proxy required |
+| Error contract | framework `422`; Panchang technical schema `1.0` for application failures |
 | Time limitation | numeric fixed offset only; initial v0 should be `5.5`, no IANA/DST claim |
-| Next Engine task | focused Panchang HTTP contract alignment and contract tests |
+| Next task | Playground health/Panchang server-proxy integration |
 
 ## Validation basis
 
-Version 1.0 was produced by reviewing application inclusion and route
+Version 1.1 was implemented by reviewing application inclusion and route
 decorators, request/response schemas, route-to-calculation forwarding,
 Panchang/Kundali/Dasha calculation entry points, existing API/schema tests,
 generated-OpenAPI configuration source, current API documentation,
 SPEC-API-STABILITY-001, Playground prerequisites, and cross-document links.
-Runtime behavior was not changed.
+Focused and full regression evidence is recorded in the implementation commit.
 
 ## Change history
 
 | Version | Change |
 | --- | --- |
+| 1.1 | Implemented the Panchang v0 alignment: strict extras, effective Lahiri forwarding, language deprecation, technical error schema `1.0`, finite JSON enforcement, and server-proxy boundary. |
 | 1.0 | Initial authoritative audit of the existing Engine HTTP API and minimum conditional Playground v0 contract. |

@@ -129,6 +129,17 @@ class PanchangRequestSchemaTest(unittest.TestCase):
                 ayanamsa="raman",
             )
 
+    def test_unknown_field_fails(self) -> None:
+        with self.assertRaises(ValidationError):
+            PanchangRequest(
+                year=2026,
+                month=6,
+                day=29,
+                latitude=26.2389,
+                longitude=73.0243,
+                date="2026-06-29",
+            )
+
 
 @unittest.skipIf(PanchangResponse is None, "pydantic is not installed")
 class PanchangResponseSchemaTest(unittest.TestCase):
@@ -245,6 +256,15 @@ class PanchangResponseSchemaTest(unittest.TestCase):
 
         with self.assertRaises(ValidationError):
             PanchangResponse(**payload)
+
+    def test_response_rejects_non_finite_numbers(self) -> None:
+        for value in (float("nan"), float("inf"), float("-inf")):
+            payload = _aggregator_output()
+            payload["ayanamsa"]["value"] = value
+
+            with self.subTest(value=value):
+                with self.assertRaises(ValidationError):
+                    PanchangResponse(**payload)
 
 
 def _planet_summary(planet: str, sidereal_longitude: float) -> dict[str, object]:

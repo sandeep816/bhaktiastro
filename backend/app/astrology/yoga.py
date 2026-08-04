@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from functools import partial
 import math
 from numbers import Real
 from typing import TypedDict
@@ -108,6 +109,8 @@ def get_panchang_yoga_with_boundary(
     minute: int,
     second: int,
     timezone_offset: float,
+    *,
+    ayanamsa_mode: str | None = None,
 ) -> PanchangYogaWithBoundaryResult:
     """Return current Panchang Yoga with its next boundary end time.
 
@@ -119,6 +122,7 @@ def get_panchang_yoga_with_boundary(
         minute: Local minute.
         second: Local second.
         timezone_offset: Local UTC offset in decimal hours.
+        ayanamsa_mode: Optional configured Ayanamsa mode.
 
     Returns:
         PanchangYogaWithBoundaryResult containing current Yoga details plus
@@ -140,14 +144,15 @@ def get_panchang_yoga_with_boundary(
         timezone_offset,
     )
     sun_longitude, moon_longitude = _get_sun_moon_sidereal_longitudes(
-        julian_day_result.julian_day_ut
+        julian_day_result.julian_day_ut,
+        ayanamsa_mode,
     )
     current_yoga = get_panchang_yoga(sun_longitude, moon_longitude)
     target_boundary = current_yoga["end_degree"]
 
     end_datetime_utc = search.find_next_longitude_boundary(
         julian_day_result.utc_datetime,
-        _calculate_yoga_degree_at_utc,
+        partial(_calculate_yoga_degree_at_utc, ayanamsa_mode=ayanamsa_mode),
         target_boundary,
     )
     end_datetime_local = end_datetime_utc.astimezone(
@@ -162,7 +167,11 @@ def get_panchang_yoga_with_boundary(
     return result
 
 
-def _calculate_yoga_degree_at_utc(utc_datetime: datetime) -> float:
+def _calculate_yoga_degree_at_utc(
+    utc_datetime: datetime,
+    *,
+    ayanamsa_mode: str | None = None,
+) -> float:
     """Calculate normalized Sun+Moon sidereal degree for a UTC datetime."""
 
     normalized_datetime = utc_datetime.astimezone(timezone.utc).replace(microsecond=0)
@@ -176,15 +185,22 @@ def _calculate_yoga_degree_at_utc(utc_datetime: datetime) -> float:
         0.0,
     )
     sun_longitude, moon_longitude = _get_sun_moon_sidereal_longitudes(
-        julian_day_result.julian_day_ut
+        julian_day_result.julian_day_ut,
+        ayanamsa_mode,
     )
     return _normalize_longitude(sun_longitude + moon_longitude)
 
 
-def _get_sun_moon_sidereal_longitudes(julian_day_ut: float) -> tuple[float, float]:
+def _get_sun_moon_sidereal_longitudes(
+    julian_day_ut: float,
+    ayanamsa_mode: str | None = None,
+) -> tuple[float, float]:
     """Return Sun and Moon sidereal longitudes for a Julian Day UT."""
 
-    ayanamsa_value = ayanamsa.get_ayanamsa(julian_day_ut)
+    if ayanamsa_mode is None:
+        ayanamsa_value = ayanamsa.get_ayanamsa(julian_day_ut)
+    else:
+        ayanamsa_value = ayanamsa.get_ayanamsa(julian_day_ut, ayanamsa_mode)
     positions = planet_positions.get_planet_positions(julian_day_ut, ayanamsa_value)
     sun = _find_planet_position(positions, "sun")
     moon = _find_planet_position(positions, "moon")
@@ -204,7 +220,9 @@ def _find_planet_position(
         if position.get("planet") == planet_name:
             return position
 
-    raise RuntimeError(f"Planet positions did not include required planet: {planet_name}")
+    raise RuntimeError(
+        f"Planet positions did not include required planet: {planet_name}"
+    )
 
 
 def _get_sidereal_longitude(

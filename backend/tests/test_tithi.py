@@ -100,7 +100,16 @@ class TithiLookupTest(unittest.TestCase):
         boundary_utc = datetime(2026, 6, 29, 8, 30, tzinfo=timezone.utc)
 
         with _patch_boundary_dependencies(fake_julian_result, boundary_utc) as mocks:
-            result = get_tithi_with_boundary(2026, 6, 29, 12, 0, 0, 5.5)
+            result = get_tithi_with_boundary(
+                2026,
+                6,
+                29,
+                12,
+                0,
+                0,
+                5.5,
+                ayanamsa_mode="lahiri",
+            )
 
         self.assertEqual(result["tithi_number"], 1)
         self.assertEqual(result["end_angle"], 12.0)
@@ -112,6 +121,10 @@ class TithiLookupTest(unittest.TestCase):
             datetime.fromisoformat("2026-06-29T12:00:00+05:30"),
         )
         mocks["find_next_longitude_boundary"].assert_called_once()
+        mocks["get_ayanamsa"].assert_called_once_with(
+            fake_julian_result.julian_day_ut,
+            "lahiri",
+        )
         self.assertEqual(
             mocks["find_next_longitude_boundary"].call_args.args[2],
             12.0,

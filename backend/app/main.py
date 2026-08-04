@@ -6,6 +6,10 @@ from typing import Dict
 
 from fastapi import FastAPI
 
+from backend.app.api.errors import (
+    TechnicalHTTPException,
+    technical_http_exception_handler,
+)
 from backend.app.api.v1.dasha import router as dasha_router
 from backend.app.api.v1.kundali import router as kundali_router
 from backend.app.api.v1.panchang import router as panchang_router
@@ -16,6 +20,10 @@ app = FastAPI(
     version=APP_VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
+)
+app.add_exception_handler(
+    TechnicalHTTPException,
+    technical_http_exception_handler,
 )
 
 
