@@ -25,6 +25,7 @@ while approved permanent specifications own migrated domain contracts.
 | `SPEC-REPORTING-001` | [REPORTING.md](REPORTING.md) | approved version 1.0; runtime implemented | [Sprint 12](../SPRINT-12.md) |
 | `SPEC-INTERPRETATION-001` | [INTERPRETATION.md](INTERPRETATION.md) | approved version 1.0; runtime implemented | [Sprint 13](../SPRINT-13.md) |
 | `SPEC-API-STABILITY-001` | [API-STABILITY.md](API-STABILITY.md) | approved version 1.0; documentation foundation complete | [Sprint 14](../SPRINT-14.md) |
+| `SPEC-HTTP-API-001` | [HTTP-API.md](HTTP-API.md) | approved version 1.0; current HTTP routes audited; Playground prerequisites remain | [API guide](../API.md) and current FastAPI runtime |
 | `SPEC-GOLDEN-FIXTURES-001` | [GOLDEN-FIXTURES.md](GOLDEN-FIXTURES.md) | approved version 1.0; governance complete; fixture data not started | [Sprint 15](../SPRINT-15.md) |
 | `SPEC-GOLDEN-REFERENCE-SOURCES-001` | [GOLDEN-REFERENCE-SOURCES.md](GOLDEN-REFERENCE-SOURCES.md) | approved version 1.0; source framework complete; source records not started | [Sprint 15](../SPRINT-15.md) |
 
@@ -33,9 +34,12 @@ not make this index a substitute for the current Sprint, runtime, or tests.
 The Matchmaking migration is complete. Reporting version 1.0 is approved and
 implemented as the Sprint 12 foundation. Interpretation version 1.0 is
 approved and implemented as the Sprint 13 foundation. API Stability version
-1.0 is the approved cross-cutting Sprint 14 documentation foundation; its
-separately authorized future inventory and contract-test enforcement are not
-started. Golden Fixture Governance version 1.0 is the approved Sprint 15
+1.0 is the approved cross-cutting Sprint 14 documentation foundation.
+HTTP API version 1.0 is the canonical audit of current FastAPI routes and the
+conditional Playground handoff; its blocking runtime alignment and contract
+tests are not started. API Stability's broader separately authorized future
+inventory and contract-test enforcement are also not started. Golden Fixture
+Governance version 1.0 is the approved Sprint 15
 documentation foundation; no golden fixture data exists yet.
 Golden Reference Source Framework version 1.0 defines the approved source,
 trust, independence, provenance, and review contract; no source record or
@@ -141,8 +145,10 @@ This order starts with the recently completed, fully documented Matchmaking
 contract, then follows its main chart dependencies. Reporting is now an
 approved, independently governed Sprint 12 foundation and does not alter that
 domain-migration order. API Stability is a cross-cutting approved Sprint 14
-contract. Golden Fixture Governance and Golden Reference Source Governance are
-cross-domain approved Sprint 15 contracts. None alters the migration order.
+contract. The HTTP API contract is a cross-cutting transport audit and
+Playground readiness gate. Golden Fixture Governance and Golden Reference
+Source Governance are cross-domain approved Sprint 15 contracts. None alters
+the migration order.
 
 Each migration is one focused task that must:
 

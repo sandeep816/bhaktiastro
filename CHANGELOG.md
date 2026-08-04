@@ -5,6 +5,11 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Approved the Engine HTTP API Contract specification, documenting the exact
+  current health, Panchang, Kundali, and Dasha routes; request, response,
+  forwarding, error, timezone, localization, CORS, privacy, and version
+  behavior; confirmed transport gaps; and the conditional minimum Playground
+  v0 Panchang handoff without runtime, test, endpoint, or Playground changes.
 - Authorized the documentation-only Sprint 15.4 Mumbai independent-source-
   selection contract, defining qualifying timezone/UTC and Julian Day source
   categories, lineage and independence review, acceptance and rejection rules,
