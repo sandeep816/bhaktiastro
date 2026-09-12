@@ -147,6 +147,23 @@ Goal: Add deterministic compatibility infrastructure.
 - Safe score structure
 - No marriage predictions
 
+## Documentation Architecture Foundation - Pre-Sprint 12 Gate
+
+Status: Complete.
+
+This unnumbered project gate separates navigation and progress, cross-cutting
+architecture decisions, permanent domain specifications, canonical test
+vectors, Sprint execution records, and runtime implementation details. It adds
+documentation governance only and does not renumber product Sprints or start
+Sprint 12.
+
+- ADR index and five accepted foundation ADRs
+- Domain-specification index, template, ownership, and gradual migration policy
+- Canonical test-vector index, format, verification states, and provenance rules
+- Source-of-truth hierarchy and explicit conflict-resolution process
+- Narrow `MASTER.md`, `ROADMAP.md`, and changelog integration
+- No runtime, test, calculator, API, serialization, or domain-rule changes
+
 ## Sprint 12 - Report Data Model Foundation
 
 Goal: Prepare deterministic data for future reports.

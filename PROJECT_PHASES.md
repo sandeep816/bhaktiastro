@@ -5,6 +5,15 @@
 > **Rule:** एक task complete + test pass होने के बाद ही अगला task करें।
 > **Cross-reference:** `FEATURES.md`, `CALCULATIONS.md`, `CURSOR_RULES.md`
 
+> **Historical ownership note:** This is a legacy Phase-based planning
+> artifact. Its phase and task numbers are superseded for current milestone
+> sequencing by [`docs/ROADMAP.md`](docs/ROADMAP.md) and
+> [`docs/MASTER.md`](docs/MASTER.md). In particular, “Phase 12 - Web UI MVP”
+> and “Task 12.1 - Kundali Input Form” do not refer to the current
+> [Sprint 12 - Report Data Model Foundation](docs/SPRINT-12.md). The UI ideas
+> below are retained as historical, noncanonical backlog context; they do not
+> authorize current implementation work.
+
 ---
 
 ## ⚡ Working Rules (Commit Rules)

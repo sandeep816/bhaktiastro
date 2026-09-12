@@ -5,6 +5,141 @@ All notable changes to BhaktiAstro will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Approved the Engine HTTP API Contract specification, documenting the exact
+  current health, Panchang, Kundali, and Dasha routes; request, response,
+  forwarding, error, timezone, localization, CORS, privacy, and version
+  behavior; confirmed transport gaps; and the conditional minimum Playground
+  v0 Panchang handoff without runtime, test, endpoint, or Playground changes.
+- Authorized the documentation-only Sprint 15.4 Mumbai independent-source-
+  selection contract, defining qualifying timezone/UTC and Julian Day source
+  categories, lineage and independence review, acceptance and rejection rules,
+  and a future two-file execution boundary without selecting products,
+  acquiring expected values, assigning tolerances, or changing tests.
+- Authorized the documentation-only Sprint 15.3 Mumbai reference-case contract,
+  defining the future provisional identity, narrow-scope and calculation-
+  configuration requirements, independent source-candidate plan, evidence-
+  record boundary, and promotion gates without selecting values, collecting
+  evidence, creating fixtures, changing tolerances, or activating tests.
+- Approved Golden Reference Source Framework defining the five canonical
+  source categories, four scope-specific trust levels, material-independence
+  rules, provenance and review requirements, conflict resolution, source
+  lifecycle, and schema versioning for Sprint 15.2 without collecting source
+  records, reference datasets, or fixture data.
+- Approved Golden Fixture Governance and Reference specification defining
+  structural, regression, provisional-reference, and golden classifications;
+  strict qualification, provenance, time/DST, tolerance, schema, identifier,
+  storage, review, failure, and future-test contracts for Sprint 15.1 without
+  creating or promoting fixture data.
+- Approved API Versioning and Stability specification defining the public
+  contract boundary, compatibility categories, Python/model/serializer/schema
+  guarantees, vocabulary and identifier stability, conservative error and
+  ordering rules, deprecation and breaking-change policy, version
+  responsibilities, and future inventory and contract-test requirements for
+  Sprint 14.1 without runtime changes.
+- Immutable Interpretation Data Boundary runtime foundation with eight strict
+  models, versioned rule and source-field evidence references, explicit
+  technical and tendency vocabularies, defensive factories, strict validators,
+  deterministic JSON-safe serialization, mutation isolation, and additive
+  public exports for Sprint 13.1.
+- Approved Interpretation Data Boundary Foundation specification with eight
+  immutable domain-neutral model contracts, traceable source-field evidence,
+  versioned rule references, technical status and semantic tendency
+  separation, explicit strength/confidence deferral, deterministic JSON-safe
+  serialization, and an additive public API plan for Sprint 13.1 without
+  runtime changes.
+- Immutable domain-neutral Reporting runtime foundation with eight strict
+  models, seven discriminated block kinds, explicit diagnostic statuses,
+  defensive factories, strict validators, deterministic JSON-safe
+  serialization, mutation isolation, and additive public exports for Sprint
+  12.1.
+- Approved domain-neutral Report Data Model Foundation specification with a
+  strict immutable model hierarchy, discriminated block contracts, technical
+  status and diagnostic partial-report policies, deterministic JSON-safe
+  serialization, schema versioning, and an additive public API plan for Sprint
+  12.1 without runtime changes.
+- Approved permanent Matchmaking specification and canonical test-vector
+  catalogue, migrating the completed Sprint 11 foundation, all eight Kootas,
+  aggregation, Manglik, report composition, public result families, and strict
+  serialization contracts without runtime changes.
+- Documentation Architecture Foundation with accepted cross-cutting ADRs,
+  permanent domain-specification governance, canonical test-vector standards,
+  a source-of-truth hierarchy, conflict resolution, and gradual migration rules
+  established before Sprint 12.
+- Strict deterministic serialization for all Sprint 11 matchmaking result
+  families, with exact contract validation, recursive JSON-safe copying,
+  mutation isolation, cycle and alias rejection, additive public serializers,
+  and full backward-compatibility regression coverage.
+- Source-of-truth Sprint 11 serialization and compatibility-hardening contract
+  covering every matchmaking result family, exact schema and field ordering,
+  strict recursive JSON safety, mutation isolation, versioning, additive
+  compatibility guarantees, and exhaustive runtime-test requirements.
+- Deterministic structured Compatibility / Report Composition over completed
+  Ashtakoota and Manglik results, with separated raw, strict precomputed, and
+  serialization APIs, canonical ordering, strict JSON-safe validation, and no
+  combined score or interpretation.
+- Source-of-truth Compatibility / Report Composition orchestration over
+  completed Ashtakoota and Manglik results, with separated raw, strict
+  precomputed, and serialization APIs, canonical section ordering, immutable
+  JSON-safe contracts, strict validation, and exhaustive test specifications
+  for Sprint 11.14.
+- Deterministic Lagna-only Manglik classification from raw longitudes or an
+  existing Kundali chart, plus strict structured comparison of precomputed
+  bride/groom classifications using the whole-sign houses `1`, `4`, `7`, `8`,
+  and `12` without scoring or cancellation rules.
+- Source-of-truth Manglik compatibility foundation using a Lagna-only,
+  whole-sign five-house binary convention, separated raw/chart/precomputed
+  APIs, structured same/mixed comparison, strict exclusions, validation,
+  immutable result contracts, and exhaustive test specifications for Sprint
+  11.13.
+- Deterministic Ashtakoota aggregation over all eight completed Kootas, with
+  canonical execution order, raw Moon-longitude orchestration, strict
+  precomputed-result validation, exact `math.fsum` totals, and a fixed `36.0`
+  maximum.
+- Source-of-truth Ashtakoota aggregation orchestration, canonical eight-Koota
+  order, exact `36.0` maximum, raw and strict precomputed-result APIs,
+  validation, failure propagation, immutable result-contract, and exhaustive
+  test specifications for Sprint 11.12.
+- Deterministic Nadi Koota classification and symmetric scoring from supplied
+  sidereal Moon Nakshatras, with complete 27-star mapping, exhaustive `27 x
+  27` pair coverage, and no cancellation exceptions.
+- Source-of-truth Nadi Koota 27-Nakshatra classification, symmetric binary
+  scoring matrix, exception exclusions, validation, immutable result-contract,
+  boundary, normalization, and exhaustive test specifications for Sprint
+  11.11.
+- Deterministic Bhakoot Koota full Moon-Rashi classification, inclusive
+  circular distance, and symmetric `7.0`/`0.0` scoring with exhaustive
+  `12 x 12` Rashi-pair coverage and no cancellation exceptions.
+- Source-of-truth Bhakoot Koota full Moon-Rashi derivation, inclusive circular
+  distance, symmetric dosha scoring, validation, immutable result-contract,
+  cancellation-exclusion, boundary, and exhaustive test specifications for
+  Sprint 11.10.
+- Deterministic Gana Koota classification and directional scoring from
+  supplied sidereal Moon Nakshatras, with complete 27-star mapping and exact
+  bride-row/groom-column `3 x 3` matrix coverage.
+- Source-of-truth Gana Koota 27-Nakshatra classification, directional
+  bride-row/groom-column scoring matrix, validation, immutable result-contract,
+  boundary, normalization, and test specifications for Sprint 11.9.
+- Deterministic Graha Maitri Koota classification and symmetric scoring from
+  supplied sidereal Moon longitudes, reusing canonical Rashi lordship and
+  permanent natural planetary relationships with complete `7 x 7` coverage.
+- Source-of-truth Graha Maitri Koota Moon-Rashi derivation, permanent
+  planetary relationship, symmetric scoring matrix, validation,
+  result-contract, and test specifications for Sprint 11.8.
+- Deterministic Yoni Koota classification and symmetric scoring from supplied
+  sidereal Moon Nakshatras, with complete 27-star mapping and `14 x 14` matrix
+  coverage.
+- Source-of-truth Yoni Koota 27-Nakshatra classification, Yoni-sex metadata,
+  symmetric scoring matrix, validation, result-contract, and test
+  specifications for Sprint 11.7.
+- Deterministic Tara Koota classification and bidirectional scoring from
+  supplied sidereal Moon Nakshatras, with inclusive modulo-9 counting.
+- Source-of-truth Tara Koota input, inclusive counting, modulo-9
+  classification, bidirectional scoring, validation, result-contract, and test
+  specifications for Sprint 11.6.
+- Deterministic Vashya Koota classification and directional scoring from
+  supplied sidereal Moon longitudes, with split-sign boundary coverage.
+- Source-of-truth Vashya Koota classification, boundary, directional scoring,
+  validation, result-contract, and test specifications for Sprint 11.5.
 - Reusable Prediction Explanation layer for structured result explanations.
 - Reusable prediction category discovery, loading, and evaluation service for rule libraries.
 - General Personality Prediction Rule Library starter set with validation and composer coverage.
@@ -54,6 +189,9 @@ All notable changes to BhaktiAstro will be documented in this file.
 - Project README.
 
 ### Changed
+- Closed Sprint 14 after its sole approved documentation task, advanced project
+  navigation to Sprint 15, and corrected stale Interpretation runtime-status
+  metadata without changing runtime behavior.
 - Tightened Panchang response schemas to require boundary timing fields and reject undocumented response keys.
 
 ## [0.1.0] - TBD

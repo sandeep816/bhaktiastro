@@ -4,6 +4,48 @@ This document is the Codex working brief for the BhaktiAstro repository. Use it
 to keep each task scoped, testable, and aligned with the deterministic-first
 project rules.
 
+## Documentation Navigation
+
+`MASTER.md` is the concise project navigation and current-status entry point.
+It does not own detailed astrology formulas, exhaustive validation rules, or
+permanent calculator contracts.
+
+- Milestone sequence and high-level scope: [ROADMAP.md](ROADMAP.md)
+- Cross-cutting decisions: [Architecture index](architecture/INDEX.md)
+- Permanent domain contracts and migration status:
+  [Specifications index](specifications/INDEX.md)
+- Canonical completed Matchmaking contract:
+  [SPEC-MATCHMAKING-001](specifications/MATCHMAKING.md)
+- Approved Reporting foundation contract:
+  [SPEC-REPORTING-001](specifications/REPORTING.md)
+- Approved Interpretation boundary contract:
+  [SPEC-INTERPRETATION-001](specifications/INTERPRETATION.md)
+- Approved API versioning and stability contract:
+  [SPEC-API-STABILITY-001](specifications/API-STABILITY.md)
+- Approved Engine HTTP contract and conditional Playground handoff:
+  [SPEC-HTTP-API-001](specifications/HTTP-API.md)
+- Approved Golden Fixture governance contract:
+  [SPEC-GOLDEN-FIXTURES-001](specifications/GOLDEN-FIXTURES.md)
+- Approved Golden Reference Source contract:
+  [SPEC-GOLDEN-REFERENCE-SOURCES-001](specifications/GOLDEN-REFERENCE-SOURCES.md)
+- Reviewed examples and boundary cases:
+  [Test-vector index](test-vectors/INDEX.md)
+- Active Sprint execution record: [SPRINT-15.md](SPRINT-15.md)
+- Most recently completed Sprint execution record: [SPRINT-14.md](SPRINT-14.md)
+- Previous completed Sprint execution records: [SPRINT-13.md](SPRINT-13.md)
+  and [SPRINT-12.md](SPRINT-12.md)
+
+Current product status: Sprint 11, the Documentation Architecture Foundation
+gate, and Sprints 12 through 14 are complete. `SPEC-REPORTING-001` and
+`SPEC-INTERPRETATION-001` version 1.0 are approved and implemented. Sprint 15
+Tasks 15.1 through 15.4 have completed Golden Fixture governance, Golden
+Reference Source governance, the Mumbai provisional-case contract, and the
+Mumbai independent-source-selection contract. One proposed/pending human
+evidence plan exists; sources, expected values, fixture data, and tests have
+not started. `SPEC-HTTP-API-001` version 1.0 now audits the current health,
+Panchang, Kundali, and Dasha routes and defines the conditional Playground v0
+Panchang gate; no runtime alignment or Playground integration has started.
+
 ## Project Rules
 
 - Work on one task or milestone at a time.
@@ -34,6 +76,11 @@ project rules.
 - Sprint 8: Ashtakavarga Engine.
 - Sprint 9: Advanced Lagna and Arudha Engine.
 - Sprint 10A: Prediction Framework Architecture.
+- Sprint 10B: Prediction Rules Foundation.
+- Sprint 11: Matchmaking Foundation.
+- Sprint 12: Report Data Model Foundation.
+- Sprint 13: Interpretation Data Boundary.
+- Sprint 14: API Versioning and Stability.
 
 Sprint 4 completed:
 
@@ -155,37 +202,141 @@ Sprint 10A completed:
 - Regression Coverage
 - Sprint 10A documentation and completion checklist
 
+Sprint 10B completed:
+
+- Prediction Rule Library architecture and documentation
+- General Prediction Rule schema and validation helpers
+- Prediction Rule Registry
+- YAML Rule Loader foundation
+- Career, Marriage, Finance, Health, Education, Children, Spirituality, and
+  Personality rule library foundations
+- Prediction category loader and evaluator integration
+- Reusable structured Prediction Explanation layer
+- Validation and regression coverage
+- Sprint 10B documentation through Task 10B.14
+
 ## Current Sprint
 
-Current sprint: Sprint 10B - Prediction Rules Foundation.
+Current sprint: Sprint 15 - Golden Fixture Expansion.
+**Tasks 15.1 through 15.4 documentation complete; one proposed/pending Mumbai
+evidence plan exists; source selection, expected values, fixtures, and tests
+not started.**
 
-Primary sprint document: `docs/SPRINT-10B.md`.
+Primary sprint document: [SPRINT-15.md](SPRINT-15.md).
 
-Sprint 10B goal:
+Permanent contracts:
 
-- Add deterministic, data-driven prediction rule foundations on top of the
-  completed Sprint 10A framework.
-- Keep rules structured, testable, and free of generated interpretation text.
-- Keep AI-generated summaries outside the core prediction engine.
-- Reuse existing Panchang, Kundali, Varga, Dasha, Strength, Ashtakavarga, and
-  special Lagna foundations.
-- Preserve backward compatibility for all existing APIs.
+- [SPEC-GOLDEN-FIXTURES-001](specifications/GOLDEN-FIXTURES.md)
+- [SPEC-GOLDEN-REFERENCE-SOURCES-001](specifications/GOLDEN-REFERENCE-SOURCES.md)
+
+Task 15.1 defines fixture classifications and lifecycle, golden qualification,
+schema and identifiers, provenance and manual review, exact time/DST context,
+per-scope tolerance governance, storage boundaries, failure policy, and the
+future Mumbai, London, New York, and Kundali fixture boundaries.
+
+Task 15.2 defines canonical reference-source categories, scope-specific trust,
+material independence, provenance, review and conflict resolution, source
+lifecycle, and schema `bhaktiastro.golden-reference-source` version `1.0`.
+
+Task 15.3 defines the pre-runtime and
+pre-Golden contract for selecting one exact Mumbai case and planning a future
+evidence record with `proposed` fixture lifecycle, `pending` vector
+verification, and `provisional_reference` only as the intended classification
+after externally sourced candidate values exist. It assigns no final case
+values, collects no source evidence, and creates no evidence record or fixture.
+
+A separately authorized execution created the
+[Mumbai TIME_JD evidence plan](test-vectors/golden-fixtures/GF-MUMBAI-20240701-TIME_JD-V1.md)
+without expected values, sources, tolerances, fixture data, or tests.
+
+Task 15.4 is the next and latest approved Sprint 15 task. It authorizes a
+pre-value source-selection contract for timezone/UTC and Julian Day evidence,
+with canonical categories, material independence, reproducibility, acceptance
+and rejection criteria, and a two-file future execution boundary. It selects
+or approves no product and acquires no value.
+
+These tasks change no runtime code, tests, fixtures, skipped-test state, public
+exports, calculations, or API behavior. Existing Jodhpur and Delhi JSON files
+remain structural and pending. No Task 15.4 source-selection execution,
+expected-value collection, machine fixture, test activation, or later Sprint
+15 task is approved; each requires separate authorization under the permanent
+contracts.
+
+## Completed Matchmaking Reference
+
+Sprint 11 - Matchmaking Foundation. **Complete.**
+
+Primary sprint document: `docs/SPRINT-11.md`.
+
+Sprint 11 goal:
+
+- Add reusable input and result schemas for future deterministic matchmaking.
+- Consume existing birth and Kundali data without recalculating or mutating it.
+- Keep compatibility calculations separate from prediction, API, report, and
+  UI layers.
+- Preserve backward compatibility for completed modules and existing APIs.
 
 Completed tasks:
-- **Task 10B.1**: Initialize Prediction Rule Library architecture and folders (docs/prediction_rules.md).
-- **Task 10B.2**: Implement reusable General Prediction Rule schema and validation helpers (backend/app/prediction/schema.py).
-- **Task 10B.3**: Implement reusable Prediction Rule Registry (backend/app/prediction/registry.py).
-- **Task 10B.4**: Implement YAML Rule Loader foundation (backend/app/prediction/loader.py).
-- **Task 10B.5**: Implement Career Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/career/career_rules.yaml).
-- **Task 10B.6**: Implement Marriage Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/marriage/marriage_rules.yaml).
-- **Task 10B.7**: Implement Finance Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/finance/finance_rules.yaml).
-- **Task 10B.8**: Implement Health Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/health/health_rules.yaml).
-- **Task 10B.9**: Implement Education Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/education/education_rules.yaml).
-- **Task 10B.10**: Implement Children Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/children/children_rules.yaml).
-- **Task 10B.11**: Implement Spirituality Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/spiritual/spiritual_rules.yaml).
-- **Task 10B.12**: Implement General Personality Rule Library foundation with a small validated starter rule set (backend/app/prediction/prediction_rules/personality/personality_rules.yaml).
-- **Task 10B.13**: Implement prediction category loader and evaluator integration (backend/app/prediction/categories.py).
-- **Task 10B.14**: Implement reusable Prediction Explanation layer (backend/app/prediction/explanations.py).
+- **Task 11.1**: Initialize Matchmaking Foundation Architecture with JSON-safe
+  person, pair, result, and metadata schemas and factories.
+- **Task 11.2**: Add deterministic person and pair input validation with stable
+  issue codes, normalized outputs, boundary checks, and duplicate ID detection.
+- **Task 11.3**: Add Nakshatra identity and ordered pair-context foundations
+  with zero-based indexes, circular distances, stable issue codes, and no Koota
+  scoring or compatibility judgement.
+- **Task 11.4**: Implement deterministic Varna Koota with one-based Rashi
+  indexes, centralized Varna mapping/ranks, explicit scoring direction, and no
+  final compatibility judgement.
+- **Task 11.5**: Implement deterministic Vashya Koota from supplied sidereal
+  Moon longitudes with reused Rashi normalization, split-sign classification,
+  strict category validation, and explicit bride-row/groom-column scoring.
+- **Task 11.6**: Implement deterministic Tara Koota with reused zero-based
+  Nakshatra pair context, inclusive circular counting, modulo-9
+  classification, explicit bidirectional roles, and `0.0`/`1.5`/`3.0` scoring.
+- **Task 11.7**: Implement deterministic Yoni Koota with reused Nakshatra
+  normalization, the canonical 27-star animal and Yoni-sex mapping, strict
+  category validation, and the complete symmetric `14 x 14` scoring matrix.
+- **Task 11.8**: Implement deterministic Graha Maitri Koota with reused
+  Moon-Rashi derivation, Rashi lordship, permanent natural relationships,
+  strict lord validation, and the complete symmetric `7 x 7` scoring matrix.
+- **Task 11.9**: Implement deterministic Gana Koota with reused Nakshatra
+  normalization and pair context, complete 27-star classification, strict
+  category validation, and directional bride-row/groom-column scoring.
+- **Task 11.10**: Implement deterministic Bhakoot Koota with reused full
+  Moon-Rashi derivation, inclusive circular directional distances, the
+  complete symmetric `12 x 12` base scoring convention, and no cancellation
+  exceptions.
+- **Task 11.11**: Implement deterministic Nadi Koota with reused Nakshatra
+  normalization and pair context, complete 27-star classification, strict
+  category validation, symmetric `0.0`/`8.0` scoring, and no cancellation
+  exceptions.
+- **Task 11.12**: Implement deterministic Ashtakoota aggregation over all eight
+  completed Kootas with canonical ordering, raw and strict precomputed-result
+  APIs, exact `math.fsum` totals, a fixed `36.0` maximum, and no partial score
+  or interpretation behavior.
+- **Task 11.13**: Implement deterministic Lagna-only Manglik classification
+  and structured bride/groom status comparison using canonical whole-sign
+  house placement, the binary five-house convention, strict chart and
+  precomputed-result validation, and no score, cancellation, or marriage
+  judgement.
+- **Task 11.14**: Implement deterministic structured compatibility report
+  composition through separated raw, strict precomputed, and serialization
+  APIs, reusing completed Ashtakoota and Manglik results without adding a
+  combined score, interpretation, verdict, recommendation, or rendering.
+- **Task 11.15**: Harden serialization for every Sprint 11 matchmaking result
+  family with strict recursive JSON validation and copying, exact schema and
+  field-order enforcement, mutation isolation, additive public serializers,
+  and full compatibility regression coverage.
+
+Sprint 11 is complete. The Documentation Architecture Foundation established
+ADRs, permanent-specification governance, and canonical test-vector standards
+before Sprint 12 began.
+
+The completed Matchmaking contract is now migrated to
+[`SPEC-MATCHMAKING-001`](specifications/MATCHMAKING.md), with reviewed examples
+in [the Matchmaking vector catalogue](test-vectors/matchmaking.md). Sprints 12
+through 14 are complete. Sprint 15's documentation-only fixture governance does
+not change the completed Sprint 11 contracts.
 
 ## Next Task Instructions
 

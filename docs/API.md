@@ -1,121 +1,56 @@
-# API
+# Engine HTTP API
 
-## POST /api/v1/kundali
+This is the concise route guide for the current FastAPI application. The
+authoritative contract, exact nested schemas, known gaps, and conditional
+Playground handoff are in
+[SPEC-HTTP-API-001](specifications/HTTP-API.md).
 
-Calculate the basic deterministic Kundali chart for one local birth date, time,
-and location.
+Application entry point: `backend.app.main:app`
 
-This endpoint includes Lagna, planet positions enriched with Rashi and
-house-placement metadata, and placeholder house groupings. Divisional charts
-are available only when explicitly requested. It does not include predictions,
-interpretation text, or advanced house systems.
+| Surface | Path |
+| --- | --- |
+| API base path | `/api/v1` |
+| OpenAPI | `/openapi.json` |
+| Swagger UI | `/docs` |
+| Swagger OAuth redirect helper | `/docs/oauth2-redirect` |
+| ReDoc | `/redoc` |
 
-### Request
+The current API has no authentication and no CORS middleware. It accepts
+numeric UTC offsets, not IANA timezone identifiers or DST rules.
 
-**URL:** `/api/v1/kundali`
+## Routes
 
-**Method:** `POST`
-
-**Content-Type:** `application/json`
-
-Example:
-
-```json
-{
-  "year": 1990,
-  "month": 1,
-  "day": 1,
-  "hour": 12,
-  "minute": 0,
-  "second": 0,
-  "timezone_offset": 5.5,
-  "latitude": 26.9124,
-  "longitude": 75.7873,
-  "ayanamsa": "lahiri",
-  "include_vargas": false
-}
-```
-
-### Request Fields
-
-| Field | Type | Required | Default | Validation |
-| --- | --- | --- | --- | --- |
-| `year` | integer | yes | - | `1900` to `2100` |
-| `month` | integer | yes | - | `1` to `12` |
-| `day` | integer | yes | - | `1` to `31` |
-| `hour` | integer | no | `12` | `0` to `23` |
-| `minute` | integer | no | `0` | `0` to `59` |
-| `second` | integer | no | `0` | `0` to `59` |
-| `timezone_offset` | number | no | `5.5` | `-12` to `14` |
-| `latitude` | number | yes | - | `-90` to `90` |
-| `longitude` | number | yes | - | `-180` to `180` |
-| `ayanamsa` | string | no | `lahiri` | `lahiri` |
-| `include_vargas` | boolean | no | `false` | `true` or `false` |
-
-### Response
-
-Successful responses return `200 OK`.
-
-Response body:
-
-```json
-{
-  "lagna": {},
-  "planets": [],
-  "houses": []
-}
-```
-
-The Kundali API response keeps these top-level fields stable:
-
-| Field | Type | Description |
+| Method | Route | Purpose |
 | --- | --- | --- |
-| `lagna` | object | Sidereal ascendant and Lagna Rashi metadata. |
-| `planets` | array | Planet positions and optional foundation metadata. |
-| `houses` | array | Twelve placeholder houses with grouped planets. |
-| `vargas` | object | Optional Varga charts, present only when `include_vargas` is `true`. |
+| `GET` | `/api/v1/health` | process liveness and application version |
+| `POST` | `/api/v1/panchang` | basic deterministic Panchang |
+| `POST` | `/api/v1/kundali` | basic Kundali with opt-in sections |
+| `POST` | `/api/v1/dasha` | Vimshottari Dasha timeline |
 
-Optional planet metadata may include dignity, Mooltrikona, motion,
-combustion, and Graha Drishti fields when the underlying chart data supports
-them. The reusable JSON export helper can add export-only metadata, but the
-public API response remains `lagna`, `planets`, and `houses` unless Vargas are
-explicitly requested.
+No Matchmaking, Reporting, Interpretation, or standalone Prediction HTTP route
+currently exists.
 
-When `include_vargas` is omitted or `false`, the response omits `vargas` and
-preserves the previous top-level response shape. When `include_vargas` is
-`true`, `vargas` contains the supported charts `D2`, `D3`, `D7`, `D9`, `D10`,
-`D12`, `D16`, `D20`, `D24`, `D27`, `D30`, `D40`, `D45`, and `D60`.
+## Health
 
-### Validation Errors
-
-Invalid request fields return FastAPI/Pydantic validation errors with status
-`422`.
-
-Calculation errors raised by the deterministic calculation layer return:
-
-- `400` for invalid calculation input, such as invalid date components
-- `500` for runtime calculation failures, such as unavailable Swiss Ephemeris
-
-## POST /api/v1/panchang
-
-Calculate the basic deterministic Panchang for one local date and time.
-
-This endpoint includes current Tithi, Nakshatra, Yoga, and Karana end times. It does not include Vara boundary end time, monthly Panchang, muhurat, or interpretation text.
-
-### Request
-
-**URL:** `/api/v1/panchang`
-
-**Method:** `POST`
-
-**Content-Type:** `application/json`
-
-Example:
+`GET /api/v1/health` returns:
 
 ```json
 {
-  "date": "1985-04-20",
-  "time": "18:10:00",
+  "status": "ok",
+  "app": "BhaktiAstro",
+  "version": "0.1.0"
+}
+```
+
+The configured `app` and `version` values may differ. This is liveness and
+version information only, not calculation readiness or dependency health.
+
+## Panchang
+
+`POST /api/v1/panchang`
+
+```json
+{
   "year": 1985,
   "month": 4,
   "day": 20,
@@ -130,73 +65,103 @@ Example:
 }
 ```
 
-The current API schema validates `year`, `month`, `day`, `hour`, `minute`, `second`, `timezone_offset`, `latitude`, `longitude`, `language`, and `ayanamsa`. The `date` and `time` fields are included in the example for readability and match the split date/time fields.
+| Field | Required | Default | Bounds/values |
+| --- | --- | --- | --- |
+| `year` | yes | — | integer `1900..2100` |
+| `month` | yes | — | integer `1..12` |
+| `day` | yes | — | integer `1..31` |
+| `hour` | no | `12` | integer `0..23` |
+| `minute`, `second` | no | `0` | integer `0..59` |
+| `timezone_offset` | no | `5.5` | number `-12..14` |
+| `latitude` | yes | — | number `-90..90` |
+| `longitude` | yes | — | number `-180..180` |
+| `language` | no | `"hi"` | `"hi"` or `"en"` |
+| `ayanamsa` | no | `"lahiri"` | `"lahiri"` |
 
-### Request Fields
+`date` and `time` are not schema fields. Unknown fields are currently ignored.
+`language` and `ayanamsa` are accepted but not forwarded to the calculation;
+the current calculation follows its default Lahiri path and returns fixed
+multilingual fields.
 
-| Field | Type | Required | Default | Validation |
-| --- | --- | --- | --- | --- |
-| `year` | integer | yes | - | `1900` to `2100` |
-| `month` | integer | yes | - | `1` to `12` |
-| `day` | integer | yes | - | `1` to `31` |
-| `hour` | integer | no | `12` | `0` to `23` |
-| `minute` | integer | no | `0` | `0` to `59` |
-| `second` | integer | no | `0` | `0` to `59` |
-| `timezone_offset` | number | no | `5.5` | `-12` to `14` |
-| `latitude` | number | yes | - | `-90` to `90` |
-| `longitude` | number | yes | - | `-180` to `180` |
-| `language` | string | no | `hi` | `hi` or `en` |
-| `ayanamsa` | string | no | `lahiri` | `lahiri` |
+A successful response has these required top-level fields:
 
-### Response
+```text
+julian_day, ayanamsa, sun, moon, tithi, nakshatra, yoga,
+karana, vara, sunrise, sunset, moonrise, moonset
+```
 
-Successful responses return `200 OK`.
+Rise/set local and UTC values may be `null` when an event is not found. The
+Jodhpur files under `docs/examples/` are current Engine snapshots, not
+independently verified Golden references.
 
-Response body:
+## Kundali
+
+`POST /api/v1/kundali`
+
+Kundali uses Panchang's split date/time components, numeric offset, coordinates,
+and Lahiri-only `ayanamsa`, but has no `language`. It adds these optional
+boolean flags, all defaulting to `false`:
+
+```text
+include_vargas
+include_strength
+include_ashtakavarga
+include_special_lagnas
+include_predictions
+```
+
+The route forwards `ayanamsa` and all five flags. Required response keys are
+`lagna`, `planets`, and `houses`. Requested sections are emitted as `vargas`,
+`strength`, `ashtakavarga`, `special_lagna`, and `predictions`. Several of
+these optional sections remain open dictionaries at the HTTP schema boundary;
+see the canonical specification before adopting them.
+
+## Dasha
+
+`POST /api/v1/dasha`
 
 ```json
 {
-  "julian_day": {},
-  "ayanamsa": {},
-  "sun": {},
-  "moon": {},
-  "tithi": {},
-  "nakshatra": {},
-  "yoga": {},
-  "karana": {},
-  "vara": {},
-  "sunrise": {},
-  "sunset": {},
-  "moonrise": {},
-  "moonset": {}
+  "date": "1990-01-01",
+  "time": "12:00:00",
+  "timezone_offset": 5.5,
+  "latitude": 26.9124,
+  "longitude": 75.7873,
+  "ayanamsa": "lahiri",
+  "target_datetime": "2026-07-03T12:00:00",
+  "include_antardasha": true,
+  "include_pratyantardasha": false
 }
 ```
 
-The `tithi`, `nakshatra`, `yoga`, and `karana` sections include consistent boundary timing fields:
+`date`, `latitude`, and `longitude` are required. `time` defaults to noon,
+`timezone_offset` to `5.5`, `ayanamsa` to `"lahiri"`,
+`include_antardasha` to `true`, and `include_pratyantardasha` to `false`.
+`target_date` and `target_datetime` are nullable; `target_datetime` takes
+precedence when both are supplied.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `degrees_remaining` | number | Degrees remaining until the current Panchang element ends. |
-| `end_time_local` | string | Local ISO-8601 datetime when the current Panchang element ends. |
-| `end_time_utc` | string | UTC ISO-8601 datetime with `Z` suffix when the current Panchang element ends. |
+The Dasha `ayanamsa` field is accepted but not forwarded to its Panchang
+dependency. A successful response contains `birth_datetime`,
+`target_datetime`, `mahadasha_timeline`, `current_dasha`, and `metadata`.
 
-See `docs/examples/panchang_response_jodhpur.json` for a complete response generated from the current API route for Jodhpur, 20 Apr 1985, 18:10 IST.
+## Validation and errors
 
-### Validation Errors
+| Status | Current meaning |
+| --- | --- |
+| `200` | successful response |
+| `422` | framework-generated request validation errors |
+| `400` | caught calculation `TypeError` or `ValueError` |
+| `500` | caught calculation `RuntimeError` or other server failure |
 
-Invalid request fields return FastAPI/Pydantic validation errors with status `422`.
+Calculation errors currently use `{"detail": "<exception text>"}`. There is no
+stable Engine-owned error envelope or machine-readable error code. Request
+models are coercive and currently ignore unknown properties; response models
+for declared sections reject unknown properties.
 
-Examples:
+## Playground use
 
-- `month` outside `1..12`
-- `hour` outside `0..23`
-- `timezone_offset` outside `-12..14`
-- `latitude` outside `-90..90`
-- `longitude` outside `-180..180`
-- unsupported `language`
-- unsupported `ayanamsa`
-
-Calculation errors raised by the deterministic calculation layer return:
-
-- `400` for invalid calculation input, such as invalid date components
-- `500` for runtime calculation failures, such as unavailable Swiss Ephemeris
+Health is safe only as a liveness check. Panchang is the first conditional
+real-data candidate, but browser access, request strictness and forwarding,
+finite serialization, and a stable error contract must be aligned first.
+Kundali and Dasha are not approved for Playground v0. See the
+[readiness matrix and handoff](specifications/HTTP-API.md#playground-integration-readiness).
